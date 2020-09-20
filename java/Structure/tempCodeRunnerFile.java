@@ -1,0 +1,1 @@
+result = numberStack.pop();
