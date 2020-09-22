@@ -55,7 +55,7 @@ public class StackDemo{
         System.out.println(calRePolishExpr(aRePolishString));
         System.out.println(calPolishExpr(aPolishString));
 
-        String infixExpr = "1.2+((2+3.3)*4)-5";
+        String infixExpr = "1.2 +((2+3.3)*4)-5";
         System.out.println(convertInfixToPostfix(infixExpr));
     }
 
@@ -86,7 +86,7 @@ public class StackDemo{
 
         // to suppress type safety warning
         @SuppressWarnings("unchecked")
-        List<String> exprList = convertInfixExprToList(expr); 
+        List<String> exprList = convertInfixExprToList(expr.replace(" ","")); 
 
         // parse infix expression list
         Stack<String> operatorStack = new Stack<String>();
