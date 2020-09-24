@@ -3,20 +3,27 @@ import java.util.ArrayList;
 
 public class nQueensPuzzle {
     public static void main(String[] args) {
-        NQueens puzzle = new NQueens(4);
+        nQueens puzzle = new nQueens(4);
         // public static List<int[]> result;
         // puzzle.place(0);
-        for(int[] r:puzzle.result){
-            for(int i:r){
+        for(int[] placements:puzzle.result){
+            for(int i:placements){
                 System.out.printf("%d ", i);
             }
             System.out.println();
         }
+
+        System.out.println("-----------");
+        nQueensYetAnother puzzleYA = new nQueensYetAnother(4);
+        for(List<Integer> placements: puzzleYA.result){
+                System.out.println(placements);
+            }
+        
     }
 
 }
 
-class NQueens{
+class nQueens{
     /**
      * 在nxn的棋盘上，放上n个皇后，且使其互不攻击（相互不在一行、一列、一对角线上），问有几种摆法？
      */
@@ -25,11 +32,11 @@ class NQueens{
     // 对应一种可能的放置方式，其中索引表示行，值表示列，如[1,3,0,2]就表示第0个皇后放在第0行第1列，以此类推
     public int[] colPlacements;
 
-    public NQueens(int queens){
+    public nQueens(int queens){
         this.queens = queens;
         this.colPlacements = new int[queens];
         this.result = new ArrayList<int[]>();
-        // 
+        //
         this.place(0);
     }
 
@@ -69,4 +76,50 @@ class NQueens{
         }
         return true;
     }
+}
+
+
+
+class nQueensYetAnother {
+    public List<List<Integer>> result; 
+
+    public nQueensYetAnother(int n) {
+        result = nQueens(n);        
+    }
+
+    public static List<List<Integer>> nQueens(int n){
+        List<List<Integer>> result = new ArrayList<>();
+        solveNQueens(n, 0, new ArrayList<Integer>(), result);
+        return result;
+    }
+
+    public static void solveNQueens(int n, int row, List<Integer> colPlacements, List<List<Integer>> result){
+        // goal 是否已经放了最后一个皇后 
+        if(row == n){
+            result.add(new ArrayList<>(colPlacements));
+        }else{
+            for(int col=0;col<n;col++){
+                // choice - choose a placement
+                colPlacements.add(col);
+                // constraint - check if it's valid
+                if(isValid(colPlacements)){
+                    solveNQueens(n, row+1, colPlacements, result);
+                }
+                // 这步有些不太理解
+                colPlacements.remove(colPlacements.size()-1);
+            }
+        }
+    }
+
+    public static boolean isValid(List<Integer> colPlacements){
+        int rowId = colPlacements.size()-1;
+        for(int i=0;i<rowId;i++){
+            int diff = Math.abs(colPlacements.get(i) - colPlacements.get(rowId));
+            if(diff == 0 || diff == rowId - i){
+                return false;
+            }
+        }
+        return true;
+    }
+    
 }
