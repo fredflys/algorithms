@@ -14,29 +14,32 @@ public class Sorting {
         // System.out.printf("Sorted: %s\n", Arrays.toString(res));
         // res = shellByInsertion(arr);
         // System.out.printf("Sorted: %s\n", Arrays.toString(res));
-        quickHelper(arr);
-        System.out.println(Arrays.toString(arr));
+        // quickHelper(arr);
+        // System.out.println(Arrays.toString(arr));
+        // int[] res = mergeHelper(arr);
+        // System.out.println(Arrays.toString(res));
 
 
-        // 生成测试数据
+        // testPerf();
+    }
+
+    public static void testPerf() throws Exception{
+                // 生成测试数据
         int[] testArr = new int[100000];
         for(int i=0;i<testArr.length;i++){
             testArr[i] = (int)(Math.random() * 100000);
         }
-
-        // test("bubble", testArr);
-        // test("selection", testArr); 
-        // test("insertion", testArr);
-        // test("shellBySwap", testArr);      
-        // test("shellByInsertion", testArr); 
-        // test("quickHelper", testArr);
-
-        // int[] res = quickHelper(testArr);
-        // for(int i=0;i<1000;i++){
-        //     System.out.println(testArr[i]);
-        // }
+        
+        test("bubble", testArr);
+        test("selection", testArr); 
+        test("insertion", testArr);
+        test("shellBySwap", testArr);      
+        test("shellByInsertion", testArr); 
+        test("quickHelper", testArr);
+        test("mergeHelper", testArr);
         
     }
+
     public static void test(String funcName, int[] testArr) throws Exception{
         long start = System.currentTimeMillis();
         // 用反射调用方法
@@ -50,6 +53,7 @@ public class Sorting {
 
     // 冒泡排序 O(n**2)
     public static int[] bubble(int[] originalArr){
+        // retain arr for next sorting
         int[] arr = originalArr.clone();
     
         int tempForSwap = 0;
@@ -211,8 +215,13 @@ public class Sorting {
         return arr;
     }
 
-    public static void quickHelper(int[] arr) {
+    // 快速排序
+    public static int[] quickHelper(int[] originalArr) {
+        int[] arr = originalArr.clone();
+
         quick(arr, 0, arr.length-1);
+
+        return arr;
     }
 
     public static void quick(int[] arr, int low, int high){
@@ -242,6 +251,7 @@ public class Sorting {
         int tempForSwap;
 
         while(left<right){
+            // 注意左右游标移动过程中不要越界
             while(arr[left] <= pivotVal && left<high){
                 left++;
             }
@@ -260,6 +270,77 @@ public class Sorting {
 
         return right;
     }
+
+    // 归并排序
+    public static int[] mergeHelper(int[] originalArr){
+        int[] arr = originalArr.clone();
+
+        int[] tempArr = new int[arr.length];
+        divideForMerge(arr, 0, arr.length-1, tempArr);
+        return arr;
+    }
+
+    public static void divideForMerge(int[] arr, int start, int end, int[] tempArr){
+        // 分而治之
+        if(start < end){
+            int  mid = (start + end) / 2;
+            divideForMerge(arr, start, mid, tempArr);
+            divideForMerge(arr, mid + 1, end, tempArr);
+            merge(arr, start, mid, end, tempArr);
+        }
+    }
+
+    public static void merge(int[] arr, int start, int mid, int end, int[] tempArr){
+        /*
+        s     m            e         t
+        4 5 7 8      1 2 3 6         
+        l            r 
+        --a
+        l            . r             1 
+        l              . r           1 2
+        l                . r         1 2 3
+        . l                r         1 2 3 4 5
+          . l                r       1 2 3 4 5 6
+        --b
+            * 1              r       1 2 3 4 5 6 7 
+              * 1            r       1 2 3 4 5 6 7 8
+
+        */
+        // merge次数: arr.length-1
+        int leftCur = start;
+        int rightCur = mid + 1;
+        int tempCur = 0;
+
+        // a 依次从左有序数组和右有序数组向临时数组转移 
+        while(leftCur <= mid && rightCur <= end){
+            if(arr[leftCur] <= arr[rightCur]){
+                tempArr[tempCur++] = arr[leftCur++];
+            }else{
+                tempArr[tempCur++] = arr[rightCur++];
+            }
+        }
+
+        // b 把上次转移剩下的一股脑转移到临时数组
+        while(leftCur<=mid){
+            tempArr[tempCur++] = arr[leftCur++];
+        }
+        while(rightCur<=end){
+            tempArr[tempCur++] = arr[rightCur++];
+        }
+
+        // 从临时数组往原数组转移
+        tempCur = 0;
+        int arrCur = start;
+        while(arrCur <= end){
+            arr[arrCur++] = tempArr[tempCur++]; 
+        }
+
+
+    }
+
+
+
+
 }
 
 
