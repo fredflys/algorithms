@@ -273,6 +273,7 @@ public class Sorting {
 
     // 归并排序
     public static int[] mergeHelper(int[] originalArr){
+        // divide and conquer
         int[] arr = originalArr.clone();
 
         int[] tempArr = new int[arr.length];
@@ -335,6 +336,64 @@ public class Sorting {
             arr[arrCur++] = tempArr[tempCur++]; 
         }
 
+
+    }
+
+    
+    public static int[] radix(int[] originalArr){
+        int[] arr = originalArr.clone();
+
+        // 待排序数组长度为n，创建长度为10的数组，表示0-9的基数桶，其中每个桶是长度为n的数组，用来盛放每次放入基数桶中的元素
+        int[][] buckets = new int[10][arr.length];
+        // 再创建一个数组，用来记录每个基数桶已放置元素的个数，之后从基数桶往原数组转移时会用到
+        int[] bucketsLength = new int[arr.length];
+        int[] negativeArr = new int[arr.length];
+        int max=0;
+        for(int current:arr){
+            if(current>max){
+                max = current;
+            }
+            if(current<0){
+                
+            }
+        }
+        int maxDigit = (max + "").length(); 
+        System.out.println(maxDigit);
+        /*
+        arr
+        [12,23,456,5,10]
+        buckets
+        [
+        0    1    2    3    4    5    6    7    8    9
+        [5]  [5]  [5]  [5]  [5]  [5]  [5]  [5]  [5]  [5]
+        ]
+        bucketsLength
+        [10]
+        */
+
+        // 每一位循环一次
+        for(int round=0;round<maxDigit;round++){
+            for(int arrCur=0;arrCur<arr.length;arrCur++){
+                // 计算当前位（个十百千....）的值
+                int currentDigitNum = arr[arrCur] / (int) Math.pow(10,round) % 10;
+                buckets[currentDigitNum][bucketsLength[currentDigitNum]] = arr[arrCur];
+                bucketsLength[currentDigitNum]++;
+            }
+
+            int arrCur = 0;
+            for(int bucketCur=0;bucketCur<bucketsLength.length;bucketCur++){
+                if(bucketsLength[bucketCur] != 0){
+                    for(int bucketElementCur=0; bucketElementCur<bucketsLength[bucketCur];bucketElementCur++){
+                        arr[arrCur++] = buckets[bucketCur][bucketElementCur];
+                    }
+                }
+                // 为下一轮做准备，将记录基数桶元素个数的数组中的每个元素置0
+                bucketsLength[bucketCur] = 0;
+            }
+            System.out.println("Current round" + Arrays.toString(arr));
+        }
+
+        return arr;
 
     }
 
