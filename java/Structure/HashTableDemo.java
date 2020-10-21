@@ -1,8 +1,39 @@
-package Structure;
+import java.util.Scanner;
 
-public class HashTableDemo {
+public class HashTableDemo{
+    public static void main(String[] args) {
+        HashTable hashtable = new HashTable(7);
+        
+        String input = " ";
+        Scanner scanner = new Scanner(System.in);
+        
+        while(true){
+            System.out.println("(a)dd: add a new employee");
+            System.out.println("(l)ist: show employees");
+            System.out.println("(e)xit");
     
-}
+            input = scanner.next();
+            switch(input){
+                case "a":
+                    System.out.print("id: ");
+                    int id = scanner.nextInt();
+                    System.out.print("name: ");
+                    String name = scanner.next();
+                    Employee emp = new Employee(id, name);
+                    hashtable.add(emp);
+                    break;
+                case "l":
+                    hashtable.list();
+                    break;
+                case "e":
+                    scanner.close();
+                    System.exit(0);
+                default:
+                    break;
+            }
+        }
+    }
+} 
 
 
 class Employee{
@@ -16,14 +47,16 @@ class Employee{
 }
 
 class EmpLinkedList{
-    public Employee head;
+    private Employee head;
     
     public void add(Employee emp){
         if(head == null){
+            System.out.println("aaaaaaaaa");
             head = emp;
             return;
         }
-        Employee cur = head;
+
+        Employee cur = this.head;
         while(cur.next != null){
             cur = cur.next;
         }
@@ -32,10 +65,10 @@ class EmpLinkedList{
 
     public void list(){
         if(head == null){
-            System.out.println("Empty Employee Linked List");
+            return;
         }
         Employee cur = head;
-        while(cur.next != null){
+        while(cur != null){
             System.out.printf("Current employee => id: %d, name: %s\n", cur.id, cur.name);
             cur = cur.next;
         }
@@ -85,6 +118,7 @@ class HashTable{
     public HashTable(int size){
         this.arr = new EmpLinkedList[size];
         this.size = size;
+        // 这里一定要初始化链表数组中的每个链表，否则里面存的都只是null，会有空指针错误
         for(int i=0;i<size;i++){
             arr[i] = new EmpLinkedList();
         }
@@ -111,6 +145,13 @@ class HashTable{
 
     public int getPos(int id){
         return id % size;
+    }
+
+    public void list(){
+        System.out.println("LLL");
+        for(EmpLinkedList l:arr){
+            l.list();
+        }       
     }
 
 }
