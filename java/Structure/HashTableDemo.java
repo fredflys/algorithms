@@ -10,6 +10,7 @@ public class HashTableDemo{
         while(true){
             System.out.println("(a)dd: add a new employee");
             System.out.println("(l)ist: show employees");
+            System.out.println("(s)earc: find an employee by id");
             System.out.println("(e)xit");
     
             input = scanner.next();
@@ -28,6 +29,10 @@ public class HashTableDemo{
                 case "e":
                     scanner.close();
                     System.exit(0);
+                case "s":
+                    System.out.print("id: ");
+                    int searchId = scanner.nextInt();
+                    hashtable.search(searchId);
                 default:
                     break;
             }
@@ -68,6 +73,7 @@ class EmpLinkedList{
             return;
         }
         Employee cur = head;
+        // 注意这里不是判断cur.next，在这里卡过
         while(cur != null){
             System.out.printf("Current employee => id: %d, name: %s\n", cur.id, cur.name);
             cur = cur.next;
@@ -76,11 +82,11 @@ class EmpLinkedList{
 
     public boolean search(int id){
         if(head == null){
-            System.out.println("Empty Employee Linked List...nothing to search");
+            System.out.println("Not found.");
             return false;
         }
         Employee cur = head;
-        while(cur.next != null){
+        while(cur != null){
             if(id == cur.id){
                 System.out.printf("Employee found => id: %d, name: %s\n", cur.id, cur.name);
                 return true;
