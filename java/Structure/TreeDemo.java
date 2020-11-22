@@ -12,10 +12,11 @@ public class TreeDemo {
         nodeC.setLeft(nodeD);
 
         binaryTree.infixTraversal();
-
+        System.out.println(binaryTree.preSearch(4));
+        binaryTree.deleteNode(3);
+        System.out.println("-------------");
+        binaryTree.infixTraversal();
     }
-
-    
 }
 
 class BinaryTree{
@@ -48,6 +49,29 @@ class BinaryTree{
             System.out.println("Empty binary tree.");
         }
     }
+
+    public TreeNode preSearch(int no){
+        System.out.println("Presearching......");
+        TreeNode resultNode = null;
+        if(this.root != null){
+            resultNode = this.root.preSearch(no);
+        }else{
+            System.out.println("Empty binary tree.");
+        }
+        return resultNode;
+    }
+
+    public void deleteNode(int no){
+        if(root != null){
+            if(root.getNo() == no){
+                root = null;
+            }else{
+                root.del(no);
+            }
+        }else{
+            System.out.println("Emptry tree...nothing to delete");
+        }
+    }
 }
 
 class TreeNode {
@@ -67,6 +91,10 @@ class TreeNode {
 
     public void setRight(TreeNode right) {
         this.right = right;
+    }
+
+    public int getNo() {
+        return no;
     }
 
     public TreeNode getLeft() {
@@ -111,5 +139,85 @@ class TreeNode {
         }
         System.out.println(this);
     }
+
+    public TreeNode preSearch(int no){
+        System.out.println("--Comparison is done once...");
+        if(this.no == no){
+            return this;
+        }else{
+            TreeNode resultNode = null;
+            if(this.left != null){
+                resultNode = this.left.preSearch(no);
+                if(resultNode != null){
+                    return resultNode;
+                }
+            }
+            if(this.right != null){
+                resultNode = this.right.preSearch(no);
+            }
+            return resultNode;
+
+        }
+    }
+
+    public TreeNode infixSearh(int no){
+        TreeNode resultNode = null;
+        if(this.left != null){
+            resultNode = this.left.infixSearh(no);
+            if(resultNode != null){
+                return resultNode;
+            }
+        }
+
+        if(this.no == no){
+            return this;
+        }
+
+        if(this.right != null){
+            resultNode = this.right.preSearch(no);
+        }
+        return resultNode;
+    }
+
+    public TreeNode postSearch(int no){
+        TreeNode resultNode = null;
+        if(this.left != null){
+            resultNode = this.left.infixSearh(no);
+            if(resultNode != null){
+                return resultNode;
+            }
+        }
+        if(this.right != null){
+            resultNode = this.right.preSearch(no);
+        }
+        
+        if(this.no == no){
+            return this;
+        }
+
+        return resultNode;
+    }
+
+    public void del(int no){
+        if(this.left != null && this.left.no == no){
+            this.left = null;
+            return;
+        }
+
+        if(this.right != null && this.right.no == no){
+            this.right = null;
+            return;
+        }
+
+        if(this.left != null){
+            System.out.println("zzz");
+            this.left.del(no);
+        }
+
+        if(this.right != null){
+            this.right.del(no);
+        }
+    }
 }
+
 
