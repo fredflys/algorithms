@@ -8,14 +8,14 @@ public class TreeDemo {
 
         binaryTree.setRoot(nodeA);
         nodeA.setLeft(nodeB); 
-        nodeB.setRight(nodeC);
-        nodeC.setLeft(nodeD);
+        nodeA.setRight(nodeC);
+        nodeC.setRight(nodeD);
 
         binaryTree.infixTraversal();
         System.out.println(binaryTree.preSearch(4));
-        binaryTree.deleteNode(3);
+        // binaryTree.deleteNode(3);
         System.out.println("-------------");
-        binaryTree.infixTraversal();
+        binaryTree.preTraversal();
     }
 }
 
@@ -25,10 +25,13 @@ class BinaryTree{
     public void setRoot(TreeNode root){
         this.root = root;
     }
+    public TreeNode getRoot() {
+        return root;
+    }
 
     public void preTraversal(){
-        if(this.root != null){
-            this.root.preTraversal();
+        if(this.getRoot() != null){
+            this.getRoot().preTraversal();
         }else{
             System.out.println("Empty binary tree.");
         }
@@ -96,6 +99,9 @@ class TreeNode {
     public int getNo() {
         return no;
     }
+    public void setNo(int no) {
+        this.no = no;
+    }
 
     public TreeNode getLeft() {
         return left;
@@ -107,16 +113,17 @@ class TreeNode {
 
     @Override
     public String toString(){
-        return "TreeNode [no=" + this.no + ", name=" + name + "]";
+        return "TreeNode [no=" + no + ", name=" + name + "]";
     }
 
     public void preTraversal(){
-        System.out.println(this);
-        if(this.left != null){
-            this.left.preTraversal();
+        System.out.println("Pre-traversing: " + this);
+        //System.out.println("Test  " + this.getLeft());
+        if(this.getLeft() != null){
+            this.getLeft().preTraversal();
         }
-        if(this.right != null){
-            this.right.preTraversal();
+        if(this.getRight() != null){
+            this.getRight().preTraversal();
         }
     }
 
