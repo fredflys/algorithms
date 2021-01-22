@@ -1,3 +1,5 @@
+package Structure;
+
 public class ThreadBinaryTreeDemo {
     public static void main(String[] args) {
         ThreadNode aNode = new ThreadNode(1, "Alice");

@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import jdk.internal.dynalink.beans.StaticClass;
 import java.util.Arrays;
 
 public class Search {

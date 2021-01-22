@@ -1,8 +1,8 @@
 import java.util.Arrays;
 
 public class Sorting {
-    public static void main(String[] args) throws Exception{
-        int[] arr = {8,9,1, 7, 2, 3, 5, 4, 6, 0};
+    public static void main(final String[] args) throws Exception{
+        final int[] arr = {8,9,1, 7, 2, 3, 5, 4, 6, 0};
         // int[] res = bubble(arr);
         // System.out.printf("Sorted: %s\n", Arrays.toString(res));
         // res = selection(arr);
@@ -25,7 +25,7 @@ public class Sorting {
 
     public static void testPerf() throws Exception{
                 // 生成测试数据
-        int[] testArr = new int[100000];
+        final int[] testArr = new int[100000];
         for(int i=0;i<testArr.length;i++){
             testArr[i] = (int)(Math.random() * 100000);
         }
@@ -40,11 +40,11 @@ public class Sorting {
         
     }
 
-    public static void test(String funcName, int[] testArr) throws Exception{
-        long start = System.currentTimeMillis();
+    public static void test(final String funcName, final int[] testArr) throws Exception{
+        final long start = System.currentTimeMillis();
         // 用反射调用方法
         Sorting.class.getMethod(funcName, int[].class).invoke(funcName, testArr);
-        long end = System.currentTimeMillis();
+        final long end = System.currentTimeMillis();
         System.out.printf("Executing " + funcName + " sorting on a %d-item array takes %d" + " ms......\n", testArr.length, end - start);
     }
 
@@ -52,29 +52,28 @@ public class Sorting {
 
 
     // 冒泡排序 O(n**2)
-    public static int[] bubble(int[] originalArr){
+    public static int[] bubble(final int[] originalArr){
         // retain arr for next sorting
-        int[] arr = originalArr.clone();
+        final int[] arr = originalArr.clone();
     
         int tempForSwap = 0;
         boolean swapped = false;
         /*
          value  2,3,1,5,7,4,6,8,10,9
          index  0 1 2 3 4 5 6 7  8 9
-                  .              . 
+                  .           l-3   l-2. l-1
          指针到length - 2位置的元素，length-1位置的元素即已归位
          内循环终止位置到1位置的元素，0位置的元素即已归位
         */
         for(int left=0;left<arr.length-2;left++){
             for(int cur=0;cur<arr.length-1-left;cur++){
                 if(arr[cur] > arr[cur+1]){
-                    swapped = true;
                     tempForSwap = arr[cur];
                     arr[cur] = arr[cur+1];
                     arr[cur+1] = tempForSwap;
+                    swapped = true;
                 }
             }
-    
             // 优化：如果上一轮内循环中，没有发生一次交换，则所有元素已然归位，可以提前结束
             if(!swapped){
                 break;
@@ -85,8 +84,8 @@ public class Sorting {
         return arr;
     }
 
-    public static int[] selection(int[] originalArr){
-        int[] arr = originalArr.clone();
+    public static int[] selection(final int[] originalArr){
+        final int[] arr = originalArr.clone();
         
         /*
         选择排序即从数组中选择出极值归位，再抛开极值，再从剩下的元素中选出极值归位，如此循环，直到最后一个元素归位，排序完成
@@ -103,7 +102,7 @@ public class Sorting {
                 }
             }
             if(start != minIndex){
-                int min = arr[minIndex];
+                final int min = arr[minIndex];
                 arr[minIndex] = arr[start];
                 arr[start] = min;
             }
@@ -112,14 +111,14 @@ public class Sorting {
         return arr;
     }
 
-    public static int[] insertion(int[] originalArr){
-        int[] arr = originalArr.clone();
+    public static int[] insertion(final int[] originalArr){
+        final int[] arr = originalArr.clone();
     
         /*
         选择排序的思想是视位置0的元素为有序数组，依次从右侧取元素，插入到该有序数组中，使其不断向右扩展，最终使得整个数组按顺序排列
         */
         for(int insertIndex=1;insertIndex<arr.length;insertIndex++){
-            int insertVal = arr[insertIndex];
+            final int insertVal = arr[insertIndex];
             int targetIndex = insertIndex - 1;
             /*
             while
@@ -143,9 +142,9 @@ public class Sorting {
         return arr;
     }
 
-    public static int[] shellBySwap(int[] originalArr){
+    public static int[] shellBySwap(final int[] originalArr){
 
-        int[] arr = originalArr.clone();
+        final int[] arr = originalArr.clone();
         // index 0 1 2 3 4 5 6 7 8 9
         //       8 9 1 7 2 3 5 4 6 0
         //       .         .          length/2 一组
@@ -156,12 +155,12 @@ public class Sorting {
  
         int tempForSwap;
 
-        int length = arr.length;
+        final int length = arr.length;
         for(int stride = length/2;stride>0;stride/=2){
             for(int rightCur=stride; rightCur<length; rightCur++){
                 for(int leftCur=rightCur-stride; leftCur>=0; leftCur-=stride){
                     if(arr[leftCur]>arr[leftCur+stride]){
-                        int nextInGroup = leftCur+stride;
+                        final int nextInGroup = leftCur+stride;
                         tempForSwap = arr[leftCur];
                         arr[leftCur] = arr[nextInGroup];
                         arr[nextInGroup] = tempForSwap;
@@ -173,12 +172,12 @@ public class Sorting {
         return arr;
     }
 
-    public static int[] shellByInsertion(int[] originalArr){
+    public static int[] shellByInsertion(final int[] originalArr){
         // 希尔排序是对插入排序的改进
 
-        int[] arr = originalArr.clone();
+        final int[] arr = originalArr.clone();
         
-        int length = arr.length;
+        final int length = arr.length;
         for(int stride = length/2;stride>0;stride/=2){
             for(int cur=stride;cur<length;cur++){
                 /*
@@ -202,7 +201,7 @@ public class Sorting {
                 */
                 if(arr[cur] < arr[cur - stride]){
                     int tartgetIndex = cur;
-                    int insertVal = arr[cur];
+                    final int insertVal = arr[cur];
     
                     while(tartgetIndex - stride >=0 && insertVal < arr[tartgetIndex - stride]){
                         arr[tartgetIndex] = arr[tartgetIndex - stride];
@@ -216,15 +215,15 @@ public class Sorting {
     }
 
     // 快速排序
-    public static int[] quickHelper(int[] originalArr) {
-        int[] arr = originalArr.clone();
+    public static int[] quickHelper(final int[] originalArr) {
+        final int[] arr = originalArr.clone();
 
         quick(arr, 0, arr.length-1);
 
         return arr;
     }
 
-    public static void quick(int[] arr, int low, int high){
+    public static void quick(final int[] arr, final int low, final int high){
         int pivot;
         if(high>low){
             pivot = partition(arr, low, high);
@@ -233,7 +232,7 @@ public class Sorting {
         }
     }
 
-    public static int partition(int[] arr, int low, int high){
+    public static int partition(final int[] arr, final int low, final int high){
         // 对冒泡排序的改进
         /*
         0 1 2 3 4 5 6 7 8 9
@@ -245,7 +244,7 @@ public class Sorting {
             r l 	    
         0	  3 
         */
-        int pivotVal = arr[low];
+        final int pivotVal = arr[low];
         int left = low;
         int right = high;
         int tempForSwap;
@@ -272,26 +271,26 @@ public class Sorting {
     }
 
     // 归并排序
-    public static int[] mergeHelper(int[] originalArr){
+    public static int[] mergeHelper(final int[] originalArr){
         // divide and conquer
-        int[] arr = originalArr.clone();
+        final int[] arr = originalArr.clone();
 
-        int[] tempArr = new int[arr.length];
+        final int[] tempArr = new int[arr.length];
         divideForMerge(arr, 0, arr.length-1, tempArr);
         return arr;
     }
 
-    public static void divideForMerge(int[] arr, int start, int end, int[] tempArr){
+    public static void divideForMerge(final int[] arr, final int start, final int end, final int[] tempArr){
         // 分而治之
         if(start < end){
-            int  mid = (start + end) / 2;
+            final int  mid = (start + end) / 2;
             divideForMerge(arr, start, mid, tempArr);
             divideForMerge(arr, mid + 1, end, tempArr);
             merge(arr, start, mid, end, tempArr);
         }
     }
 
-    public static void merge(int[] arr, int start, int mid, int end, int[] tempArr){
+    public static void merge(final int[] arr, final int start, final int mid, final int end, final int[] tempArr){
         /*
         s     m            e         t
         4 5 7 8      1 2 3 6         
@@ -340,16 +339,16 @@ public class Sorting {
     }
 
     
-    public static int[] radix(int[] originalArr){
-        int[] arr = originalArr.clone();
+    public static int[] radix(final int[] originalArr){
+        final int[] arr = originalArr.clone();
 
         // 待排序数组长度为n，创建长度为10的数组，表示0-9的基数桶，其中每个桶是长度为n的数组，用来盛放每次放入基数桶中的元素
-        int[][] buckets = new int[10][arr.length];
+        final int[][] buckets = new int[10][arr.length];
         // 再创建一个数组，用来记录每个基数桶已放置元素的个数，之后从基数桶往原数组转移时会用到
-        int[] bucketsLength = new int[arr.length];
-        int[] negativeArr = new int[arr.length];
+        final int[] bucketsLength = new int[arr.length];
+        final int[] negativeArr = new int[arr.length];
         int max=0;
-        for(int current:arr){
+        for(final int current:arr){
             if(current>max){
                 max = current;
             }
@@ -357,7 +356,7 @@ public class Sorting {
                 
             }
         }
-        int maxDigit = (max + "").length(); 
+        final int maxDigit = (max + "").length(); 
         System.out.println(maxDigit);
         /*
         arr
@@ -375,7 +374,7 @@ public class Sorting {
         for(int round=0;round<maxDigit;round++){
             for(int arrCur=0;arrCur<arr.length;arrCur++){
                 // 计算当前位（个十百千....）的值
-                int currentDigitNum = arr[arrCur] / (int) Math.pow(10,round) % 10;
+                final int currentDigitNum = arr[arrCur] / (int) Math.pow(10,round) % 10;
                 buckets[currentDigitNum][bucketsLength[currentDigitNum]] = arr[arrCur];
                 bucketsLength[currentDigitNum]++;
             }

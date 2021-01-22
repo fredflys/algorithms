@@ -1,3 +1,5 @@
+package Structure;
+
 public class SparseArray {
     public static void main(String[] args){
         // 创建二维数组
