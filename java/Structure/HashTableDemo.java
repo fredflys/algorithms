@@ -1,5 +1,3 @@
-package Structure;
-
 import java.util.Scanner;
 
 public class HashTableDemo{

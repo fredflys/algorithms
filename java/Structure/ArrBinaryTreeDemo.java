@@ -1,5 +1,3 @@
-package Structure;
-
 public class ArrBinaryTreeDemo {
     public static void main(String[] args) {
         int[] demoArr =  {1, 2, 3, 4, 5, 6, 7};    

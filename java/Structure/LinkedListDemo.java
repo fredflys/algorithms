@@ -225,7 +225,7 @@ class Node {
         this.nickname = nickname;
     }
 
-    @Override
+	@Override
     public String toString(){
         return "好汉: 排名=" + no + ", 名字=" + name + ", 绰号= " + nickname;
     }

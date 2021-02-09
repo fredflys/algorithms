@@ -1,5 +1,3 @@
-package Structure;
-
 /* 
   约瑟夫环
 */
