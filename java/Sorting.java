@@ -2,7 +2,7 @@ import java.util.Arrays;
 
 public class Sorting {
     public static void main(final String[] args) throws Exception{
-        final int[] arr = {8,9,1, 7, 2, 3, 5, 4, 6, 0};
+        // int[] arr = {8,9,1, 7, 2, 3, 5, 4, 6, 0};
         // int[] res = bubble(arr);
         // System.out.printf("Sorted: %s\n", Arrays.toString(res));
         // res = selection(arr);
@@ -20,12 +20,12 @@ public class Sorting {
         // System.out.println(Arrays.toString(res));
 
 
-        // testPerf();
+        testPerf();
     }
 
     public static void testPerf() throws Exception{
-                // 生成测试数据
-        final int[] testArr = new int[100000];
+        // 生成测试数据
+        int[] testArr = new int[100000];
         for(int i=0;i<testArr.length;i++){
             testArr[i] = (int)(Math.random() * 100000);
         }
@@ -41,10 +41,10 @@ public class Sorting {
     }
 
     public static void test(final String funcName, final int[] testArr) throws Exception{
-        final long start = System.currentTimeMillis();
+        long start = System.currentTimeMillis();
         // 用反射调用方法
         Sorting.class.getMethod(funcName, int[].class).invoke(funcName, testArr);
-        final long end = System.currentTimeMillis();
+        long end = System.currentTimeMillis();
         System.out.printf("Executing " + funcName + " sorting on a %d-item array takes %d" + " ms......\n", testArr.length, end - start);
     }
 

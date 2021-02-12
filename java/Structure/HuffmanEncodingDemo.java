@@ -1,3 +1,9 @@
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,28 +15,42 @@ import org.w3c.dom.TypeInfo;
 
 public class HuffmanEncodingDemo {
     public static void main(String[] args) {
+        // ---------------------------编码与解码字符串---------------------------------
         String line = "i like like like java do you like a java";
         byte[] bytes = line.getBytes();
         HuffmanEncoding encoding = new HuffmanEncoding(bytes);
         byte[] encodingBytes = encoding.getEncodingBytes();
         byte[] decodedBytes = encoding.getDecodedBytes();
-        System.out.println("Result after compression: " + Arrays.toString(encodingBytes) + ".\nLength reduced from " + bytes.length + " to " + encodingBytes.length + ".\nCompression rate is " + (float) (bytes.length - encodingBytes.length) / bytes.length + ".");
-        System.out.println("Decoded bytes from the result is: " + new String(decodedBytes) + "\nMatched: " + Arrays.equals(decodedBytes,bytes));
+        System.out.println("Result after compression: " + Arrays.toString(encodingBytes) + ".\nLength reduced from "
+                + bytes.length + " to " + encodingBytes.length + ".\nCompression rate is "
+                + (float) (bytes.length - encodingBytes.length) / bytes.length + ".");
+        System.out.println("Decoded bytes from the result is: " + new String(decodedBytes) + "\nMatched: "
+                + Arrays.equals(decodedBytes, bytes));
+
+        // ----------------------------压缩与解压文件---------------------------------
+        System.out.println("-----------------------------------");
+
+        String zipSrcPath = "..//..//original.bmp";
+        String zipDstPath = "..//..//zipped";
+        HuffmanEncoding fileEncoding = new HuffmanEncoding(zipSrcPath, zipDstPath);
+        System.out.println("File zipped successfully...");
+        String unzipDstPath = "..//..//unzipped.bmp";
+        fileEncoding.unzipFile(zipDstPath, unzipDstPath);
+        System.out.println("File unzipped successfully...");
     }
 
 }
 
-class HuffmanEncoding{
+class HuffmanEncoding {
     // character -> tree path e.g. 32 -> 01, 97 -> 100..
-    // 0 indicates left, 1 indicates right 
+    // 0 indicates left, 1 indicates right
     private Map<Byte, String> mapping = new HashMap<Byte, String>();
     private ENode treeRoot;
     private List<ENode> nodes;
     private byte[] encodingBytes;
     private byte[] decodedBytes;
 
-
-    public HuffmanEncoding(byte[] bytes){
+    public HuffmanEncoding(byte[] bytes) {
         // 从字符串的字节构建节点
         createNodes(bytes);
         // 根据节点构建霍夫曼树
@@ -38,38 +58,42 @@ class HuffmanEncoding{
         // 从霍夫曼树生成每个字节映射的字符串编码
         buildCodesForChildNodes(treeRoot, "", new StringBuilder());
         // 从字符串编码回构字节，压缩完成
-        zip(bytes);
+        encode(bytes);
         // 解码
         decode(mapping, encodingBytes);
     }
 
+    public HuffmanEncoding(String srcPath, String dstPath) {
+        zipFile(srcPath, dstPath);
+    }
+
     // --------------------------压缩-------------------------------------
     // e.g. [ ENode[data=32, weight=9] ... ]
-    // prepare nodes from which a Huffman tree will be built 
-    private void createNodes(byte[] bytes){
+    // prepare nodes from which a Huffman tree will be built
+    private void createNodes(byte[] bytes) {
         ArrayList<ENode> nodes = new ArrayList<ENode>();
 
         Map<Byte, Integer> map = new HashMap<>();
         // get occurance of each character
-        for(Byte b: bytes){
+        for (Byte b : bytes) {
             // get a wrapper for int so it can be compared to null
             Integer count = map.get(b);
-            if(count == null){
-                map.put(b,1);
-            }else{
+            if (count == null) {
+                map.put(b, 1);
+            } else {
                 map.put(b, ++count);
             }
         }
-        // turn every distinct character into a node 
-        for(Map.Entry<Byte, Integer> entry: map.entrySet()){
+        // turn every distinct character into a node
+        for (Map.Entry<Byte, Integer> entry : map.entrySet()) {
             ENode node = new ENode(entry.getKey(), entry.getValue());
             nodes.add(node);
         }
         this.nodes = nodes;
     }
 
-    private void createHuffmanTree(List<ENode> nodes){
-        while(nodes.size()>1){
+    private void createHuffmanTree(List<ENode> nodes) {
+        while (nodes.size() > 1) {
             Collections.sort(nodes);
             ENode left = nodes.get(0);
             ENode right = nodes.get(1);
@@ -84,51 +108,125 @@ class HuffmanEncoding{
     }
 
     /*
-    *
-    * @param node: current node
-    * @param path: 0(left), 1(right), null(root)
-    * @param previousCodeBuilder: code built before (from which new code will be built) 
-    */
-    private void buildCodesForChildNodes(ENode node, String path, StringBuilder previousCodeBuilder){
+     *
+     * @param node: current node
+     * 
+     * @param path: 0(left), 1(right), null(root)
+     * 
+     * @param previousCodeBuilder: code built before (from which new code will be
+     * built)
+     */
+    private void buildCodesForChildNodes(ENode node, String path, StringBuilder previousCodeBuilder) {
         StringBuilder currentCodeBuilder = new StringBuilder(previousCodeBuilder);
         currentCodeBuilder.append(path);
         // if node is a leaf node, put node and code into the mapping hashmap
-        // base case for the recursive calls  
-        if(node.data != null){
+        // base case for the recursive calls
+        if (node.data != null) {
             mapping.put(node.data, currentCodeBuilder.toString());
-        }else{
-            // if node is not a leaf node, run method recursively build codes for child createNodes
+        } else {
+            // if node is not a leaf node, run method recursively build codes for child
+            // createNodes
             // left branch
             buildCodesForChildNodes(node.left, "0", currentCodeBuilder);
             // right branch
-            buildCodesForChildNodes(node.right, "1",currentCodeBuilder);
+            buildCodesForChildNodes(node.right, "1", currentCodeBuilder);
         }
     }
 
-    private void zip(byte[] bytes){
-        // convert every character into its mapping value and concatenate e.g. 110101010...
+    /*
+     * @param: 待压缩的字符串字节数组 result: 压缩后的字节数组
+     */
+    private void encode(byte[] bytes) {
+        // convert every character into its mapping value and concatenate e.g.
+        // 110101010...
         StringBuilder mapString = new StringBuilder();
-        for(byte b: bytes){
+        for (byte b : bytes) {
             mapString.append(mapping.get(b));
         }
         // compress mapping value string to bytes array(8 bit for a byte)
         int bytesLength = (mapString.length() + 7) / 8; // remainder is discarded
         byte[] encodingBytes = new byte[bytesLength];
         // every time a byte is put into encodingBytes, pos will be added by 1
-        int pos = 0; 
+        int pos = 0;
         // a byte has 8 bits
-        for(int i=0;i<mapString.length();i+=8){
+        for (int i = 0; i < mapString.length(); i += 8) {
             String currentByteStr;
             // avoid index-out-of-bounds error
-            if(i+8 > mapString.length()){
+            if (i + 8 > mapString.length()) {
                 // right to the end
                 currentByteStr = mapString.substring(i);
-            }else{
-                currentByteStr = mapString.substring(i,i+8);
+            } else {
+                currentByteStr = mapString.substring(i, i + 8);
             }
-            encodingBytes[pos++] = (byte)Integer.parseInt(currentByteStr, 2);
+            encodingBytes[pos++] = (byte) Integer.parseInt(currentByteStr, 2);
         }
         this.encodingBytes = encodingBytes;
+    }
+
+    private void zipFile(String srcPath, String dstPath) {
+        // 原文件读取流
+        FileInputStream inputStream = null;
+        // 压缩文件输出流
+        FileOutputStream outputStream = null;
+        // 压缩文件要按对象块输出，以区分压缩后的字节以及还原时要用到的编码表
+        ObjectOutputStream objectOutputStream = null;
+        try {
+            inputStream = new FileInputStream(srcPath);
+            outputStream = new FileOutputStream(dstPath);
+            objectOutputStream = new ObjectOutputStream(outputStream);
+
+            byte[] fileBytes = new byte[inputStream.available()];
+            inputStream.read(fileBytes);
+
+            createNodes(fileBytes);
+            createHuffmanTree(nodes);
+            buildCodesForChildNodes(treeRoot, "", new StringBuilder());
+            encode(fileBytes);
+
+            // 写入编码后的原文件字节
+            objectOutputStream.writeObject(encodingBytes);
+            // 写入
+            objectOutputStream.writeObject(mapping);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            // 关闭输入流和输出流
+            try {
+                inputStream.close();
+                outputStream.close();
+                objectOutputStream.close();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+    }
+
+    void unzipFile(String srcPath, String dstPath) {
+        FileInputStream inputStream = null;
+        FileOutputStream outputStream = null;
+        ObjectInputStream objectInputStream = null;
+        try {
+            inputStream = new FileInputStream(srcPath);
+            objectInputStream = new ObjectInputStream(inputStream);
+            outputStream = new FileOutputStream(dstPath);
+
+            byte[] fileBytes = (byte[]) objectInputStream.readObject();
+
+            Map<Byte, String> storedMapping = (HashMap<Byte, String>)objectInputStream.readObject();
+            decode(storedMapping, fileBytes);
+            outputStream.write(decodedBytes);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            try {
+                inputStream.close();
+                objectInputStream.close();
+                outputStream.close();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
     }
 
     // ------------------------------解压----------------------------------
