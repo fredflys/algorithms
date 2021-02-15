@@ -35,7 +35,7 @@ public class Search {
         return low;
     }
 
-    // 二分搜索-递归帮
+    // 二分搜索-递归
     public static int binaryRecur(int[] orderedArr, int low, int high, int val){
         if(low > high){
             return -1; 
