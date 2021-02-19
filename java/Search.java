@@ -18,7 +18,7 @@ public class Search {
         return res;
     }
 
-    // 二分搜索
+    // 二分搜索非递归版本
     public static int binary(int[] arr,  int val){
         /*
         因为回过头去放慢镜头，二分查找的过程就是一个 维护 low 的过程： 
@@ -157,5 +157,7 @@ public class Search {
         return -1;
 
     }
-     
+
 }
+
+

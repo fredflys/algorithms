@@ -21,7 +21,7 @@ class ArrBinaryTree{
          *2n+1   2n+2    
          */
         if(arr == null || arr.length == 0){
-            System.out.println("Empty arr...");
+            System.out.println("Empty array...");
         }
 
         System.out.println(arr[no]);
