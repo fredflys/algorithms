@@ -1,6 +1,6 @@
 ## Array
 
-26 Remove Duplicates
+26 Remove Duplicates <span style="color:green">Easy</span>
 
 two-pointers: 不要想着从原数组内移除重复的元素，而是从空数组开始，一点点将不重复的元素添加进去。快指针用来遍历原数组，慢指针则负责追踪结果数组的最后一个位置。
 
@@ -21,7 +21,7 @@ class Solution {
 }
 ```
 
-293 Move Zeros
+293 Move Zeros <span style="color:green">Easy</span>
 two-pointers: 快指针找到一个非 0 数就往前放，慢指针标记非零数组的末尾。快指针遍历完成后，则所有非 0 数都已挪到原数组前部，但是原数组后部还保持不变，因此需要再依次更新后部为 0。
 
 ```java
@@ -43,7 +43,7 @@ class Solution {
 }
 ```
 
-844 Backspace String Compare
+844 Backspace String Compare <span style="color:green">Easy</span>
 two-pointers: 碰到退格键，满指针不再是跳过，而是要向前退一格。因此涉及到减法，要额外注意确保慢指针不要小于 0。
 
 ```java
@@ -71,7 +71,7 @@ class Solution {
 }
 ```
 
-977 Squares of a Sorted Array
+977 Squares of a Sorted Array <span style="color:green">Easy</span>
 
 two-pointers: 谈到到平方，就会涉及负数，就要想到比较绝对值。从“原数列是有序数列”这点出发，又可知平方后最小的数无法判断，但是最大值一定在两端之中。除此之外，不能再有其他假设。我第一次的错误在于假设每次插入都是成对进行，即最右侧是最大，最左侧一定是次大，这种假设让情况变得复杂，也不符合实际，因为我们在任意时刻能确定的只有最大值。我们是一个一个往结果数组插入，因此该去控制循环的是指向结果数组元素的指针，左右指针是指向原数组的两端，因此我们要从两者中总是取较大值。
 
@@ -101,7 +101,7 @@ class Solution {
 }
 ```
 
-209 Minimum Size Subarray Sum
+209 Minimum Size Subarray Sum <span style="color:orange">Medium</span>
 
 brute force
 
@@ -159,7 +159,7 @@ class Solution {
 }
 ```
 
-904 Fruits into Baskets
+904 Fruits into Baskets <span style="color:orange">Medium</span>
 
 自己想出来的循环法，空间占用小，但耗时较多。start 用来标记水果 A 的起点，middle 用来标记水果 B 的起点，end 用来标记挑选停止的位置。
 
@@ -220,7 +220,7 @@ class Solution {
 }
 ```
 
-76 Minimum Window Substring Hard
+76 Minimum Window Substring <span style="color:red">Hard</span>
 第一次用自己的思路写，只能通过一半的测试用例，错误在于我没有考虑到 t 中可以有重复字符，错将 t 中字符与该字符在 s 中出现的位置当成了 HashMap 的 key 与 value，应该记录出现的次数。在看了力扣的视频题解后，才对滑动窗口有了更深的认识，并改写了自己的版本。
 
 ```java
@@ -298,3 +298,5 @@ class Solution {
     }
 }
 ```
+
+1248 Count Number of Nice Subarrays <span style="color:orange">Medium</span>
