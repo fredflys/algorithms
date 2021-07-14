@@ -1,9 +1,10 @@
 ## Array
+
 26 Remove Duplicates
 
 two-pointers: 不要想着从原数组内移除重复的元素，而是从空数组开始，一点点将不重复的元素添加进去。快指针用来遍历原数组，慢指针则负责追踪结果数组的最后一个位置。
 
-```java 
+```java
 class Solution {
     public int removeDuplicates(int[] nums) {
         int slow = 0;
@@ -19,8 +20,9 @@ class Solution {
     }
 }
 ```
+
 293 Move Zeros
-two-pointers: 快指针找到一个非0数就往前放，慢指针标记非零数组的末尾。快指针遍历完成后，则所有非0数都已挪到原数组前部，但是原数组后部还保持不变，因此需要再依次更新后部为0。
+two-pointers: 快指针找到一个非 0 数就往前放，慢指针标记非零数组的末尾。快指针遍历完成后，则所有非 0 数都已挪到原数组前部，但是原数组后部还保持不变，因此需要再依次更新后部为 0。
 
 ```java
 class Solution {
@@ -36,12 +38,13 @@ class Solution {
             nums[slow] = 0;
             slow++;
         }
-        
+
     }
 }
 ```
+
 844 Backspace String Compare
-two-pointers: 碰到退格键，满指针不再是跳过，而是要向前退一格。因此涉及到减法，要额外注意确保慢指针不要小于0。
+two-pointers: 碰到退格键，满指针不再是跳过，而是要向前退一格。因此涉及到减法，要额外注意确保慢指针不要小于 0。
 
 ```java
 class Solution {
@@ -49,7 +52,7 @@ class Solution {
         char backspace = '#';
         return getRealString(s, backspace).equals(getRealString(t, backspace));
     }
-    
+
     public String getRealString(String s, char backspace){
         char[] chars = s.toCharArray();
         int slow = 0;
@@ -67,6 +70,7 @@ class Solution {
     }
 }
 ```
+
 977 Squares of a Sorted Array
 
 two-pointers: 谈到到平方，就会涉及负数，就要想到比较绝对值。从“原数列是有序数列”这点出发，又可知平方后最小的数无法判断，但是最大值一定在两端之中。除此之外，不能再有其他假设。我第一次的错误在于假设每次插入都是成对进行，即最右侧是最大，最左侧一定是次大，这种假设让情况变得复杂，也不符合实际，因为我们在任意时刻能确定的只有最大值。我们是一个一个往结果数组插入，因此该去控制循环的是指向结果数组元素的指针，左右指针是指向原数组的两端，因此我们要从两者中总是取较大值。
@@ -96,6 +100,7 @@ class Solution {
     }
 }
 ```
+
 209 Minimum Size Subarray Sum
 
 brute force
@@ -128,7 +133,7 @@ class Solution {
 
 sliding window
 
-上述暴力解法无非循环嵌套，不断确定start和end的位置，再不断对区间内的值累加求和。注意外层循环中，每一次都会重置sum，这也就带来了重复运算。而滑动窗口则可以利用之前的结果。
+上述暴力解法无非循环嵌套，不断确定 start 和 end 的位置，再不断对区间内的值累加求和。注意外层循环中，每一次都会重置 sum，这也就带来了重复运算。而滑动窗口则可以利用之前的结果。
 
 ```java
 class Solution {
@@ -156,7 +161,7 @@ class Solution {
 
 904 Fruits into Baskets
 
-自己想出来的循环法，空间占用小，但耗时较多。start用来标记水果A的起点，middle用来标记水果B的起点，end用来标记挑选停止的位置。
+自己想出来的循环法，空间占用小，但耗时较多。start 用来标记水果 A 的起点，middle 用来标记水果 B 的起点，end 用来标记挑选停止的位置。
 
 ```java
 class Solution {
@@ -170,16 +175,16 @@ class Solution {
             while(middle < fruits.length && fruits[middle] == fruits[start]){
                 middle++;
             }
-            // initializes end 
+            // initializes end
             end = middle;
-            // stops when curent fruit is neither fruit A nor fruit B 
+            // stops when curent fruit is neither fruit A nor fruit B
             while(end < fruits.length && (fruits[end] == fruits[middle] || fruits[end] == fruits[start])){
                 end++;
             }
-            
+
             candidate = end - start;
             result = result > candidate ? result : candidate;
-            // jumps to the middle since the start-to-middle part is already visisted 
+            // jumps to the middle since the start-to-middle part is already visisted
             // in the next iteration, start will be incremented so 1 is deducted in advance
             start = middle - 1;
         }
@@ -215,3 +220,81 @@ class Solution {
 }
 ```
 
+76 Minimum Window Substring Hard
+第一次用自己的思路写，只能通过一半的测试用例，错误在于我没有考虑到 t 中可以有重复字符，错将 t 中字符与该字符在 s 中出现的位置当成了 HashMap 的 key 与 value，应该记录出现的次数。在看了力扣的视频题解后，才对滑动窗口有了更深的认识，并改写了自己的版本。
+
+```java
+class Solution {
+    public String minWindow(String s, String t) {
+        if(s == null || s == "" || t == null || t == "" || t.length() > s.length()) return "";
+        // character frequency in sliding window. This will be updated in the process as expected characters are found.
+		// ASCII table has 128 characters so the array is initialized to 128-element long.
+        int[] windowFreq = new int[128];
+		// character frequency in target string. This will stay the same after initialization.
+        int[] targetFreq = new int[128];
+
+		// iterate target string to initialize targetFreq
+        for(int i = 0; i < t.length(); i++){
+            targetFreq[t.charAt(i)]++;
+        }
+        // attach s length and t length to variables for re-use
+        int sLen = s.length();
+        int tLen = t.length();
+
+        int left = 0;
+        char leftChar;
+        int right;
+        char rightChar;
+        int begin = 0;
+		// minimum length of the string in the window that contains all the characters needed
+        int minLen = sLen + 1;
+		// this variable is used to count how many expected characters are covered in the window
+        int covered = 0;
+		// move the right end of the window first
+        for(right = 0; right < sLen; right++){
+            rightChar = s.charAt(right);
+			// current character at right pointer is included in t
+            if(targetFreq[rightChar] > 0){
+				// covered is incremented only when the desired amount of the expected character has not been reached
+				// it helps to decide when to shrink the window
+				// for example, for s = "aac" and t = "ac", without this if-statement, covered would be equal to 2 when right is equal to 1
+				// continue on and the window would be shrinked but "aa" is not a valid window, which means window-shrinking happens too early
+                if(windowFreq[rightChar] < targetFreq[rightChar]){
+                    covered++;
+                }
+				// expected characters in the window can be more than enough so the frequency of the current character is incremented anyway
+                windowFreq[rightChar]++;
+            }
+
+			// when enough or more expected characters are found in the window
+            while(covered == tLen){
+                if(right - left < minLen){
+                    minLen = right - left;
+                    begin = left;
+                }
+
+                leftChar = s.charAt(left);
+				// current character at left pointer is included in t
+                if(targetFreq[leftChar] > 0){
+					// since left will always be decremented in the while loop, if current character is just what we need, moving on means we have one less character covered in the window. So wee need to decrement covered.
+                    if(windowFreq[leftChar] == targetFreq[leftChar]){
+                        covered--;
+                    }
+					// window will be shrinked anyway so the current character in the window is lost
+                    windowFreq[leftChar]--;
+                }
+				// now shrink the window
+                left++;
+            }
+
+        }
+
+        if(minLen == sLen + 1){
+            return "";
+        }
+        // note that right pointer stops just at the right end of the window, which means we have to increment when we calculate the expected length using end points
+        return s.substring(begin, begin + minLen + 1);
+
+    }
+}
+```
