@@ -300,3 +300,42 @@ class Solution {
 ```
 
 1248 Count Number of Nice Subarrays <span style="color:orange">Medium</span>
+自己想的解法，自以为完备，真正执行时，先会遇到语法错误。语法问题解决后，再去执行，常常是连第一个测试用例也无法通过。再以第一个测试用例，调整思路，使其通过后，再执行多个测试用例，发现又有错误。多半是自己只盯着特殊的测试用例，问题没理解充分，忽略了限制条件。好不容易让多个测试用例也通过了，真正提交时又会遇到要么是一半的测试用例没通过，要么是超时了，瓶颈在哪里自己也搞不清楚。这道题还是看了讨论中的题解才依样画葫芦给做出来的。
+
+```java
+class Solution {
+    public int numberOfSubarrays(int[] nums, int k) {
+		int len = nums.length;
+		int left = 0;
+		int right;
+		// track how many odd numbers are found in the window
+		int windowOdds = 0;
+		int result = 0;
+		// track how many subarrays are found in the window
+		int tempResult = 0;
+		for(right = 0; right < len; right++){
+			if(nums[right] % 2 == 1){
+				windowOdds++;
+				if(windowOdds == k) tempResult = 0;
+				while(windowOdds == k){
+					// as long as the window remains
+					tempResult++;
+
+					// left stops at an odd number, which means we'll lose an odd number after moving left one step further, so the window should shrink
+					if(nums[left] % 2 == 1){
+						windowOdds--;
+					}
+					left++;
+				}
+				// the window no longer remains, so we add the temp result from this round to the final result
+				result += tempResult;
+			} else {
+				// current character is even after moving forward, which means it does not affect the result from last round, so we simply reuse it and add it to the result
+				// e.g. for nums = [2 2 1 2 1 2] and k = 2, when right pointer stops at the latter 1, there are 3 sub arrays for now. Then we move the right pointer forward and it stops at the last 2, since it is not odd, we have another 3 sub arrays, every one of which is simply the sub array from last round with the even number appended. (22121 -> 221212, 2121->21212, 121->1212)
+				result += tempResult;
+			}
+		}
+		return result;
+    }
+}
+```
