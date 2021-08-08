@@ -339,3 +339,44 @@ class Solution {
     }
 }
 ```
+
+[930 Binary Subarrays With Sum](https://leetcode-cn.com/problems/binary-subarrays-with-sum/) <span style="color:orange">Medium</span>
+
+So we are trying to count continuous sub-arrays where the number of ones within is equal to a desired goal. So only ones count in this case. Consider the array [0,0,1,0,1,0,0,0] and the goal is 2 and [1,0,1] in the middle is the base case from which we can go left or right. Since two zeros are on the left and three on the right, we have 2 x 3 possibilities. Also, don't forget [1,0,1] in the middle, therefore we have (2+1) x (3+1) possibilities in total. Starting from this example, it's safe to say that the things we care about here are the number of ones and zeros in between. But we have to be careful when the goal is 0 because in this cases we can not get the result simply by summing the number of the zeros in between.
+
+```python
+class Solution:
+    def numSubarraysWithSum(self, nums: List[int], goal: int) -> int:
+        result = 0
+        # count zeros between ones in each iteration
+        count_zeros = 0
+        # use an array to save the number of zeros between ones
+        # example: [0,0,1,0,1,0,0,0] zeros_between_ones: [3, 2, 4]
+        zeros_between_ones = []	
+
+        for num in nums:
+            if(num == 0):
+                count_zeros += 1
+            else:
+                zeros_between_ones.append(count_zeros + 1)
+                count_zeros = 0
+        zeros_between_ones.append(count_zeros + 1)
+
+        # when goal is 0, count the possibilities of zero combinations, ones excluded
+        # so only adding is involved here and no multiplication
+        # example: [0,0,0,1,0,0] zeros_between_ones: [4, 3]
+        if(goal == 0):
+            for count in zeros_between_ones:
+                for i in range(count):
+                    result += i
+            return result
+
+        # when goal is not zero, multiplication is needed
+        for i in range(len(zeros_between_ones)):
+            # ones are exhausted
+            if(i + goal == len(zeros_between_ones)):
+                break
+            result += zeros_between_ones[i] * zeros_between_ones[i + goal]
+        return result
+```
+
