@@ -380,3 +380,18 @@ class Solution:
         return result
 ```
 
+前缀和加哈希表的解法，我始终无法理解，看了许多题解，还是不懂为什么要sum-goal，统计出来的map又有怎么样的实际意义。不想再在这道题上花时间了，挫败感太强了，之后再碰到前缀和的题目然后再看吧。
+
+[1. Two Sum](https://leetcode-cn.com/problems/two-sum/) <span style="color:green">Easy</span>
+
+```python
+class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        num_index = {}
+        for index, num in enumerate(nums):
+            if target - num in num_index:
+                return [num_index[target - num], i]
+            num_index[nums[index]] = index
+        return []
+```
+
