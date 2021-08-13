@@ -395,3 +395,40 @@ class Solution:
         return []
 ```
 
+[992. Subarrays with K Different Integers](https://leetcode-cn.com/problems/subarrays-with-k-different-integers/) <span style="color:red">Hard</span>
+
+恰好由k个不同整数组成的子序列个数 = **最多**由k个不同整数组成的子序列个数 - **最多**由k - 1个不同整数组成的子序列个数   
+
+```python
+class Solution:
+    def subarraysWithKDistinct(self, nums: List[int], k: int) -> int:
+        return self.distinctAtMost(nums, k) - self.distinctAtMost(nums, k - 1)
+    def distinctAtMost(self, nums, k):
+        length = len(nums)
+        # to track how many different integers are in the window 
+        distinct = 0
+        # to count frequency of every different integer in the window
+        counter = collections.Counter()
+        # let and right pointer
+        left, right = 0, 0
+        result = 0
+        while right < length:
+            # right points to a number that has not been seen in the window
+            if counter[nums[right]] == 0:
+                distinct += 1
+            # right moves and 
+            counter[nums[right]] += 1
+            while distinct > k:
+                counter[nums[left]] -= 1
+                # left points to a number that disappears from the window now
+                if counter[nums[left]] == 0: 
+                    distinct -= 1;
+                # left moves forwar
+                left += 1
+            result += right - left + 1
+            
+            # right  moves forward
+            right += 1
+        return result
+```
+
