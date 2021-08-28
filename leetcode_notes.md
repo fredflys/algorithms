@@ -397,7 +397,7 @@ class Solution:
 
 [992. Subarrays with K Different Integers](https://leetcode-cn.com/problems/subarrays-with-k-different-integers/) <span style="color:red">Hard</span>
 
-恰好由k个不同整数组成的子序列个数 = **最多**由k个不同整数组成的子序列个数 - **最多**由k - 1个不同整数组成的子序列个数   
+**恰好**由k个不同整数组成的子序列个数 = **最多**由k个不同整数组成的子序列个数 - **最多**由k - 1个不同整数组成的子序列个数   
 
 ```python
 class Solution:
@@ -427,8 +427,41 @@ class Solution:
                 left += 1
             result += right - left + 1
             
-            # right  moves forward
+            # right moves forward
             right += 1
         return result
 ```
+
+[862. Shortest Subarray with Sum at Least K](https://leetcode-cn.com/problems/shortest-subarray-with-sum-at-least-k/) <span style="color:red">Hard</span>
+
+求连续子数组之和至少为k的最短长度，既然有和，就可以想到使用前缀和数组，问题可转化为连续子数组之和为prefix_sums[right] - prefix_sums[left] >= K时，right - left的最小值。如果以暴力求解，可以想到每一个点都要当作right，也要被当作left，即内外双层循环。如此方法，自然费时。有没有办法可以减少循环的次数呢？此问题的难点在于数组中可以有负数，前缀和数组自然就不一定是单调增加。从这一点出发，前缀和数组中就可能出现这样的情况：有i < j使得prefix_sums[i] >= prefix_sums[j]，也就是说i到j这一段的和小于0，往后再延长，长度变长自不必说，结果反而比起不带i到j这一段变小了。那么，i作为left自然不可能是最后答案。而假如我们已经找到了prefix_sums[j] - prefix_sums[i] >= K，j再往后走也没有意义，因为无论之后是正数还是负数，长度都变长了，即便符合条件，也不是我们要找的最后答案。因此，一旦遇到一个符合条件的left（即此刻的i），就意味着可以求出一个可能的结果，不必再考虑该点作为左侧起始点的情况。
+
+```python
+class Solution:
+    def shortestSubarray(self, nums: List[int], k: int) -> int:
+        # prefix sum array
+        prefix_sums = [0]
+        # assume the result is the largest posssible number plus one
+        result = len(nums) + 1;
+        # 
+        left_candidates = collections.deque()
+        for index, num in enumerate(nums):
+            prefix_sums.append(prefix_sums[index] + num)
+
+        for right in range(len(prefix_sums)):
+			# if sum[j] <= sum[i], sum from i to j is negative. i as the starting point can be removed
+            while(left_candidates and prefix_sums[right] <= prefix_sums[left_candidates[-1]]):
+                left_candidates.pop()
+			# if sum[j] - sum[i] >= k, we can compute a result and i as the starting point can be removed
+            while(left_candidates and prefix_sums[right] - prefix_sums[left_candidates[0]] >= k):
+                result = min(result, right - left_candidates.popleft())
+            # every prefix sum is considered as a starting point candidate at first and then we try to shrink the candidates list in the loop to skip unnecessary calculations
+            left_candidates.append(right)
+
+        return result if result < len(nums) + 1 else -1
+```
+
+
+
+209
 
