@@ -463,5 +463,28 @@ class Solution:
 
 
 
-209
+[209. Minimum Size Subarray Sum](https://leetcode-cn.com/problems/minimum-size-subarray-sum/) <span style="color:orange">Medium</span>
+
+```python
+class Solution:
+    def minSubArrayLen(self, target: int, nums: List[int]) -> int:
+        left = right = sum = 0
+        # set result to the maximum value plus one
+        result = len(nums) + 1
+        while(right < len(nums)):
+            # enlarge the window to the right
+            sum += nums[right]
+            # now the subarray between left and right has a sum that meets the condition 
+            while(sum >= target):
+                # compare with the old result and get a new result
+                result = min(result, right - left + 1)
+                # shrink the window from the left
+                sum -= nums[left]
+                # increment the left pointer so that the iteration continues
+                left += 1
+            # drive the outer iteration
+            right += 1
+            
+        return result if result != len(nums) + 1 else 0
+```
 
