@@ -71,6 +71,28 @@ class Solution {
 }
 ```
 
+[944. Delete Columns to Make Sorted ](https://leetcode-cn.com/problems/delete-columns-to-make-sorted/) <span style="color:green">Easy</span>
+
+```java
+class Solution {
+    public int minDeletionSize(String[] A) {
+        int result = 0;
+        int stringLen = A[0].length();
+        int arrayLen = A.length;
+        for (int stringPointer = 0; stringPointer < stringLen; ++stringPointer)
+            for (int arrayPointer = 0; arrayPointer < A.length - 1; ++arrayPointer)
+                if (A[arrayPointer].charAt(stringPointer) > A[arrayPointer + 1].charAt(stringPointer)) {
+                    result++;
+                    break;
+                }
+
+        return result;
+    }
+}
+```
+
+
+
 977 Squares of a Sorted Array <span style="color:green">Easy</span>
 
 two-pointers: 谈到到平方，就会涉及负数，就要想到比较绝对值。从“原数列是有序数列”这点出发，又可知平方后最小的数无法判断，但是最大值一定在两端之中。除此之外，不能再有其他假设。我第一次的错误在于假设每次插入都是成对进行，即最右侧是最大，最左侧一定是次大，这种假设让情况变得复杂，也不符合实际，因为我们在任意时刻能确定的只有最大值。我们是一个一个往结果数组插入，因此该去控制循环的是指向结果数组元素的指针，左右指针是指向原数组的两端，因此我们要从两者中总是取较大值。
@@ -158,6 +180,31 @@ class Solution {
     }
 }
 ```
+
+```python
+class Solution:
+    def minSubArrayLen(self, target: int, nums: List[int]) -> int:
+        left = right = sum = 0
+        # set result to the maximum value plus one
+        result = len(nums) + 1
+        while(right < len(nums)):
+            # enlarge the window to the right
+            sum += nums[right]
+            # now the subarray between left and right has a sum that meets the condition 
+            while(sum >= target):
+                # compare with the old result and get a new result
+                result = min(result, right - left + 1)
+                # shrink the window from the left
+                sum -= nums[left]
+                # increment the left pointer so that the iteration continues
+                left += 1
+            # drive the outer iteration
+            right += 1
+            
+        return result if result != len(nums) + 1 else 0
+```
+
+
 
 904 Fruits into Baskets <span style="color:orange">Medium</span>
 
@@ -461,30 +508,34 @@ class Solution:
         return result if result < len(nums) + 1 else -1
 ```
 
+[59. Spiral Matrix II](https://leetcode-cn.com/problems/spiral-matrix-ii/) <span style="color:orange">Medium</span>
 
-
-[209. Minimum Size Subarray Sum](https://leetcode-cn.com/problems/minimum-size-subarray-sum/) <span style="color:orange">Medium</span>
-
-```python
-class Solution:
-    def minSubArrayLen(self, target: int, nums: List[int]) -> int:
-        left = right = sum = 0
-        # set result to the maximum value plus one
-        result = len(nums) + 1
-        while(right < len(nums)):
-            # enlarge the window to the right
-            sum += nums[right]
-            # now the subarray between left and right has a sum that meets the condition 
-            while(sum >= target):
-                # compare with the old result and get a new result
-                result = min(result, right - left + 1)
-                # shrink the window from the left
-                sum -= nums[left]
-                # increment the left pointer so that the iteration continues
-                left += 1
-            # drive the outer iteration
-            right += 1
-            
-        return result if result != len(nums) + 1 else 0
+```java
+class Solution {
+    public int[][] generateMatrix(int n) {
+        // left and top border, set to 0
+		int left = 0, top = 0;
+        // right and bottom border, set to n - 1
+		int right = n - 1, bottom = n - 1;
+		int[][] matrix = new int[n][n];
+		int current = 1;
+		int end = n * n;
+		while(current <= end){
+			// from top left to top right
+			for(int i = left; i <= right; i++) matrix[top][i] = current++; 
+			top++;
+			// from right top to right bottom
+			for(int i = top; i <= bottom; i++) matrix[i][right] = current++;
+			right--;
+			// from bottom right to bottom left
+			for(int i = right; i >= left; i--) matrix[bottom][i] = current++;
+			bottom--;
+			// from left bottom to left top
+			for(int i = bottom; i >= top; i--) matrix[i][left] = current++;
+			left++;
+		}
+		return matrix;
+    }
+}
 ```
 
