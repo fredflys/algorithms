@@ -1,6 +1,6 @@
 ## Array
 
-26 Remove Duplicates <span style="color:green">Easy</span>
+#### 26 Remove Duplicates <span style="color:green">Easy</span>
 
 two-pointers: 不要想着从原数组内移除重复的元素，而是从空数组开始，一点点将不重复的元素添加进去。快指针用来遍历原数组，慢指针则负责追踪结果数组的最后一个位置。
 
@@ -21,7 +21,8 @@ class Solution {
 }
 ```
 
-293 Move Zeros <span style="color:green">Easy</span>
+#### 293 Move Zeros <span style="color:green">Easy</span>
+
 two-pointers: 快指针找到一个非 0 数就往前放，慢指针标记非零数组的末尾。快指针遍历完成后，则所有非 0 数都已挪到原数组前部，但是原数组后部还保持不变，因此需要再依次更新后部为 0。
 
 ```java
@@ -43,7 +44,8 @@ class Solution {
 }
 ```
 
-844 Backspace String Compare <span style="color:green">Easy</span>
+#### 844 Backspace String Compare <span style="color:green">Easy</span>
+
 two-pointers: 碰到退格键，满指针不再是跳过，而是要向前退一格。因此涉及到减法，要额外注意确保慢指针不要小于 0。
 
 ```java
@@ -71,7 +73,7 @@ class Solution {
 }
 ```
 
-[944. Delete Columns to Make Sorted ](https://leetcode-cn.com/problems/delete-columns-to-make-sorted/) <span style="color:green">Easy</span>
+#### [944. Delete Columns to Make Sorted ](https://leetcode-cn.com/problems/delete-columns-to-make-sorted/) <span style="color:green">Easy</span>
 
 ```java
 class Solution {
@@ -93,7 +95,7 @@ class Solution {
 
 
 
-977 Squares of a Sorted Array <span style="color:green">Easy</span>
+#### 977 Squares of a Sorted Array <span style="color:green">Easy</span>
 
 two-pointers: 谈到到平方，就会涉及负数，就要想到比较绝对值。从“原数列是有序数列”这点出发，又可知平方后最小的数无法判断，但是最大值一定在两端之中。除此之外，不能再有其他假设。我第一次的错误在于假设每次插入都是成对进行，即最右侧是最大，最左侧一定是次大，这种假设让情况变得复杂，也不符合实际，因为我们在任意时刻能确定的只有最大值。我们是一个一个往结果数组插入，因此该去控制循环的是指向结果数组元素的指针，左右指针是指向原数组的两端，因此我们要从两者中总是取较大值。
 
@@ -123,7 +125,7 @@ class Solution {
 }
 ```
 
-209 Minimum Size Subarray Sum <span style="color:orange">Medium</span>
+#### 209 Minimum Size Subarray Sum <span style="color:orange">Medium</span>
 
 brute force
 
@@ -206,7 +208,7 @@ class Solution:
 
 
 
-904 Fruits into Baskets <span style="color:orange">Medium</span>
+#### 904 Fruits into Baskets <span style="color:orange">Medium</span>
 
 自己想出来的循环法，空间占用小，但耗时较多。start 用来标记水果 A 的起点，middle 用来标记水果 B 的起点，end 用来标记挑选停止的位置。
 
@@ -267,7 +269,8 @@ class Solution {
 }
 ```
 
-76 Minimum Window Substring <span style="color:red">Hard</span>
+#### 76 Minimum Window Substring <span style="color:red">Hard</span>
+
 第一次用自己的思路写，只能通过一半的测试用例，错误在于我没有考虑到 t 中可以有重复字符，错将 t 中字符与该字符在 s 中出现的位置当成了 HashMap 的 key 与 value，应该记录出现的次数。在看了力扣的视频题解后，才对滑动窗口有了更深的认识，并改写了自己的版本。
 
 ```java
@@ -346,7 +349,8 @@ class Solution {
 }
 ```
 
-1248 Count Number of Nice Subarrays <span style="color:orange">Medium</span>
+#### 1248 Count Number of Nice Subarrays <span style="color:orange">Medium</span>
+
 自己想的解法，自以为完备，真正执行时，先会遇到语法错误。语法问题解决后，再去执行，常常是连第一个测试用例也无法通过。再以第一个测试用例，调整思路，使其通过后，再执行多个测试用例，发现又有错误。多半是自己只盯着特殊的测试用例，问题没理解充分，忽略了限制条件。好不容易让多个测试用例也通过了，真正提交时又会遇到要么是一半的测试用例没通过，要么是超时了，瓶颈在哪里自己也搞不清楚。这道题还是看了讨论中的题解才依样画葫芦给做出来的。
 
 ```java
@@ -387,7 +391,7 @@ class Solution {
 }
 ```
 
-[930 Binary Subarrays With Sum](https://leetcode-cn.com/problems/binary-subarrays-with-sum/) <span style="color:orange">Medium</span>
+#### [930 Binary Subarrays With Sum](https://leetcode-cn.com/problems/binary-subarrays-with-sum/) <span style="color:orange">Medium</span>
 
 So we are trying to count continuous sub-arrays where the number of ones within is equal to a desired goal. So only ones count in this case. Consider the array [0,0,1,0,1,0,0,0] and the goal is 2 and [1,0,1] in the middle is the base case from which we can go left or right. Since two zeros are on the left and three on the right, we have 2 x 3 possibilities. Also, don't forget [1,0,1] in the middle, therefore we have (2+1) x (3+1) possibilities in total. Starting from this example, it's safe to say that the things we care about here are the number of ones and zeros in between. But we have to be careful when the goal is 0 because in this cases we can not get the result simply by summing the number of the zeros in between.
 
@@ -429,7 +433,7 @@ class Solution:
 
 前缀和加哈希表的解法，我始终无法理解，看了许多题解，还是不懂为什么要sum-goal，统计出来的map又有怎么样的实际意义。不想再在这道题上花时间了，挫败感太强了，之后再碰到前缀和的题目然后再看吧。
 
-[1. Two Sum](https://leetcode-cn.com/problems/two-sum/) <span style="color:green">Easy</span>
+#### [1. Two Sum](https://leetcode-cn.com/problems/two-sum/) <span style="color:green">Easy</span>
 
 ```python
 class Solution:
@@ -442,7 +446,7 @@ class Solution:
         return []
 ```
 
-[992. Subarrays with K Different Integers](https://leetcode-cn.com/problems/subarrays-with-k-different-integers/) <span style="color:red">Hard</span>
+#### [992. Subarrays with K Different Integers](https://leetcode-cn.com/problems/subarrays-with-k-different-integers/) <span style="color:red">Hard</span>
 
 **恰好**由k个不同整数组成的子序列个数 = **最多**由k个不同整数组成的子序列个数 - **最多**由k - 1个不同整数组成的子序列个数   
 
@@ -479,7 +483,7 @@ class Solution:
         return result
 ```
 
-[862. Shortest Subarray with Sum at Least K](https://leetcode-cn.com/problems/shortest-subarray-with-sum-at-least-k/) <span style="color:red">Hard</span>
+#### [862. Shortest Subarray with Sum at Least K](https://leetcode-cn.com/problems/shortest-subarray-with-sum-at-least-k/) <span style="color:red">Hard</span>
 
 求连续子数组之和至少为k的最短长度，既然有和，就可以想到使用前缀和数组，问题可转化为连续子数组之和为prefix_sums[right] - prefix_sums[left] >= K时，right - left的最小值。如果以暴力求解，可以想到每一个点都要当作right，也要被当作left，即内外双层循环。如此方法，自然费时。有没有办法可以减少循环的次数呢？此问题的难点在于数组中可以有负数，前缀和数组自然就不一定是单调增加。从这一点出发，前缀和数组中就可能出现这样的情况：有i < j使得prefix_sums[i] >= prefix_sums[j]，也就是说i到j这一段的和小于0，往后再延长，长度变长自不必说，结果反而比起不带i到j这一段变小了。那么，i作为left自然不可能是最后答案。而假如我们已经找到了prefix_sums[j] - prefix_sums[i] >= K，j再往后走也没有意义，因为无论之后是正数还是负数，长度都变长了，即便符合条件，也不是我们要找的最后答案。因此，一旦遇到一个符合条件的left（即此刻的i），就意味着可以求出一个可能的结果，不必再考虑该点作为左侧起始点的情况。
 
@@ -508,7 +512,11 @@ class Solution:
         return result if result < len(nums) + 1 else -1
 ```
 
-[59. Spiral Matrix II](https://leetcode-cn.com/problems/spiral-matrix-ii/) <span style="color:orange">Medium</span>
+#### [54. Spiral Matrix](https://leetcode-cn.com/problems/spiral-matrix/) <span style="color:orange">Medium</span>
+
+
+
+#### [59. Spiral Matrix II](https://leetcode-cn.com/problems/spiral-matrix-ii/) <span style="color:orange">Medium</span>
 
 ```java
 class Solution {
@@ -538,4 +546,20 @@ class Solution {
     }
 }
 ```
+
+## Linked List
+
+#### [203. Remove Linked List Elements](https://leetcode-cn.com/problems/remove-linked-list-elements/) <span style="color:green">Easy</span>
+
+#### [707. Design Linked List](https://leetcode-cn.com/problems/design-linked-list/) <span style="color:orange">Medium</span>
+
+#### [206. Reverse Linked List](https://leetcode-cn.com/problems/reverse-linked-list/) <span style="color:green">Easy</span>
+
+#### [24. Swap Nodes in Pairs ](https://leetcode-cn.com/problems/swap-nodes-in-pairs/) <span style="color:orange">Medium</span>
+
+#### [19. Remove Nth Node From End of List](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/) <span style="color:orange">Medium</span>
+
+#### [面试题 02.07. Intersection of Two Linked Lists LCCI ](https://leetcode-cn.com/problems/intersection-of-two-linked-lists-lcci/)<span style="color:green">Easy</span>
+
+#### [142. Linked List Cycle II](https://leetcode-cn.com/problems/linked-list-cycle-ii/) <span style="color:orange">Medium</span>
 
