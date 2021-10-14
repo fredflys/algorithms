@@ -551,6 +551,38 @@ class Solution {
 
 #### [203. Remove Linked List Elements](https://leetcode-cn.com/problems/remove-linked-list-elements/) <span style="color:green">Easy</span>
 
+```java
+class Solution {
+    public ListNode removeElements(ListNode head, int val) {
+        if (head == null) return null;
+        head.next = removeElements(head.next, val);
+        return head.val == val ? head.next : head;
+    }
+}
+```
+
+```python
+class Solution(object):
+    def removeElements(self, head, val):
+        """
+        :type head: ListNode
+        :type val: int
+        :rtype: ListNode
+        """
+        dummy_head = ListNode(-1)
+        dummy_head.next = head
+        
+        current_node = dummy_head
+        while current_node.next:
+            if current_node.next.val == val:
+                current_node.next = current_node.next.next
+            else:
+                current_node = current_node.next
+        return dummy_head.next
+```
+
+
+
 #### [707. Design Linked List](https://leetcode-cn.com/problems/design-linked-list/) <span style="color:orange">Medium</span>
 
 #### [206. Reverse Linked List](https://leetcode-cn.com/problems/reverse-linked-list/) <span style="color:green">Easy</span>
