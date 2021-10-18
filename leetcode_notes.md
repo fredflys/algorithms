@@ -581,9 +581,183 @@ class Solution(object):
         return dummy_head.next
 ```
 
-
-
 #### [707. Design Linked List](https://leetcode-cn.com/problems/design-linked-list/) <span style="color:orange">Medium</span>
+
+My Implementation is bat at run time and memory usage. There are simply too many special cases involved that cause additional complexity.
+
+```java
+class MyLinkedList {
+
+    class Node {
+        int val;
+        Node next;
+        Node(int val){
+            this.val = val;
+        }
+    }
+    
+    Node head;
+    int length;
+    
+    
+    public MyLinkedList() {
+        this.head = null;
+        this.length = 0;
+    }
+    
+    public int get(int index) {
+        if(index < 0 || index >= this.length){
+            return -1;
+        } else {
+            System.out.println(index);
+            System.out.println(this.length);
+            int count = 0;
+            Node current = this.head;
+            while(count != index){
+                if(current != null){
+                    current = current.next;   
+                }
+                count++;
+            }
+            return current.val;
+        }
+    }
+    
+    public Node getNode(int index){
+        int count = 0;
+        Node current = head;
+        while(count < index){
+            current = current.next;
+            count++;
+        }
+        return current;
+    }
+    
+    public void addAtHead(int val) {
+        Node newHeadNode = new Node(val);
+        Node currHeadNode = this.head;
+        newHeadNode.next = currHeadNode;
+        this.head = newHeadNode;
+        this.length++;
+    }
+    
+    public void addAtTail(int val) {
+        if(this.length == 0){
+            this.addAtHead(val);
+            return;
+        }
+        Node newTailNode = new Node(val);
+        Node currentTailNode = this.getNode(this.length - 1);
+        currentTailNode.next = newTailNode;
+        this.length++;
+    }
+    
+    public void addAtIndex(int index, int val) {
+        if(index == 0){
+            this.addAtHead(val);
+            return;
+        }
+        if(index == this.length){
+            this.addAtTail(val);
+            return;
+        }
+        if(index < 0 || index > this.length){
+            return;
+        }
+        Node node = new Node(val);
+        Node prevNode = this.getNode(index - 1);
+        Node currNode = prevNode.next;
+        prevNode.next = node;
+        node.next = currNode;
+        this.length++;
+    }
+    
+    public void deleteAtIndex(int index) {
+        if(index < 0 || index >= this.length){
+            return;
+        }
+        if(index == 0){
+            Node node = this.head.next;
+            this.head = node;
+            this.length--;
+            return;
+        }
+        Node prevNode = this.getNode(index - 1);
+        if(prevNode.next.next == null){
+            prevNode.next = null;
+        } else {
+            prevNode.next = prevNode.next.next;
+        }
+        this.length--;
+    }
+}
+```
+
+Clean and elegant implementation that saves time and storage.  addAtHead and addAtTail are considered as special cases of addAtIndex.
+
+```python
+class Node:
+    def __init__(self, val):
+        self.val = val
+        self.next = None
+
+class MyLinkedList(object):
+
+    def __init__(self):
+        self.head = None
+        self.size = 0
+
+    def get(self, index):
+        if index < 0 or index >= self.size:
+            return -1
+        current = self.head
+        for _ in range(0, index):
+            current = current.next
+        return current.val
+    
+	# defined as a special case of addAtIndex 
+    def addAtHead(self, val):
+        self.addAtIndex(0, val)
+        
+	# defined as a special case of addAtIndex 
+    def addAtTail(self, val):
+        self.addAtIndex(self.size, val)
+        
+
+    def addAtIndex(self, index, val):
+        if index > self.size:
+            return
+        current = self.head
+        node = Node(val)
+        
+        if index <= 0:
+            node.next = current
+            self.head = node
+        else:
+            for _ in range(index  - 1):
+                current = current.next
+            node.next = current.next
+            current.next = node
+            
+        self.size += 1
+
+    def deleteAtIndex(self, index):
+        if index < 0 or index >= self.size:
+            return
+        
+        if index == 0:
+            self.head = self.head.next
+        else:
+            current = self.head
+            for _ in range(index - 1):
+                current = current.next
+            current.next = current.next.next
+            
+        self.size -= 1
+
+```
+
+
 
 #### [206. Reverse Linked List](https://leetcode-cn.com/problems/reverse-linked-list/) <span style="color:green">Easy</span>
 
