@@ -874,6 +874,29 @@ class Solution {
 
 #### [19. Remove Nth Node From End of List](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/) <span style="color:orange">Medium</span>
 
+```java
+// recursive 
+class Solution {
+    // index is used to determine if n is reached
+    private int index;
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        // exit condition
+        if(head == null){
+            this.index = 0;
+            return head;
+        }
+        
+        // what to do at current step: link head to its next or next's next
+        head.next = removeNthFromEnd(head.next, n);
+        this.index += 1;
+        
+        // return value: when index does not reach n, return current node
+        // when index is equal to n, current node is skipped and return its next
+        return this.index == n ? head.next : head;
+    }
+}
+```
+
 
 
 #### [面试题 02.07. Intersection of Two Linked Lists LCCI ](https://leetcode-cn.com/problems/intersection-of-two-linked-lists-lcci/)<span style="color:green">Easy</span>
