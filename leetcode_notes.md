@@ -693,7 +693,7 @@ class MyLinkedList {
 }
 ```
 
-Clean and elegant implementation that saves time and storage.  addAtHead and addAtTail are considered as special cases of addAtIndex.
+Clean and elegant implementation that saves time and storage.  addAtHead and addAtTail are treated as special cases of addAtIndex.
 
 ```python
 class Node:
@@ -757,13 +757,124 @@ class MyLinkedList(object):
 
 ```
 
-
-
 #### [206. Reverse Linked List](https://leetcode-cn.com/problems/reverse-linked-list/) <span style="color:green">Easy</span>
+
+My implementation. I treat the reversing process as a whole by converting the linked list to a list, reversing it and building the reversed linked list from scratch. This is inefficient and memory consuming.
+
+```python
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+class Solution(object):
+    def reverseList(self, head):
+        """
+        :type head: ListNode
+        :rtype: ListNode
+        """
+        if not head:
+            return None
+        current = head
+        nodes = []
+        while current.next:
+            nodes.append(current)
+            current = current.next
+        nodes.append(current)
+        nodes.reverse()
+        for index, node in enumerate(nodes):
+            if index == len(nodes) - 1:
+                node.next = None
+            else:
+                node.next = nodes[index + 1]
+            if index == 0:
+                head = node
+        return head
+```
+
+Iteration is a different perspective. The whole process is divided into sub-processes chained together.
+
+```java
+// iterative 
+public ListNode reverseList(ListNode head) {
+    /*-- 
+    e.g. null ->   1    ->  2
+              prev ->  head  -> next
+    --*/
+    ListNode prev = null;
+    while(head != null){
+        ListNode next = head.next;
+       	// link the current node to its previous node, thus the reversing is done
+        head.next = prev;
+        // to keep the iteration moving
+        prev = head;
+        head = next;
+    }
+    return prev;
+}
+
+// recursive
+public ListNode reverseList(ListNode head) {
+    return reverse(head, null);
+}
+private ListNode reverse(ListNode head, ListNode prev){
+    if(head == null)
+        return prev;
+    ListNode next = head.next;
+    head.next = prev;
+    return reverse(next, head);
+}
+
+```
 
 #### [24. Swap Nodes in Pairs ](https://leetcode-cn.com/problems/swap-nodes-in-pairs/) <span style="color:orange">Medium</span>
 
+```java
+class Solution {
+    /*-- 
+    e.g. null ->  1  ->  2  ->  3
+         f        s      t
+    --*/
+    public ListNode swapPairs(ListNode head) {
+		ListNode resultHead = new ListNode();
+        resultHead.next = head;
+        
+        ListNode current = resultHead;
+        while(current != null && current.next != null && current.next.next != null){
+            // swap second and third
+            ListNode first = current;
+            ListNode second = current.next;
+            ListNode third = second.next;
+            
+            first.next = third;
+            second.next = third.next;
+            third.next = second;
+            
+            current = current.next.next;
+        }
+        return resultHead.next;
+    }
+}
+```
+
+```java
+// recursive
+class Solution {
+    public ListNode swapPairs(ListNode head) {
+        if(head == null || head.next == null)
+            return head;
+        
+        ListNode next = head.next;
+        head.next = swapPairs(next.next);
+        next.next = head;
+        return next;
+    }
+}
+```
+
 #### [19. Remove Nth Node From End of List](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/) <span style="color:orange">Medium</span>
+
+
 
 #### [面试题 02.07. Intersection of Two Linked Lists LCCI ](https://leetcode-cn.com/problems/intersection-of-two-linked-lists-lcci/)<span style="color:green">Easy</span>
 
