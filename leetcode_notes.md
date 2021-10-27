@@ -897,7 +897,76 @@ class Solution {
 }
 ```
 
+```java
+// Calculate the length of the linked list
+class Solution {
+    public int getLength(ListNode head) {
+        int length = 0;
+        while (head != null) {
+            ++length;
+            head = head.next;
+        }
+        return length;
+    }
+    
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode dummy = new ListNode(0, head);
+        int length = getLength(head);
+        ListNode current = dummy;
+        for(int i = 0; i < length - n; ++i){
+            // current will be moved to the next when the index stops so 
+            current = current.next;
+        }
+        current.next = current.next.next;
+        return dummy.next;
+    }
+}
+```
 
+```java
+// Stack's first-in-last-out mechanism is the right fit for couting backwards
+class Solution {
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode dummy = new ListNode(0, head);
+        Deque<ListNode> stack = new LinkedList<ListNode>();
+        ListNode current = dummy;
+        while(current != null){
+            stack.push(current);
+            current = current.next;
+        }
+        // when n nodes are poped current will be just the node before the node to be deleted
+        for(int i = 0; i < n; ++i){
+            stack.pop();
+        }
+        ListNode prev = stack.peek();
+        prev.next = prev.next.next;
+        ListNode ans = dummy.next;
+        return ans;
+    }
+}
+```
+
+```java
+// Tow Pointers
+class Solution {
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode dummy = new ListNode(0, head);
+        ListNode fast = head;
+        ListNode slow = dummy;
+        for(int i = 0; i < n; i++){
+            fast = fast.next;
+        }
+        while(fast != null){
+            fast = fast.next;
+            slow = slow.next;
+        }
+        slow.next = slow.next.next;
+        return dummy.next;
+    }
+}
+```
+
+Why not simply return head instead of the next of dummy? If head is returned, that means the linked list will never be empty. If the linked list is {1] and n is 1, the result will be empty after removal. Returning dummy.next will get null, but returning head, in this case, will return a wrong answer. When dealing with linked lists, it's better to make sure that you always stay in the linked list. A variable that points to a node is not the node itself. A node is always located right after its previous node, which starts from the head node. And keep in mind that a dummy node may be quite useful in linked list problems.
 
 #### [面试题 02.07. Intersection of Two Linked Lists LCCI ](https://leetcode-cn.com/problems/intersection-of-two-linked-lists-lcci/)<span style="color:green">Easy</span>
 
