@@ -970,5 +970,67 @@ Why not simply return head instead of the next of dummy? If head is returned, th
 
 #### [面试题 02.07. Intersection of Two Linked Lists LCCI ](https://leetcode-cn.com/problems/intersection-of-two-linked-lists-lcci/)<span style="color:green">Easy</span>
 
+```java
+// Two pointers
+class Solution{
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB){
+        ListNode a = headA;
+        ListNode b = headB;
+        while(a != b){
+			a = a == null ? headB : a.next;
+            b = b == null ? headA : b.next;
+        }
+        return a;
+    }
+}
+```
+
 #### [142. Linked List Cycle II](https://leetcode-cn.com/problems/linked-list-cycle-ii/) <span style="color:orange">Medium</span>
+
+The node where the cycle begins, if there do exists a cycle, must be the node that re-appears first.
+
+```java
+public class Solution {
+    public ListNode detectCycle(ListNode head) {
+        ListNode current = head;
+        ArrayList<ListNode> seen = new ArrayList<ListNode>();
+        
+        while(current != null){
+            if(seen.contains(current))
+                return current;
+            else{
+                seen.add(current);
+                current = current.next;
+            }
+        }
+        return null;
+    }
+}
+```
+
+**从头结点出发一个指针，从相遇节点也出发一个指针，这两个指针每次只走一个节点， 那么当这两个指针相遇的时候就是环形入口的节点。**
+
+```java
+// two pointers
+public class Solution{
+    public ListNode detectCycle(ListNode head){
+        ListNode slow = head;
+        ListNode fast = head;
+        while(fast != null && fast.next != null){
+            slow = slow.next;
+            fast = fast.next.next;
+            if(slow == fast){
+                ListNode f = fast;
+                LIstNode h = head;
+                while(f != h){
+                    f = f.next;
+                    h = h.next;
+                }
+                return f;
+            }
+        }
+        return null;
+    }
+}
+```
 
