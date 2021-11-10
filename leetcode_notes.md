@@ -1034,3 +1034,47 @@ public class Solution{
 }
 ```
 
+#### [141. Linked List Cycle](https://leetcode-cn.com/problems/linked-list-cycle/) <span style="color:green">Easy</span>
+
+```java
+// tow pointers: if two pointers meet, then there must be a cycle
+public class Solution {
+    public boolean hasCycle(ListNode head) {
+        ListNode fast = head;
+        ListNode slow = head;
+        while(fast != null && fast.next != null){
+            fast = fast.next.next;
+            slow = slow.next;
+            if(fast == slow){
+                return true;
+            }
+        }
+        return false;
+    }
+}
+```
+
+## Hash Table
+
+#### [242. Valid Anagram](https://leetcode-cn.com/problems/valid-anagram/) <span style="color:green">Easy</span>
+
+#### [383. Ransom Note](https://leetcode-cn.com/problems/ransom-note/) <span style="color:green">Easy</span>
+
+#### [49. Group Anagrams](https://leetcode-cn.com/problems/group-anagrams/) <span style="color:green">Easy</span>
+
+#### [438. Find All Anagrams in a String](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/) <span style="color:orange">Medium</span>
+
+#### [349. Intersection of Two Arrays](https://leetcode-cn.com/problems/intersection-of-two-arrays/) <span style="color:green">Easy</span>
+
+#### [350. Intersection of Two Arrays II]( https://leetcode-cn.com/problems/intersection-of-two-arrays-ii/) <span style="color:green">Easy</span>
+
+#### [202. Happy Number](https://leetcode-cn.com/problems/happy-number/) <span style="color:green">Easy</span>
+
+#### [1. Two Sum](https://leetcode-cn.com/problems/two-sum/) <span style="color:green">Easy</span> **
+
+#### [454. 4Sum II](https://leetcode-cn.com/problems/4sum-ii/) <span style="color:orange">Medium</span>
+
+#### [15. 3Sum](https://leetcode-cn.com/problems/3sum/) <span style="color:orange">Medium</span>
+
+#### [18. 4Sum](https://leetcode-cn.com/problems/4sum/) <span style="color:orange">Medium</span>
+
