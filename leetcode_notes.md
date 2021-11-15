@@ -1058,11 +1058,135 @@ public class Solution {
 
 #### [242. Valid Anagram](https://leetcode-cn.com/problems/valid-anagram/) <span style="color:green">Easy</span>
 
+Easy! FIgured it out right away! Now I see I do make progress.
+
+```java
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        // if lengths are equal, they cannot be anagrams
+        // change not-equal to less-than and you have the solution to problem 383
+        if(s.length() != t.length())
+            return false;
+        
+        int[] count = new int[26];
+        for(int i = 0; i < s.length(); i++){
+            count[s.charAt(i) - 'a']++;
+        }
+        for(int j = 0; j < t.length(); j++){
+            // improvement: there is no need to walk through count another time. Comparing while deducting.
+            if(--count[t.charAt(j) - 'a'] < 0)
+                return false;
+        }
+       
+        return true;
+    }
+}
+```
+
+```python
+	return sorted(s) == sorted(t)
+```
+
 #### [383. Ransom Note](https://leetcode-cn.com/problems/ransom-note/) <span style="color:green">Easy</span>
 
-#### [49. Group Anagrams](https://leetcode-cn.com/problems/group-anagrams/) <span style="color:green">Easy</span>
+Solution almost identical as that to problem 242. 
+
+```python
+# another solution
+a = Counter(ransomNote) 
+b = Counter(magazine)
+# get the intersection set
+return (a & b) == a
+```
+
+#### [49. Group Anagrams](https://leetcode-cn.com/problems/group-anagrams/) <span style="color:orange">Medium</span>
+
+```python
+# Passs, but running is slow
+class Solution(object):
+    def groupAnagrams(self, strs):
+        """
+        :type strs: List[str]
+        :rtype: List[List[str]]
+        """
+        sorts = []
+        result = []
+        for s in strs:
+            _ = sorted(s)
+            if _ not in sorts:
+                sorts.append(_)
+                result.append([])
+            result[sorts.index(_)].append(s)
+        return result
+        
+```
+
+```java
+// java 8 new API stream， used to organize collections
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        return new ArrayList<>(Arrays.stream(strs)
+            .collect(
+                Collectors.groupingBy(str -> {
+                    char[] array = str.toCharArray();
+                    Arrays.sort(array);
+                    return new String(array);
+                    })
+            )
+            .values()
+        );
+    }
+}
+
+```
+
+```java
+// hashmap
+class Solution{
+    public List<List<String>> groupAnagrams(String[] strs) {
+        int length = strs.length;
+        // use hash map to group results
+        Map<String, List<String>> map = new HashMap<>();
+        for(String str: strs){
+            char[] chars = str.toCharArray();
+            Arrays.sort(chars);
+            // used sorted string as the key
+            String key = String.valueOf(chars);
+            // if not contained in the map, create a empty array to as a holder
+            if(!map.containsKey(key)){
+                map.put(key, new ArrayList<>());
+            }
+            map.get(key).add(str);
+        }
+        return new ArrayList<>(map.values());
+    }
+}
+```
 
 #### [438. Find All Anagrams in a String](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/) <span style="color:orange">Medium</span>
+
+```java
+// A, but running is slow
+class Solution {
+    public List<Integer> findAnagrams(String s, String p) {
+        int sLen = s.length();
+        int pLen = p.length();
+        char[] chars = p.toCharArray();
+        Arrays.sort(chars);
+        ArrayList result = new ArrayList();
+        for(int i = 0;i <= sLen - pLen; i++){
+            char[] subs = s.substring(i, i + pLen).toCharArray();
+            Arrays.sort(subs);
+            if(Arrays.equals(chars, subs)){
+                result.add(i);
+            }
+        }
+        return result;
+    }
+}
+```
+
+
 
 #### [349. Intersection of Two Arrays](https://leetcode-cn.com/problems/intersection-of-two-arrays/) <span style="color:green">Easy</span>
 
