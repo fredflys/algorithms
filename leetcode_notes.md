@@ -1186,13 +1186,56 @@ class Solution {
 }
 ```
 
-
-
 #### [349. Intersection of Two Arrays](https://leetcode-cn.com/problems/intersection-of-two-arrays/) <span style="color:green">Easy</span>
+
+```python
+class Solution(object):
+    def intersection(self, nums1, nums2):
+        map = {}
+        result = []
+        for num in nums1:
+            if map.get(num):
+                map[num] += 1
+            else:
+                map[num] = 1
+        
+        for num in nums2:
+            if map.get(num) and num not in result:
+                result.append(num)
+        
+        return result
+```
 
 #### [350. Intersection of Two Arrays II]( https://leetcode-cn.com/problems/intersection-of-two-arrays-ii/) <span style="color:green">Easy</span>
 
+```python
+class Solution(object):
+    def intersect(self, nums1, nums2):
+        map1 = {}
+        map2 = {}
+        result = []
+        for num in nums1:
+            if map1.get(num):
+                map1[num] += 1
+            else:
+                map1[num] = 1
+
+        for num in nums2:
+            if map2.get(num):
+                map2[num] += 1
+            else:
+                map2[num] = 1
+        
+        for key in map1.keys():
+            if key in map2.keys():
+                result = result + [key] * (map1[key] if map1[key] < map2[key] else map2[key])
+
+        return result
+```
+
 #### [202. Happy Number](https://leetcode-cn.com/problems/happy-number/) <span style="color:green">Easy</span>
+
+
 
 #### [1. Two Sum](https://leetcode-cn.com/problems/two-sum/) <span style="color:green">Easy</span> **
 
