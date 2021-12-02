@@ -1235,11 +1235,73 @@ class Solution(object):
 
 #### [202. Happy Number](https://leetcode-cn.com/problems/happy-number/) <span style="color:green">Easy</span>
 
+```python
+class Solution(object):
+    def isHappy(self, n):
+        sums = []
+        while n != 1:
+            n = self.convert(n)
+            if n in sums:
+                return False
+            sums.append(n)
+        return True
 
+    def convert(self, n):
+        sum = 0
+        for digit in str(n):
+            digit = int(digit)
+            sum += digit * digit
+        return sum
+```
 
 #### [1. Two Sum](https://leetcode-cn.com/problems/two-sum/) <span style="color:green">Easy</span> **
 
+```python
+class Solution(object):
+    def twoSum(self, nums, target):
+        for i in range(len(nums)):
+            other = target - nums[i]
+            if other in nums and i != nums.index(other):
+                return [i, nums.index(other)]
+        return []
+```
+
 #### [454. 4Sum II](https://leetcode-cn.com/problems/4sum-ii/) <span style="color:orange">Medium</span>
+
+```python
+# official solution
+class Solution(object):
+    def fourSumCount(self, nums1, nums2, nums3, nums4):
+        counter = collections.Counter(i + j for i in nums1 for j in nums2)
+        ans = 0
+        for i in nums3:
+            for j in nums4:
+                if -(i+j) in counter:
+                    ans += counter[-(i+j)]
+        return ans
+```
+
+```java
+class Solution {
+    public int fourSumCount(int[] A, int[] B, int[] C, int[] D) {
+        int ans = 0;
+		Map<Integer, Integer> counter = new HashMap<Integer, Integer>();
+        for(int a: A){
+            for(int b: B){
+                counter.put(a + b, counter.getOrDefault(a + b, 0) + 1)
+            }
+        }
+        for(int c: C){
+            for(int d: D){
+                if(counter.containsKey(-c-d)){
+                    ans += counter.get(-c-d);
+                }
+            }
+        }
+        return ans;
+    }
+}
+```
 
 #### [15. 3Sum](https://leetcode-cn.com/problems/3sum/) <span style="color:orange">Medium</span>
 
