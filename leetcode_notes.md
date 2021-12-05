@@ -1303,7 +1303,78 @@ class Solution {
 }
 ```
 
-#### [15. 3Sum](https://leetcode-cn.com/problems/3sum/) <span style="color:orange">Medium</span>
+[15. 3Sum](https://leetcode-cn.com/problems/3sum/) <span style="color:orange">Medium</span>
+
+```python
+# my solution not accepted because of low efficiency
+class Solution(object):
+    def threeSum(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[List[int]]
+        """
+        counter = collections.Counter()
+        result = []
+        for i in range(len(nums) - 1):
+            for j in range(i + 1,len(nums)):
+                twosum = nums[i] + nums[j] 
+                if -twosum in nums and nums.index(-twosum) != i and nums.index(-twosum) != j:
+                    candidate = sorted([nums[i], nums[j], - nums[i] - nums[j]])
+                    if candidate not in result:
+                        result.append(candidate)
+        return result
+```
+
+```javascript
+// two-pointer after sort
+var threeSum = function(nums) {
+  if (nums.length < 3) {
+    return [];
+  }
+  // 从小到大排序
+  const arr = nums.sort((a,b) => a-b);
+  // 最小值大于 0 或者 最大值小于 0，说明没有无效答案
+  if (arr[0] > 0 || arr[arr.length - 1] < 0) {
+    return [];
+  }
+  const n = arr.length;
+  const res = [];
+  for (let i = 0; i < n; i ++) {
+    // 如果当前值大于 0，和右侧的值再怎么加也不会等于 0，所以直接退出
+    if (nums[i] > 0)
+      return res;
+	  
+    // 当前循环的值和上次循环的一样，就跳过，避免重复值
+    if (i > 0 && nums[i] === nums[i - 1])
+      continue;
+
+    // 双指针
+    let l = i + 1;
+    let r = n - 1;
+    while(l < r) {
+      const _sum = nums[i] + nums[l] + nums[r];
+      if (_sum > 0)
+        r --;
+      if (_sum < 0) 
+        l ++;
+      if (_sum === 0) {
+        res.push([nums[i], nums[l], nums[r]]);
+        // 跳过重复值
+        while(l < r && nums[l] === nums[l + 1])
+          l ++;
+        // 同上
+        while(l < r && nums[r] === nums[r - 1])
+          r --;
+        l ++;
+        r --;
+      }
+    }
+  }
+  return res;
+};
+```
 
 #### [18. 4Sum](https://leetcode-cn.com/problems/4sum/) <span style="color:orange">Medium</span>
+
+Two-layer loop runs too slowly. Not acceptable.
 
