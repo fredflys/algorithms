@@ -1,3 +1,5 @@
+
+
 ## Array
 
 #### 26 Remove Duplicates <span style="color:green">Easy</span>
@@ -1376,5 +1378,275 @@ var threeSum = function(nums) {
 
 #### [18. 4Sum](https://leetcode-cn.com/problems/4sum/) <span style="color:orange">Medium</span>
 
-Two-layer loop runs too slowly. Not acceptable.
+```python
+# two pointer
+class Solution:
+    def fourSum(self, nums: List[int], target: int) -> List[List[int]]:
+        nums.sort()
+        n = len(nums)
+        results = []
+
+        if not nums or n < 4:
+            return results
+		# stops when c is 1 from the last
+        for a in range(n - 3):
+            if a > 0 and nums[a] == nums[a - 1]:
+                continue
+            for b in range(a + 1, n - 2):
+                if b > a + 1 and nums[b] == nums[b - 1]:
+                    continue
+                c = b + 1
+                d = n - 1
+                while c < d:
+                    sum = nums[a]+nums[b]+nums[c]+nums[d]
+                    if sum < target:
+                        c += 1
+                    elif sum > target:
+                        d -= 1
+                    else:
+                        results.append([nums[a], nums[b], nums[c], nums[d]])
+                        while c < d and nums[c + 1] == nums[c]:
+                            c += 1
+                        while c < d and nums[d - 1] == nums[d]:
+                            d -= 1
+                        c += 1
+                        d -= 1
+        return results
+```
+
+```java
+// backtrack and dfs
+class Solution {
+    List<List<Integer>> ans = new ArrayList<>();
+    List<Integer> list = new ArrayList<>();
+    int cur = 0;
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        Arrays.sort(nums);
+        dfs(nums, target,0);
+        return ans;
+    }
+    void dfs(int[] nums, int target, int begin){
+		// condition where recursion stops
+        if(list.size() == 4){
+            if(cur == target){
+                ans.add(new ArrayList<>(list));
+            }
+            return;
+        }
+
+        for(int i = begin; i < nums.length; i++ ){
+            // cutting branches
+			// remaining candidates are not enough
+			if(nums.length - i  < 4 - list.size())
+				return;
+			// current item is equal to the previous one
+            if(begin != i && nums[i - 1] == nums[i])
+				continue;
+			// current sum plus the least possible combination of remaining values is still larger than target   
+            if(i < nums.length - 1 && cur + nums[i] > target - (3 - list.size()) * nums[i + 1])		
+                return;
+			// current sum plus the largest possible combination of remaining values is still less then target
+            if(i < nums.length - 1 && cur + nums[i] < target - (3 - list.size()) * nums[nums.length - 1])
+				continue;
+			
+            cur += nums[i];
+            list.add(nums[i]);
+            dfs(nums, target, i + 1);
+            list.remove(list.size() - 1);
+            cur -= nums[i];
+        }
+    }
+}
+```
+
+## String
+
+#### [344. Reverse String](https://leetcode-cn.com/problems/reverse-string/) <span style="color:green">Easy</span>
+
+#### [541. Reverse String II](https://leetcode-cn.com/problems/reverse-string-ii/) <span style="color:green">Easy</span>
+
+#### [151. Reverse Words in a String](https://leetcode-cn.com/problems/reverse-words-in-a-string/) <span style="color:orange">Medium</span>
+
+#### [28. Implement strStr()](https://leetcode-cn.com/problems/implement-strstr/) <span style="color:green">Easy</span>
+
+```java
+// Brute force n**2
+public int strStr(String source, String target){
+    if (target == null || target.equals(""))
+        return -1;
+    
+    // limit possible start points
+    for(int i = 0; i < source.length() - target.length() + 1; i++){
+        // default flag is true, only set it to false when unequal chars are found
+        boolean equal = true;
+        for(int j = 0; j < target.length(); j++){
+            if(source.charAt(i + j) != target.charAt(j)){
+                equal = false;
+                break;
+            }
+        }
+        
+        if(equal)
+            return i;
+    }
+    
+    return -1;
+}
+```
+
+Rabin-Karp: use hash code to speed comparisons
+
+<img src="https://s2.loli.net/2021/12/19/YLfja3DWJAXv4nQ.png" alt="image-20211219225340858" style="zoom: 33%;" /> 
+
+```java
+public int BASE = 1000000;
+public int strStr(String source, String target){
+	if (source == null || target == null || target.equals(""))
+        return -1;
+    
+    int targetLen = target.length();
+    int sourceLen = source.length();
+    if(sourceLen < targetLen)
+        return -1;
+    
+    int power = 1;
+    for(int i = 0; i < targetLen; i++)
+        power = (power * 31) % BASE;
+    
+    // map target string to hash code 
+    int targetHashed = 0;
+    for(int i = 0; i < targetLen; i++)
+        targetHashed = (targetHashed * 31 + target.charAt(i)) % BASE;
+    
+    int hashed = 0;
+    for(int i = 0; i < sourceLen; i++){
+        hashed = (hashed * 31 + source.charAt(i)) % BASE;
+        // current length is less than target length, hashing continues
+        if(i < targetLen - 1)
+            continue;
+        
+        // current length longer than target length, remove the starting point from current window
+        if(i >= targetLen){
+            hashed = hashed - (source.charAt(i - targetLen) * power) % BASE;
+            if(hashed < 0)
+                hashed += BASE;
+        }
+        
+        // double check is required in case of hash collision
+        if(hashed == targetHashed){
+			if(source.substring(i - targetLen + 1, i + 1).equals(target))
+                return i - targetLen + 1;
+        }
+    }
+    
+    return -1;
+}
+```
+
+#### [459. Repeated Substring Pattern](https://leetcode-cn.com/problems/repeated-substring-pattern/) <span style="color:green">Easy</span>
+
+#### [5. Longest Palindromic Substring](https://leetcode-cn.com/problems/longest-palindromic-substring/) <span style="color:orange">Medium</span>
+
+```python
+# brute force with nested loop
+class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        if not s:
+            return None
+
+        length = len(s)
+        # possible substring length from full length to 1 
+        for possibleLength in range(length, 0, -1):
+            for start in range(length - possibleLength + 1):
+                if self.is_palindrome(s, start, start + possibleLength - 1):
+                    return s[start : start + possibleLength]
+        return ""
+    
+    def is_palindrome(self, s, left, right):
+        while left < right and s[left] == s[right]:
+            left += 1
+            right -= 1
+        return left >= right
+
+```
+
+Expanding from a middle line
+
+<img src="C:\Users\xyf22\AppData\Roaming\Typora\typora-user-images\image-20211219121255902.png" alt="image-20211219121255902" style="zoom:50%;" /> 
+
+```java
+// build a palindrome from the bottom up instead of checking every possibility 
+public String longestPalindrome(String s){
+    if(s == null)
+        return null;
+    
+    String longest = "";
+    for(int i = 0; i < s.length(); i++){
+        String oddPalindrome = getPalindromeFrom(s, i, i);
+        if(longest.length() < oddPalindrome.length())
+            longest = oddPalindrome;
+        
+        String evenPalindrome = getPalindromeFrom(s, i, i + 1);
+        if(longest.length() < evenPalindrome.length())
+            longest = evenPalindrome;
+    }
+    return longest;
+}
+
+private String getPalindromeFrom(String s, int left, int right){
+    while(left >= 0 && right < s.length()){
+        if(s.charAt(left) != s.charAt(right))
+            break;
+        left--;
+        right++;
+    }
+    return s.substring(left + 1, right);
+}
+```
+
+Dynamic Programming
+
+s[i : j] is a palindrome only if 
+
+- s[i + 1 : j - 1] is a palindome
+
+- s[i] = s[j]
+
+```java
+public String longestPalindrome(String s){
+    if(s == null && s.equals(""))
+        return "";
+    
+    int n = s.length();
+    boolean[][] isPalindrome = new boolean[n][n];
+   	
+    // matrix initialization
+    int longest = 1, start = 0;
+    for(int i = 0; i < n; i++){
+    	// base case: a single char is always a palindrome
+        isPalindrome[i][i] = true;
+        if(i < n - 1){
+            // base case: two chars as a palindrome if s[i] == s[i + 1]
+            isPalindrome[i][i + 1] = s.charAt(i) == s.charAt(i + 1);
+            if(isPalindrome[i][i + 1]){
+                start = i;
+                longest =2;
+            }
+        }
+    }
+    // since whether s[i : j] is a palindrome depends on s[i + 1: j - 1], start the iteration from i = n - 1
+    for(int i = n - 1;i >= 0; i--){
+        // two chars are treated as a base case so j starts from i + 2
+        for(int j = i + 2; j < n; j++){
+            isPalindrome[i][j] = isPalindrome[i + 1][j - 1] && s.charAt(i) == s.charAt(j);
+            if(isPalindrome[i][j] && j - i + 1 > longest){
+                start = i;
+                longest = j - i + 1;
+            }
+        }
+    }
+    
+    return s.substring(start, start + longest);
+}
+```
 
