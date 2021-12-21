@@ -1268,6 +1268,45 @@ class Solution(object):
         return []
 ```
 
+```python
+class Solution(object):
+    def twoSum(self, nums, target):
+        hashset = set()
+        for num in nums:
+            if target - num in hashset:
+                return num, target - number
+           	hashset.add(num)
+        return []
+```
+
+```python
+# two pointers
+class Solution(object):
+    def twoSum(self, nums, target):
+        if not nums:
+            return []
+        
+        # save index and number at the same time
+        # because original index will be lost after sort
+        # e.g. [3,3] 6 ans: [0,1] instead of [0,0] 
+        num_tuples = [
+            (num, index)
+            for index, num in enumerate(nums)
+        ]
+        num_tuples.sort()
+        left, right = 0, len(nums) - 1
+        while left < right:
+            if num_tuples[left][0] + num_tuples[right][0] > target:
+                right -= 1
+            elif num_tuples[left][0] + num_tuples[right][0] < target:
+                left += 1
+            else:
+                return num_tuples[left][1], num_tuples[right][1]
+        return []
+```
+
+
+
 #### [454. 4Sum II](https://leetcode-cn.com/problems/4sum-ii/) <span style="color:orange">Medium</span>
 
 ```python
@@ -1305,7 +1344,7 @@ class Solution {
 }
 ```
 
-[15. 3Sum](https://leetcode-cn.com/problems/3sum/) <span style="color:orange">Medium</span>
+#### [15. 3Sum](https://leetcode-cn.com/problems/3sum/) <span style="color:orange">Medium</span>
 
 ```python
 # my solution not accepted because of low efficiency
@@ -1572,7 +1611,7 @@ class Solution:
 
 Expanding from a middle line
 
-<img src="C:\Users\xyf22\AppData\Roaming\Typora\typora-user-images\image-20211219121255902.png" alt="image-20211219121255902" style="zoom:50%;" /> 
+<img src="https://s2.loli.net/2021/12/20/ZB91efyuRP5TiU8.png" alt="image-20211220220032016" style="zoom:33%;" /> 
 
 ```java
 // build a palindrome from the bottom up instead of checking every possibility 
@@ -1649,4 +1688,64 @@ public String longestPalindrome(String s){
     return s.substring(start, start + longest);
 }
 ```
+
+#### [125. Valid Palindrome](https://leetcode-cn.com/problems/valid-palindrome/) <span style="color:green">Easy</span>
+
+```python
+class Solution:
+    def isPalindrome(self, s):
+        left, right = 0, len(s) - 1
+        while left < right:
+            while left < right and not self.is_valid(s[left]):
+                left += 1
+            while left < right and not self.is_valid(s[right]):
+                right -= 1
+            if left < right and s[left].lower() != s[right].lower():
+                return False
+            left += 1
+            right -= 1
+        return True
+    def is_valid(self, char):
+        return char.isdigit() or char.isalpha()
+```
+
+#### [680. Valid Palindrome II](https://leetcode-cn.com/problems/valid-palindrome-ii/) <span style="color:green">Easy</span>
+
+```java
+class Solution {
+    class Pair {
+        int left, right;
+        public Pair(int left, int right){
+            this.left = left;
+            this.right = right;
+        }
+    }
+
+    public boolean validPalindrome(String s) {
+        if(s == null)
+            return false;
+
+        Pair pair = findDIfference(s, 0, s.length() - 1);
+        if(pair.left >= pair.right)
+            return true;
+
+        return isPalindrome(s, pair.left + 1, pair.right) || isPalindrome(s, pair.left, pair.right - 1);   
+    }
+
+	private Pair findDIfference(String s, int left, int right){
+        while(left < right && s.charAt(left) == s.charAt(right)){
+            left++;
+            right--;
+        }
+        return new Pair(left, right);
+    }
+    
+    private boolean isPalindrome(String s, int left, int right) {
+        Pair pair = findDIfference(s, left, right);
+        return pair.left >= pair.right;
+    }
+}
+```
+
+
 
