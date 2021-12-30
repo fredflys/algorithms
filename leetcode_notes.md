@@ -549,6 +549,259 @@ class Solution {
 }
 ```
 
+#### [912. Sort an Array](https://leetcode-cn.com/problems/sort-an-array/) <span style="color:orange">Medium</span>
+
+自己写出来的，错误真多，有用错方法，忘记类型，忘记返回值，拼写错误。
+
+先整体有序，再局部有序，分而治之。
+
+```java
+// quick sort
+class Solution {
+    public int[] sortArray(int[] nums) {
+        if(nums.length <= 1)
+            return nums;
+        
+		quicksort(nums, 0, nums.length - 1);
+        return nums;
+    }
+    
+    private void quicksort(int[] nums, int start, int end){
+        if(start >= end)
+            return;
+        
+        int left = start, right = end;
+        int pivot = nums[(start + end) / 2];
+        // make sure that left and right do not stop at the same position to avoid stack over flow error
+        while(left <= right){
+            // try best to create balanced subarrays
+            // nums[left] == pivot will cause inbalance when most elements are the same integer
+            while(left <= right && nums[left] < pivot)
+                left++;
+            while(left <= right && nums[right] > pivot)
+                right--;
+            if(left <= right){
+                int temp = nums[left];
+                nums[left] = nums[right];
+                nums[right] = temp;
+                left++;
+                right--;
+            }
+        }
+        
+        quicksort(nums, start, right);
+        quicksort(nums, left, end);
+    }
+}
+```
+
+```java
+// merge sort
+public class Solution {
+    public int[] sortArray(int[] nums) {
+        int[] sorted = new int[nums.length];
+        mergeSort(nums, 0, nums.length - 1, sorted);
+        return sorted;
+    }
+    
+    public void mergeSort(int[] nums, int start, int end, int[] temp) {
+        if(start >= end)
+            return;
+        
+        int mid = (start + end) / 2;
+        
+        mergeSort(nums, start, mid, temp);
+        mergeSort(nums, mid + 1, end, temp);
+        merge(nums, start, mid, end, temp);
+    }
+    
+    public void merge(int[] nums, int start, int mid, int end, int[] temp) {
+        int left = start, right = mid + 1, tempIndex = left;
+        
+        while (left <= mid && right <= end) {
+        	if(nums[left] < nums[right]) {
+                temp[tempIndex++] = nums[left++];
+            } else {
+                temp[tempIndex++] = nums[right++];
+            }
+        }
+        
+        while (left <= mid)
+            temp[tempIndex++] = nums[left++];
+        while (right <= end)
+        	temp[tempIndex++] = nums[right++];
+        
+        for (int i = start; i <= end; i++)
+            nums[i] = temp[i];
+    }
+}
+```
+
+#### [88. Merge Sorted Array ](https://leetcode-cn.com/problems/merge-sorted-array/) <span style="color:green">Easy</span>
+
+```java
+// basically the merging process of the merge sort
+class Solution {
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        int[] temp = new int[m];
+        for(int i = 0; i < m; i++)
+            temp[i] = nums1[i];
+        // System.out.println("Temp Array: " + Arrays.toString(temp));
+
+        int left = 0, right = 0, index = 0;
+        while(left < m && right < n) {
+            if(temp[left] < nums2[right]) {
+                nums1[index++] = temp[left++];
+            } else {
+                nums1[index++] = nums2[right++];
+            }
+        }
+
+        while(left < m)
+            nums1[index++] = temp[left++];
+        while(right < n)
+            nums1[index++] = nums2[right++];
+ 
+    }
+}
+```
+
+```java
+// another perspective: moving nums2 into nums1 from t
+class Solution {
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        int index = nums1.length;
+        
+        while(n > 0) {
+            if (m > 0 && nums1[m - 1] > nums2[n - 1]) {
+                nums1[--index] = nums1[--m];
+            }
+            else {
+                nums1[--index] = nums2[--n];
+            }
+        }
+    }
+}
+```
+
+#### 702.Search in a Sorted Array of Unknown Size <span style="color:orange">Medium</span>
+
+Binary search with incremental range.
+
+```python
+class Solution:
+    """
+    @param reader: An instance of ArrayReader.
+    @param target: An integer
+    @return: An integer which is the first index of target.
+    """
+    def searchBigSortedArray(self, reader, target):
+        # write your code here
+        range_total = 1
+        while reader.get(range_total - 1) < target:
+            range_total = range_total * 2
+
+        # binary search template code
+        def binary_search(length, reader):
+            start, end = 0, length - 1
+            while start + 1 < end:
+                mid = start + (end- start) // 2
+                if reader.get(mid) < target:
+                    start = mid
+                else:
+                    end = mid
+
+            if reader.get(start) == target:
+                return start
+            if reader.get(end) == target:
+                return end
+            return -1
+
+        return binary_search(range_total, reader)
+```
+
+#### [658. Find K Closest Elements ](https://leetcode-cn.com/problems/find-k-closest-elements/)<span style="color:orange">Medium</span>
+
+Binary search is used to find a middle line instead of an exact target. Two pointers are used to merge from both sides.
+
+```python
+class Solution:
+    def findClosestElements(self, nums: List[int], k: int, target: int) -> List[int]:
+        right = self.findUpperClosest(nums, target)
+        left = right - 1
+        
+        results = []
+        for _ in range(k):
+            if self.isLeftCloser(nums, target, left, right):
+                results.append(nums[left])
+                left -= 1
+            else:
+                results.append(nums[right])
+                right += 1
+        
+        return sorted(results)
+    
+    # binary search template code
+    def findUpperClosest(self, nums, target):
+        start, end = 0, len(nums) - 1
+        while start + 1< end:
+            mid = start + (end - start) // 2
+            if nums[mid] >= target:
+                end = mid
+            else:
+                start = mid
+        
+        if nums[start] >= target:
+            return start
+        if nums[end] >= target:
+            return end
+        
+        return len(nums)
+    
+    def isLeftCloser(self, nums, target, left, right):
+        if left < 0:
+            return False
+
+        if right >= len(nums):
+            return True
+        
+        return abs(target - nums[left]) <= abs(target - nums[right])
+```
+
+#### [852. Peak Index in a Mountain Array](https://leetcode-cn.com/problems/peak-index-in-a-mountain-array/) <span style="color:green">Easy</span>
+
+<img src="https://s2.loli.net/2021/12/30/nJgIpRw2Ld3kN9V.png" alt="image-20211230224558606" style="zoom:33%;" /> 
+
+XXXYYYY  Binary search is used to find the turning point.
+
+```java
+class Solution {
+    public int peakIndexInMountainArray(int[] nums) {
+        if(nums == null || nums.length == 0)
+            return -1;
+        
+        int start = 0, end = nums.length - 1;
+        while(start + 1 < end){
+            int mid = start + (end - start) / 2;
+            // decremental after mid, downward slope in the right, cut the right part
+            if(nums[mid] > nums[mid + 1]){
+                end = mid;
+            } else {
+                start = mid;
+            }
+        }
+        
+        if(nums[start] > nums[end])
+            return start;
+        return end;
+    }
+}
+```
+
+#### [153. Find Minimum in Rotated Sorted Array](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/) <span style="color:orange">Medium</span>
+
+
+
 ## Linked List
 
 #### [203. Remove Linked List Elements](https://leetcode-cn.com/problems/remove-linked-list-elements/) <span style="color:green">Easy</span>
@@ -1747,5 +2000,89 @@ class Solution {
 }
 ```
 
+## Recursion and Iteration
 
+#### [509. Fibonacci Number <span style="color:green">Easy</span>](https://leetcode-cn.com/problems/fibonacci-number/)
+
+```python
+# recursion and memorization: from the top down
+class Solution:
+    def fib(self, n: int) -> int:
+        memo = [0 for _ in range(n + 1)]
+        
+        return self.calculate(n, memo)
+
+    def calculate(self, n, memo):
+        if n < 2:
+            return n
+        if memo[n] != 0:
+            return memo[n]
+        memo[n] = self.calculate(n - 1, memo) + self.calculate(n - 2, memo)
+        return memo[n]
+```
+
+```java
+// DP: from the bottom up 
+class Solution {
+    public int fib(int n) {
+        if (n < 2)
+            return n;
+        int[] dp = new int[n + 1];
+        dp[1] = dp[2] = 1;
+        for (int i = 3; i <= n; i++)
+            dp[i] = dp[i - 1] + dp[i - 2];
+        return dp[n]; 
+    }
+}
+```
+
+```java
+// to save more space: for every iteration, only three numbers are involved
+class Solution {
+    public int fib(int n) {
+        if (n < 2)
+            return n;
+        int prev = 1, cur = 1;
+        for (int i = 3; i <= n; i++) {
+            int sum = prev + cur;
+            prev = cur;
+            cur = sum;
+        }
+        return cur;
+    }
+}
+```
+
+#### [34. Find First and Last Position of Element in Sorted Array](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/) <span style="color:orange">Medium</span>
+
+Binary search: Decrease and Conqu
+
+ ```python
+ class Solution:
+     def searchRange(self, nums, target):
+         if not nums:
+             return [-1, -1]
+         
+         def binary_search_left(nums, target):
+             left, right = 0, len(nums) - 1
+             while left < right:
+                 mid = (left + right) // 2
+                 if nums[mid] < target:
+                     left = mid + 1
+                 else:
+                     right = mid
+             return left if nums[left] == target else -1
+         
+         def binary_search_right(nums, target):
+             left, right = 0, len(nums) - 1
+             while left < right:
+                 mid = (left + right) // 2 + 1
+                 if nums[mid] > target:
+                     right = mid - 1
+                 else:
+                     left = mid
+             return left if nums[left] == target else -1
+         
+         return [binary_search_left(nums, target), binary_search_right(nums, target)]
+ ```
 
