@@ -684,6 +684,45 @@ class Solution {
 }
 ```
 
+Keywords for binary search: 
+
+array, target, sorted, equal or close to target, O(NlogN)
+
+#### [34. Find First and Last Position of Element in Sorted Array](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/) <span style="color:orange">Medium</span>
+
+Binary search: Decrease and Conqu
+
+ ```python
+class Solution:
+    def searchRange(self, nums, target):
+        if not nums:
+            return [-1, -1]
+        
+        def binary_search_left(nums, target):
+            left, right = 0, len(nums) - 1
+            while left < right:
+                mid = (left + right) // 2
+                if nums[mid] < target:
+                    left = mid + 1
+                else:
+                    right = mid
+            return left if nums[left] == target else -1
+        
+        def binary_search_right(nums, target):
+            left, right = 0, len(nums) - 1
+            while left < right:
+                mid = (left + right) // 2 + 1
+                if nums[mid] > target:
+                    right = mid - 1
+                else:
+                    left = mid
+            return left if nums[left] == target else -1
+        
+        return [binary_search_left(nums, target), binary_search_right(nums, target)]
+ ```
+
+
+
 #### 702.Search in a Sorted Array of Unknown Size <span style="color:orange">Medium</span>
 
 Binary search with incremental range.
@@ -799,6 +838,180 @@ class Solution {
 ```
 
 #### [153. Find Minimum in Rotated Sorted Array](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/) <span style="color:orange">Medium</span>
+
+4 5 6 7 0 1 2 3 Incremental, incremental, opposite of mountain sequence.
+
+Binary search is used to get the middle line.
+
+```python
+class Solution:
+    def findMin(self, nums: List[int]) -> int:
+        if not nums:
+            return -1
+        
+        start, end = 0, len(nums) - 1
+        while start + 1 < end:
+            mid = (start + end) // 2
+            if nums[mid] > nums[end]:
+                # cut left
+                start = mid
+            else:
+                # cut right
+                end = mid
+        return min(nums[start], nums[end])
+```
+
+
+
+#### [33. Search in Rotated Sorted Array](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/) <span style="color:orange">Medium</span>
+
+Two binary seraches: the first to get the minium point, the second to find the target in one side of the array
+
+```python
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        if not nums:
+            return -1
+
+        lowest = self.get_lowest(nums)
+        if target > nums[len(nums) - 1]:
+            # search on the left side
+            return self.binary_search(nums, 0, lowest, target)
+        # search on the right side
+        return self.binary_search(nums, lowest, len(nums) - 1, target)
+
+
+    def get_lowest(self, nums):
+        start, end = 0, len(nums) - 1
+        while start + 1 < end:
+            mid = (start + end) // 2
+            if nums[mid] > nums[end]:
+                # cut left
+                start = mid
+            else:
+                # cut right
+                end = mid
+        if nums[start] < nums[end]:
+            return start
+        return end
+
+    def binary_search(self, nums, start, end, target):
+        while start + 1 < end:
+            mid = (start + end) // 2
+            if nums[mid] > target:
+                end = mid
+            else:
+                start = mid
+            
+        if nums[start] == target:
+            return start
+        if nums[end] == target:
+            return end
+
+        return -1
+```
+
+One binary search
+
+```python
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        if not nums:
+            return -1
+        
+        start, end = 0 , len(nums) - 1
+        while start + 1 < end:
+            mid = (start + end) // 2
+            if nums[mid] > nums[end]:
+                if nums[start] <= target <= nums[mid]:
+                    end = mid
+                else:
+                    start = mid
+            else:
+                if nums[mid] <= target <= nums[end]:
+                    start = mid
+                else:
+                    end = mid
+        
+        if nums[start] == target:
+            return start
+        if nums[end] == target:
+            return end
+        
+        return -1
+```
+
+Find element in a unsorted array
+
+#### [162. Find Peak Element](https://leetcode-cn.com/problems/find-peak-element/) <span style="color:orange">Medium</span>
+
+```java
+class Solution {
+    public int findPeakElement(int[] nums) {
+        if(nums == null || nums.length == 0) {
+            return -1;
+        }
+
+        if(nums.length == 1){
+            return 0;
+        }
+
+        if(nums.length == 2) {
+            return nums[0] > nums[1] ? 0 : 1;
+        }
+
+        int start = 0, end = nums.length - 1;
+        while (start + 1 < end) {
+            int mid = start + (end - start) / 2;
+            // upward on the right, then a peak must be on the right part
+            if (nums[mid] < nums[mid + 1]) {
+                start = mid;
+			// upward on the left, then a peak must be on the left
+            } else if (nums[mid] < nums[mid - 1]) {
+                end = mid;
+            } else {
+                return mid;
+            }
+        }
+
+        return nums[start] > nums[end] ? start : end;
+    }
+}
+```
+
+Binary search on an answer set
+
+#### LintCode 183 · Wood Cut
+
+```python
+class Solution:
+    """
+    @param L: Given n pieces of wood with length L[i]
+    @param k: An integer
+    @return: The maximum length of the small pieces
+    """
+    def woodCut(self, L, k):
+        # write your code here
+        if not L:
+            return 0
+
+        start, end = 1, sum(L) // k
+
+        if end < 1:
+            return 0
+        
+        while start + 1 < end:
+            mid = (start + end) // 2
+            if self.cut_by(L, mid) >= k:
+                start = mid
+            else:
+                end = mid
+        
+        return end if self.cut_by(L, end) >= k else start
+
+    def cut_by(self, L, length):
+        return sum(l // length for l in L)
+```
 
 
 
@@ -1309,6 +1522,122 @@ public class Solution {
 }
 ```
 
+## Tree
+
+#### [102. Binary Tree Level Order Traversal ](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)<span style="color:orange">Medium</span>
+
+BFS: Single Queue(FIFO)
+
+```python
+class Solution:
+    def levelOrder(self, root):
+        results = []
+        
+        if not root:
+            return results
+        # initialization: put first level nodes in queue
+        queue = collections.deque([root])
+        while queue:
+            results.append([node.val for node in queue])
+            for _ in range(len(queue)):
+                node = queue.popleft()
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+        return results
+        
+```
+
+Dummy Node
+
+```python
+class Solution:
+    def levelOrder(self, root):
+        results = []
+        if not root:
+            return results
+        
+        queue = collections.deque([root, None])
+        level = []
+        while queue:
+            node = queue.popleft()
+            if node is None:
+                results.append(level)
+                level = []
+                if queue:
+                    queue.append(None)
+                continue
+            level.append(node.val)
+            if node.left:
+                queue.append(node.left)
+            if node.right:
+                queue.append(node.right)
+        return results
+```
+
+#### [257. Binary Tree Paths](https://leetcode-cn.com/problems/binary-tree-paths/) <span style="color:green">Easy</span>
+
+Backtracking
+
+```python
+class Solution:
+    def binaryTreePaths(self, root):
+        path, paths = [root], []
+        self.findPaths(root, path, paths)
+        return paths
+	
+    def findPaths(self, node, path, paths):
+        if node is None:
+            return
+        # leat node
+        if node.left is None and node.right is None:
+            paths.append("->".join([str(n.val) for n in path]))
+            return
+        
+        path.append(node.left)
+        self.findPaths(node.left, path, paths)
+        path.pop()
+        
+        path.append(node.right)
+        self.findPaths(node.right, path, paths)
+        path.pop()
+```
+
+Divideand conquer 
+
+Whole tree paths = left tree paths + right tree paths
+
+后序遍历：先左右后根节点
+
+```python
+class Solution:
+    def binaryTreePaths(self, root):
+        paths = []
+        if root is None:
+            return paths
+        # leat node
+        if root.left is None and root.right is None:
+            return [str(root.val)]
+        
+        for path in self.binaryTreePaths(root.left):
+            paths.append(str(root.val) + "->" + path)
+        for path in self.binaryTreePaths(root.right):
+            paths.append(str(root.val) + "->" + path)
+            
+        return paths
+```
+
+#### [110. Balanced Binary Tree](https://leetcode-cn.com/problems/balanced-binary-tree/) <span style="color:green">Easy</span>
+
+```python
+class Solution:
+    def isBalanced(self, root):
+        isBalanced, _ = self.
+```
+
+
+
 ## Hash Table
 
 #### [242. Valid Anagram](https://leetcode-cn.com/problems/valid-anagram/) <span style="color:green">Easy</span>
@@ -1342,7 +1671,7 @@ class Solution {
 	return sorted(s) == sorted(t)
 ```
 
-#### [383. Ransom Note](https://leetcode-cn.com/problems/ransom-note/) <span style="color:green">Easy</span>
+#### [383. Ransom Note](https://leetcode-cn.com/problems/ransom-note/) <span style="color:green">Easy</span> 
 
 Solution almost identical as that to problem 242. 
 
@@ -2052,37 +2381,4 @@ class Solution {
     }
 }
 ```
-
-#### [34. Find First and Last Position of Element in Sorted Array](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/) <span style="color:orange">Medium</span>
-
-Binary search: Decrease and Conqu
-
- ```python
- class Solution:
-     def searchRange(self, nums, target):
-         if not nums:
-             return [-1, -1]
-         
-         def binary_search_left(nums, target):
-             left, right = 0, len(nums) - 1
-             while left < right:
-                 mid = (left + right) // 2
-                 if nums[mid] < target:
-                     left = mid + 1
-                 else:
-                     right = mid
-             return left if nums[left] == target else -1
-         
-         def binary_search_right(nums, target):
-             left, right = 0, len(nums) - 1
-             while left < right:
-                 mid = (left + right) // 2 + 1
-                 if nums[mid] > target:
-                     right = mid - 1
-                 else:
-                     left = mid
-             return left if nums[left] == target else -1
-         
-         return [binary_search_left(nums, target), binary_search_right(nums, target)]
- ```
 
