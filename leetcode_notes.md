@@ -841,7 +841,7 @@ class Solution {
 
 4 5 6 7 0 1 2 3 Incremental, incremental, opposite of mountain sequence.
 
-Binary search is used to get the middle line.
+Binary search to to get the middle line
 
 ```python
 class Solution:
@@ -941,9 +941,9 @@ class Solution:
         return -1
 ```
 
-Find element in a unsorted array
-
 #### [162. Find Peak Element](https://leetcode-cn.com/problems/find-peak-element/) <span style="color:orange">Medium</span>
+
+Binary search to find element in a unsorted array
 
 ```java
 class Solution {
@@ -979,9 +979,9 @@ class Solution {
 }
 ```
 
-Binary search on an answer set
-
 #### LintCode 183 · Wood Cut
+
+Binary search on an answer set
 
 ```python
 class Solution:
@@ -1535,18 +1535,19 @@ class Solution:
         
         if not root:
             return results
-        # initialization: put first level nodes in queue
+        # initialization: put first level nodes in queue(FIFO)
         queue = collections.deque([root])
         while queue:
             results.append([node.val for node in queue])
             for _ in range(len(queue)):
+                # already traversed, so  pop it out
                 node = queue.popleft()
                 if node.left:
                     queue.append(node.left)
                 if node.right:
                     queue.append(node.right)
         return results
-        
+
 ```
 
 Dummy Node
@@ -1630,13 +1631,104 @@ class Solution:
 
 #### [110. Balanced Binary Tree](https://leetcode-cn.com/problems/balanced-binary-tree/) <span style="color:green">Easy</span>
 
+Divide and conquer
+
 ```python
 class Solution:
     def isBalanced(self, root):
-        isBalanced, _ = self.
+        isBalanced, _ = self.detectBalanced(root)
+        return isBalanced
+    
+    def detectBalanced(self, root):
+        if not root:
+            return True, 0
+        
+        is_left_balanced, left_height = self.detectBalanced(root.left)
+        is_right_balanced, right_height = self.detectBalanced(root.right)
+        root_height = max(left_height, right_height) + 1
+        
+        if not is_left_balanced or not is_right_balanced:
+            return False, root_height
+        if abs(left_height - right_height) > 1:
+            return False, root_height
+        return True, root_height
 ```
 
+#### [173. Binary Search Tree Iterator](https://leetcode-cn.com/problems/binary-search-tree-iterator/) <span style="color:orange">Medium</span>
 
+Without recursion, user has to use a stack to keep running paths and control backtracking. 
+
+```java
+class BSTIterator {
+    private Stack<TreeNode> stack = new Stack<>();
+
+    public BSTIterator(TreeNode root) {
+        // find the minimum point and make it the starting point by putting it on the stack top
+        // the next node will always be on the stack top
+        while(root != null) {
+            stack.push(root);
+            root = root.left;
+        }
+    }
+    
+    // inorder -> left, root, right
+    public int next() {
+        // peek to get the next instad of poppping because the stack has to be re-arranged for next iteration
+        TreeNode current = stack.peek();
+        TreeNode node = current;
+
+        // if current node has a right node, then get the least possible node on its right tree
+        if(node.right != null) {
+            // as it has a right sub-tree, the next to be returned will exist there
+            // current node will be used for later backtracking, don't pop it
+            node = node.right;
+            // looks like another initialization
+            while(node != null) {
+                stack.push(node);
+                node = node.left;
+            }
+        // if current node has no right node, return 
+        } else {
+            // current node is the end of the sub-tree we are travasing here 
+            // it will not be used again, so pop it
+            stack.pop();
+            // backtrack by removing current sub-tree and moving up
+            while (this.hasNext() && stack.peek().right == node) {
+                node = stack.pop();
+            }
+        }
+        return current.val;
+    }
+    
+    public boolean hasNext() {
+        return !stack.isEmpty();
+    }
+}
+```
+
+A simpler implementaion: only unused nodes are put in the stack
+
+```python
+class BSTIterator:
+    def __init__(self, root: Optional[TreeNode]):
+        self.stack = []
+        self.stack_from_most_left(root)
+    
+    # as this code snippet will be reused, make it a function
+    def stack_from_most_left(self, node):
+        while node:
+            self.stack.append(node)
+            node = node.left
+
+    def next(self) -> int:
+        node = self.stack.pop()
+        if node.right:
+            self.stack_from_most_left(node.right)
+        return node.val
+
+    def hasNext(self) -> bool:
+        return bool(self.stack)
+```
 
 ## Hash Table
 
