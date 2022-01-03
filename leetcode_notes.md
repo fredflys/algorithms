@@ -1730,6 +1730,113 @@ class BSTIterator:
         return bool(self.stack)
 ```
 
+## Graph
+
+#### [133. Clone Graph ](https://leetcode-cn.com/problems/clone-graph/)<span style="color:orange">Medium</span>
+
+Steps:
+
+1. Find all the nodes by BFS
+2. Clone nodes
+3. Clone edges
+
+```java
+class Solution {
+    public Node cloneGraph(Node node) {
+        if(node == null)
+            return null;
+        
+        // get ready: find all the original nodes
+        List<Node> nodes = findNodesByBFS(node);
+        // clone all the nodes
+        Map<Node, Node> mappingToCloned = copyNodes(nodes);
+        // copy every edge from original nodes to cloned nodes
+        copyEdges(nodes, mappingToCloned);
+        // get a new node from mapping
+        return mappingToCloned.get(node);
+    }
+    
+    public List<Node> findNodesByBFS(Node node) {
+        Queue<Node> candidates = new LinkedList<>();
+        Set<Node> visited = new HashSet<>();
+        // whenever a new candidate arrives, never forget to mark it as visited
+        candidates.offer(node);
+        visited.add(node);
+        while (!candidates.isEmpty()) {
+            Node current = candidates.poll();
+            for (Node neighbor: current.neighbors) {
+                // already visited so skip it
+                if (visited.contains(neighbor))
+                    continue;
+                candidates.offer(neighbor);
+                visited.add(neighbor);
+            }
+        }
+        
+        return new ArrayList<>(visited);
+    }
+    
+    public Map<Node, Node> copyNodes(List<Node> nodes) {
+        Map<Node, Node> mapping = new HashMap<>();
+        for (Node node: nodes) {
+            // clone by creating a new node with the value from the original node
+            // now the new node has no neighbors
+            mapping.put(node, new Node(node.val));
+        }
+        return mapping;
+    }
+    
+    // copying edges means adding neighbors to every cloned node
+    public void copyEdges(List<Node> nodes, Map<Node, Node> mapping) {
+        for (Node original: nodes) {
+            Node cloned = mapping.get(original);
+            for (Node neighbor: original.neighbors) {
+                Node clonedNeighbor = mapping.get(neighbor);
+                cloned.neighbors.add(clonedNeighbor);
+            }
+        }
+    }
+}
+```
+
+#### [127. Word Ladder](https://leetcode-cn.com/problems/word-ladder/) <span style="color:red">Hard</span>
+
+BFS: Shortest path 
+
+Every word in the word list can be considered as a node, whose possible transformations in the word list can be taken as neighbors. The difference is that this time neighbors need to be found by a certain rule.
+
+``` python
+class Solution:
+    def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
+        if endWord not in wordList:
+        	wordList.append(endWord)
+        
+        candidates = collections.deque([beginWord])
+        visited = [beginWord]
+        
+        distance = 0
+        while candidates:
+            distance += 1
+            
+			size = len(candidates)
+            for _ in range(size):
+                word = candidates.popleft()
+                if word == end:
+                    return distance
+                for similar_word in self.get_similar_words(word, wordList):
+                    
+```
+
+#### [200. Number of Islands ](https://leetcode-cn.com/problems/number-of-islands/)<span style="color:orange">Medium</span>
+
+#### [LintCode 611. Knight Shortest Path](https://www.lintcode.com/problem/611/)
+
+#### [207. Course Schedule](https://leetcode-cn.com/problems/course-schedule/) <span style="color:orange">Medium</span>
+
+#### [444. Sequence Reconstruction](https://leetcode.com/problems/sequence-reconstruction/) <span style="color:orange">Medium</span>
+
+#### [269. Alien Dictionary ](https://leetcode-cn.com/problems/alien-dictionary/)<span style="color:red">Hard</span>
+
 ## Hash Table
 
 #### [242. Valid Anagram](https://leetcode-cn.com/problems/valid-anagram/) <span style="color:green">Easy</span>
