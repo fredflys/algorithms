@@ -1808,26 +1808,96 @@ Every word in the word list can be considered as a node, whose possible transfor
 ``` python
 class Solution:
     def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
-        if endWord not in wordList:
-        	wordList.append(endWord)
-        
+        wordList = set(wordList)
         candidates = collections.deque([beginWord])
         visited = [beginWord]
         
-        distance = 0
+        distance = 1
         while candidates:
             distance += 1
             
-			size = len(candidates)
+            size = len(candidates)
             for _ in range(size):
-                word = candidates.popleft()
-                if word == end:
-                    return distance
-                for similar_word in self.get_similar_words(word, wordList):
-                    
+                candidate = candidates.popleft()
+                
+                for similar_word in self.find_similar_words(candidate, wordList):
+                    # early exit 
+                    if similar_word == endWord:
+                    	return distance
+                    if similar_word in visited:
+                        continue
+                    candidates.append(similar_word)
+                    visited.append(similar_word)
+        return 0
+    
+    def find_similar_words(self, word, wordList):
+        similar_words = []
+        for i in range(len(word)):
+            for char in 'abcdefghijklmnopqrstuvwxyz':
+                if char == word[i]:
+                    continue
+                new_word = word[:i] + char + word[i + 1:]
+                if new_word in wordList:
+                    similar_words.append(new_word)
+        return similar_words
 ```
 
 #### [200. Number of Islands ](https://leetcode-cn.com/problems/number-of-islands/)<span style="color:orange">Medium</span>
+
+BFS in matrix to get number of connected blocks
+
+```python
+class Solution:
+    def numIslands(self, grid: List[List[str]]) -> int:
+        islands = 0
+        
+        # empty matrix or invalid data 
+        if not grid or not grid[0]:
+            return islands
+        visited = set()
+        
+		# possible directions: right, left, up, down
+        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        
+        def bfs_search(row, column):
+            candidates = collections.deque([ (row, column) ])
+            visited.add( (row, column) ) 
+            
+            while candidates:
+                row, column = candidates.popleft()
+				# move in four possible directions
+                for row_delta, column_delta in directions:
+                    next_row = row + row_delta
+                    next_column = column + column_delta
+                    if not is_valid(next_row, next_column):
+                        continue
+                    candidates.append((next_row, next_column))
+                    visited.add((next_row, next_column))
+                    
+        def is_valid(row, column):
+            # out of limits
+            if not (0 <= row < len(grid) and 0 <= column < len(grid[0])):
+                return False
+            # already visited
+            if (row, column) in visited:
+                return False
+            # water
+            if grid[row][column] == "0":
+                return False
+            return True
+        
+        # walk through the space
+        for row in range(len(grid)):
+            for column in range(len(grid[0])):
+                # search starts only when current position is island and not visited
+                if grid[row][column] == "1" and (row, column) not in visited:
+                    bfs_search(row, column)
+                    islands += 1
+		
+        return islands 
+```
+
+
 
 #### [LintCode 611. Knight Shortest Path](https://www.lintcode.com/problem/611/)
 
