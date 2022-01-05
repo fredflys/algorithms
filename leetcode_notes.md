@@ -1901,6 +1901,60 @@ class Solution:
 
 #### [LintCode 611. Knight Shortest Path](https://www.lintcode.com/problem/611/)
 
+```python
+"""
+Definition for a point.
+class Point:
+    def __init__(self, a=0, b=0):
+        self.x = a
+        self.y = b
+"""
+class Solution:
+    """
+    @param grid: a chessboard included 0 (false) and 1 (true)
+    @param source: a point
+    @param destination: a point
+    @return: the shortest path 
+    """
+    def shortestPath(self, grid, source, destination):
+        moves = [
+            (-1,  2), (1,   2), # up left, up right
+            (-1, -2), (1,  -2), # down left, down right
+            (-2,  1), (-2, -1), # left up, left down
+            (2,   1), (2,  -1), # right up, right down
+        ]
+
+        candidates = collections.deque([(source.x, source.y)])
+        # current position -> move count
+        visited = {(source.x, source.y) : 0}
+
+        def is_valid(x, y):
+            # out of limits
+            if x < 0 or x >= len(grid) or y < 0 or y >= len(grid[0]):
+                return False
+            # position already occupied
+            if grid[x][y] == 1:
+                return False
+            return True
+
+        while candidates:
+            x, y = candidates.popleft()
+            # arrives at destination
+            if (x, y) == (destination.x, destination.y):
+                return visited[(x, y)]
+            # move in all possible directions
+            for dx, dy in moves:
+                next_x, next_y = x + dx, y + dy
+                if (next_x, next_y) in visited:
+                    continue
+                if not is_valid(next_x, next_y):
+                    continue
+                candidates.append((next_x, next_y))
+                visited[(next_x, next_y)] = visited[(x, y)] + 1
+
+        return -1
+```
+
 #### [207. Course Schedule](https://leetcode-cn.com/problems/course-schedule/) <span style="color:orange">Medium</span>
 
 #### [444. Sequence Reconstruction](https://leetcode.com/problems/sequence-reconstruction/) <span style="color:orange">Medium</span>
