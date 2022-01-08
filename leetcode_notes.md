@@ -1957,9 +1957,181 @@ class Solution:
 
 #### [207. Course Schedule](https://leetcode-cn.com/problems/course-schedule/) <span style="color:orange">Medium</span>
 
+The solution is almost identical to that to 210. Simply returns true if courses_taken == numCourses.
+
+#### [210. Course Schedule II](https://leetcode-cn.com/problems/course-schedule-ii/) <span style="color:orange">Medium</span>
+
+Topological sort
+
+```python
+class Solution:
+    def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
+        # index : prerequisite num, element: the open courses after you go to the prerequisite class
+        next_courses = [ [] for _ in range(numCourses)]
+
+        # every class has how many prerequistes, initialized to 0 for every class
+        # the equivalent in graph is called in-degree
+        pre_courses_count = [0] * numCourses
+        for next, pre in prerequisites:
+            next_courses[pre].append(next)
+            pre_courses_count[next] += 1
+
+        # courses that can be taken
+        candidates = collections.deque()
+        # initialize candidates
+        for course in range(numCourses):
+            # if the course has no prerequisites, then that's the course we should take first
+            if pre_courses_count[course] == 0:
+                candidates.append(course)
+
+        courses_taken = []
+
+        while candidates:
+            # take a course
+            course = candidates.popleft()
+            # save the course
+            courses_taken.append(course)
+            # look through what can be taken next
+            for next_course in next_courses[course]:
+                # since the course is already taken, ever next course has one less prerequisite
+                pre_courses_count[next_course] -= 1
+                # if the next course has no prerequisites, then it can be taken. So add it to the candidates
+                if pre_courses_count[next_course] == 0:
+                    candidates.append(next_course)
+        
+        # if the courses taken is not enough, it means it's impossible to take all courses
+        if len(courses_taken) != numCourses:
+            return []
+        return courses_taken
+```
+
 #### [444. Sequence Reconstruction](https://leetcode.com/problems/sequence-reconstruction/) <span style="color:orange">Medium</span>
 
+```python
+class Solution:
+    """
+    @param org: a permutation of the integers from 1 to n
+    @param seqs: a list of sequences
+    @return: true if it can be reconstructed only one or false
+    """
+    def sequenceReconstruction(self, org, seqs):
+        def build_graph(seqs):
+            graph = {}
+            for seq in seqs:
+                for node in seq:
+                    if node not in graph:
+                        graph[node] = set()
+            
+            for seq in seqs:
+                for i in range(1, len(seq)):
+                    # from sqe[i - 1] to seq[i]
+                    graph[seq[i - 1]].add(seq[i])
+
+            return graph
+
+        def get_indegrees(graph):
+            indegrees = {
+                node : 0
+                for node in graph
+            }
+            for node in graph:
+                for neighbor in graph[node]:
+                    indegrees[neighbor] += 1
+            return indegrees
+
+        def topo_sort(graph):
+            indegrees = get_indegrees(graph)
+
+            candidates = collections.deque([])
+            for node in graph:
+                if indegrees[node] == 0:
+                    candidates.append(node)
+
+            topo_order = []
+            while candidates:
+                # having only sequence means there are never more than one candidate in the queue
+                if len(candidates) > 1:
+                    return False
+                
+                node = candidates.popleft()
+                topo_order.append(node)
+                for neighbor in graph[node]:
+                    indegrees[neighbor] -= 1
+                    if indegrees[neighbor] == 0:
+                        candidates.append(neighbor)
+                
+            return topo_order
+
+        graph = build_graph(seqs)
+        topo_order = topo_sort(graph)
+        print(graph, topo_order, org)
+        return topo_order == org
+```
+
 #### [269. Alien Dictionary ](https://leetcode-cn.com/problems/alien-dictionary/)<span style="color:red">Hard</span>
+
+```python
+from heapq import heappush, heappop, heapify
+class Solution:
+    """
+    @param words: a list of words
+    @return: a string which is correct order
+    """
+    def alienOrder(self, words):
+        def build_graph(words):
+            # char that comes first -> char that comes after the key
+            graph = {}
+            for word in words:
+                for char in word:
+                    graph[char] = set()
+            for i in range(len(words) - 1):
+                current_word = words[i]
+                next_word = words[i + 1]
+                shorter_length = min(len(current_word), len(next_word))
+                # do not overstep
+                for j in range(shorter_length):
+                    # if the char in the same position is equal, move on to compare the next character
+                    if current_word[j] != next_word[j]:
+                        # the character in the current word is prior to that of the next word 
+                        graph[current_word[j]].add(next_word[j])
+                        break
+                    
+                    if j == shorter_length - 1 and len(current_word) > len(next_word):
+                        return None
+            return graph
+
+        def get_indegrees(graph):
+            indegrees = {node : 0 for node in graph}
+            for node in graph:
+                for neighbor in graph[node]:
+                    indegrees[neighbor] += 1
+            return indegrees
+
+        def topo_sort(graph):
+            indegrees = get_indegrees(graph)
+            candidates = [node for node in graph if indegrees[node] == 0]
+            # like priority queue in Java. It works like a queue, the difference is that it always puts ""
+            heapify(candidates)
+            topo_order = ""
+            while candidates:
+                node = heappop(candidates)
+                topo_order += node
+                for neighbor in graph[node]:
+                    indegrees[neighbor] -= 1
+                    if indegrees[neighbor] == 0:
+                        heappush(candidates, neighbor)
+            
+            if len(topo_order) == len(graph):
+                return topo_order
+            return ""
+
+        graph = build_graph(words)
+        if not graph:
+            return ""
+        return topo_sort(graph)
+```
+
+
 
 ## Hash Table
 
