@@ -4,6 +4,12 @@
 
 <img src="https://s2.loli.net/2022/01/09/cWtZSIj36khqFdC.png" alt="image-20220109130337781" style="zoom:50%;" /> 
 
+Categories:
+
+1. get a value or path
+2. structure the tree in a different way
+3. binary search tree
+
 #### [102. Binary Tree Level Order Traversal ](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)<span style="color:orange">Medium</span>
 
 BFS: Single Queue(FIFO)
@@ -136,6 +142,8 @@ class Solution:
 
 #### [173. Binary Search Tree Iterator](https://leetcode-cn.com/problems/binary-search-tree-iterator/) <span style="color:orange">Medium</span>
 
+Divide and Conquer, BST, Iterate
+
 Without recursion, user has to use a stack to keep running paths and control backtracking. 
 
 ```java
@@ -212,6 +220,8 @@ class BSTIterator:
 
 #### [596 · Minimum Subtree - LintCode](https://www.lintcode.com/problem/596/)
 
+Divide and Conquer, recursion
+
 ```java
 public class Solution {
     private int minSum;
@@ -241,3 +251,176 @@ public class Solution {
     }
 }
 ```
+#### [236. Lowest Common Ancestor of a Binary Tree](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/) <span style="color:orange">Medium</span>
+
+Divide and Conquer, Recursion
+
+```python
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        if root is None:
+            return None
+        if root == p or root == q:
+            return root
+
+        left = self.lowestCommonAncestor(root.left, p, q)
+        right = self.lowestCommonAncestor(root.right, p, q)
+
+        # p and q exists on left and right tree respectively, so root is the common ancestor 
+        if left and right:
+            return root
+        # p and q exists only on left tree, then left is the common ancesstor
+        if left:
+            return left
+        # p and q exists only on right tree, then right is the common ancestor
+        if right:
+            return right
+        # p and q exists on neither side of the tree, then there is no common ancestor
+        return None
+```
+#### [1644. Lowest Common Ancestor of a Binary Tree II](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree-ii/) <span style="color:green">Easy</span>
+
+Divide and Conquer
+
+```python
+class Solution:
+    def lowestCommonAncestorII(self, root, A, B):
+        parents = set()
+        current = A
+
+        while current:
+            parents.add(current)
+            current = current.parent
+
+        current = B
+        while current:
+            if current in parents:
+                return current
+            current = current.parent
+        
+        return None
+```
+
+Iteration
+
+```python
+class Solution:
+    def lowestCommonAncestorII(self, root, A, B):
+        def get_ancestors(node):
+            ancestors = []
+            current = node
+
+            while current:
+                ancestors.append(current)
+                current = current.parent
+            return ancestors
+        
+        def get_lowest_common_ancestor(ans1, ans2):
+            common = None
+            for _ in range(min(len(ans1), len(ans2))):
+                a = ans1.pop()
+                b = ans2.pop()
+                if a == b:
+                    common = a
+            return common
+
+        ancestors_A = get_ancestors(A)
+        ancestors_B = get_ancestors(B)
+        return get_lowest_common_ancestor(ancestors_A, ancestors_B)
+        
+```
+
+#### [1650. Lowest Common Ancestor of a Binary Tree III](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii/) <span style="color:orange">Medium</span>
+
+Unlike 236, A or B might not exist on the tree. So this must be taken into consideration in writing the recursive solution.
+
+Divide and Conquer, recursion
+
+```python
+class Solution:
+    def lowestCommonAncestor3(self, root: 'TreeNode', A: 'TreeNode', B: 'TreeNode') -> 'TreeNode':
+        exists_a, exists_b, lca = self.find(root, A, B)
+        if exists_a and exists_b:
+        	return lca
+        return None
+    
+    def find(self, root: 'TreeNode', A: 'TreeNode', B: 'TreeNode') -> 'TreeNode':
+        # Neither A nor B can be found on the tree
+        if root is None:
+            return False, False, None
+        exists_left_a, exists_left_b, left_lca = self.find(root.left, A, B)
+        exists_right_a, exists_right_b, right_lca = self.find(root.right, A, B)
+        
+        # A on the left or right tree, or root itself is A, then A must exist
+        exists_a = exists_left_a or exists_right_a or root == A
+        exists_b = exists_left_b or exists_right_b or root == B
+        
+        if root == A or root == B:
+            return exists_a, exists_b, root
+        
+        if left_lca and right_lca:
+            return exists_a, exists_b, root
+        
+        if left_lca:
+            return exists_a, exists_b, left_lca
+        
+        if right_lca:
+            return exists_a, exists_b, right_lca
+        
+        return exists_a, exists_b, None
+```
+
+#### [114. Flatten Binary Tree to Linked List](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/) <span style="color:orange">Medium</span>
+
+The problem can be better understood this way: DFS to traverse the tree in preorder and get the result one by one.
+
+```python
+class Solution:
+    def flatten(self, root: TreeNode) -> None:
+        self.flatten_and_return_root(root)
+
+    def flatten_and_return_root(self, root):
+        # no nodes to flatten
+        if root is None:
+            return None
+        
+        # the last node on its left tree
+        left_last = self.flatten_and_return_root(root.left)
+        # the last node on its right tree
+        right_last = self.flatten_and_return_root(root.right)
+        # flattening steps
+        # if there is no left tree, then it's alreay flattened
+        # otherwise 
+        if left_last:
+            # link left end to right start
+            left_last.right = root.right
+            # linke root to left start
+            root.right = root.left
+            # make left empty
+            root.left = None
+        
+        if right_last:
+            return right_last
+        if left_last:
+            return left_last
+        return root
+```
+
+#### [108. Convert Sorted Array to Binary Search Tree](https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/) <span style="color:green">Easy</span>
+
+Divide and Conquer, BST (Build)
+
+#### [701. Insert into a Binary Search Tree](https://leetcode.com/problems/insert-into-a-binary-search-tree/) <span style="color:orange">Medium</span>
+
+Divide and Conquer, BST (Insert)
+
+#### [700. Search in a Binary Search Tree <span style="color:green">Easy</span>](https://leetcode.com/problems/search-in-a-binary-search-tree/)
+
+Divide and Conquer, BST (Search)
+
+#### [669. Trim a Binary Search Tree](https://leetcode.com/problems/trim-a-binary-search-tree/) <span style="color:orange">Medium</span>
+
+Divide and Conquer, BST (Delete)
+
+#### [230. Kth Smallest Element in a BST ](https://leetcode.com/problems/kth-smallest-element-in-a-bst/) <span style="color:orange">Medium</span>
+
