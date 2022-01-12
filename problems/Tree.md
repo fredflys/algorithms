@@ -406,21 +406,31 @@ class Solution:
         return root
 ```
 
-#### [108. Convert Sorted Array to Binary Search Tree](https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/) <span style="color:green">Easy</span>
-
-Divide and Conquer, BST (Build)
-
-#### [701. Insert into a Binary Search Tree](https://leetcode.com/problems/insert-into-a-binary-search-tree/) <span style="color:orange">Medium</span>
-
-Divide and Conquer, BST (Insert)
-
-#### [700. Search in a Binary Search Tree <span style="color:green">Easy</span>](https://leetcode.com/problems/search-in-a-binary-search-tree/)
-
-Divide and Conquer, BST (Search)
-
-#### [669. Trim a Binary Search Tree](https://leetcode.com/problems/trim-a-binary-search-tree/) <span style="color:orange">Medium</span>
-
-Divide and Conquer, BST (Delete)
-
 #### [230. Kth Smallest Element in a BST ](https://leetcode.com/problems/kth-smallest-element-in-a-bst/) <span style="color:orange">Medium</span>
+
+A non-recursive implementation of Inorder Traversal
+
+```python
+class Solution:
+    def kthSmallest(self, root, k):
+        count = 0
+        stack = []
+        node = root
+        while node or stack:
+            # left 
+            while node:
+                stack.append(node)
+                node = node.left
+            # root
+            node = stack.pop()
+            count += 1
+            if count == k:
+                return node.val
+            # right
+            node=node.right
+```
+
+#### [270. Closest Binary Search Tree Value](https://leetcode.com/problems/closest-binary-search-tree-value/)
+
+
 
