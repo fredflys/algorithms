@@ -1,4 +1,4 @@
-#### Tower Hanoi
+## Tower Hanoi
 
 ```java
 public class TowerHanoi {

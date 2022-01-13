@@ -1,4 +1,4 @@
-#### N Queens Puzzle
+## N Queens Puzzle
 
 ```java
 import java.util.List;

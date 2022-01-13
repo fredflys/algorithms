@@ -1,4 +1,4 @@
-#### Sorting
+## Sorting
 
 ```java
 import java.util.Arrays;

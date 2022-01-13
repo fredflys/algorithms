@@ -1,4 +1,4 @@
-#### Maze
+## Maze
 
 ```java
 public class MazeDemo {
