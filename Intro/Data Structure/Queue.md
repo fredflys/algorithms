@@ -1,6 +1,7 @@
+#### Queue
+
 ```java
 import java.util.Scanner;
-
 
 public class QueueDemo{
     public static void main(String[] args){
@@ -49,8 +50,6 @@ public class QueueDemo{
             }
         }
     }
-
-
 }
 
 class Queue {

@@ -1,3 +1,5 @@
+#### Binary Search Tree
+
 ```java
 import java.util.LinkedList;
 import java.util.Stack;

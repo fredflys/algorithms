@@ -1,3 +1,5 @@
+#### Maze
+
 ```java
 public class MazeDemo {
     public static void main(String[] args) {

@@ -1,3 +1,5 @@
+#### Hash Table
+
 ```java
 import java.util.Scanner;
 
