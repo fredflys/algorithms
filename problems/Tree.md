@@ -410,6 +410,8 @@ class Solution:
 
 A non-recursive implementation of Inorder Traversal
 
+[<img src="https://s4.ax1x.com/2022/01/13/7MyaH1.png" alt="7MyaH1.png" style="zoom:50%;" />](https://imgtu.com/i/7MyaH1)
+
 ```python
 class Solution:
     def kthSmallest(self, root, k):
@@ -430,7 +432,137 @@ class Solution:
             node=node.right
 ```
 
-#### [270. Closest Binary Search Tree Value](https://leetcode.com/problems/closest-binary-search-tree-value/)
+Recursion
+
+```python
+class Solution:
+    def kthSmallest(self, root, k):
+        self.result = None
+        self.k = k
+        self.findKthNode(root)
+        return self.result
+        
+    def findKthNode(self, root):
+        if not root:
+            return
+        self.findKthNode(root.left)
+        self.k -= 1
+        if self.k == 0:
+            self.result = root.val
+            return
+        self.findKthNode(root.right)
+```
 
 
+
+#### [270. Closest Binary Search Tree Value](https://leetcode.com/problems/closest-binary-search-tree-value/)  <span style="color:orange">Medium</span>
+
+```java
+public class Solution {
+    public int closestValue(TreeNode root, double target) {
+        if (root == null)
+            return 0;
+
+        TreeNode lowerBound = lowerBound(root, target);
+        TreeNode upperBound = upperBound(root, target);
+        
+        if (lowerBound == null)
+            return upperBound.val;
+
+        if (upperBound == null)
+            return lowerBound.val;
+
+        if (target - lowerBound.val > upperBound.val - target)
+            return upperBound.val;
+
+        return lowerBound.val;
+    }
+
+    public TreeNode lowerBound(TreeNode root, double target) {
+        if (root == null)
+            return null;
+        
+        // current val is still bigger, then search in the left part
+        // until current val is no less than the target
+        if (root.val > target)
+            return lowerBound(root.left, target);
+        
+        // try to get the upper limit in the lower part
+        TreeNode boundNode = lowerBound(root.right, target);
+
+        // if a upper limit exists
+        if (boundNode != null)
+            return boundNode;
+        
+        // back to last level and return
+        return root;
+    }
+
+    public TreeNode upperBound(TreeNode root, double target) {
+        if (root == null)
+            return null;
+
+        // current val is still smaller, then search in the right part
+        // until current val is no bigger than the target
+        if (root.val < target)
+            return upperBound(root.right, target);
+
+        TreeNode boundNode = upperBound(root.left, target);
+
+        // if a upper limit exists
+        if (boundNode != null)
+            return boundNode;
+        
+        // back to last level and return
+        return root;
+    }
+}
+```
+
+Iteration
+
+Consider the test case below:
+
+target = 4.1
+
+ 		3
+
+​	2 	4
+
+1
+
+node.val < target True node:  3  lower:  3  upper:  3
+node.val < target True node:  4  lower:  3  upper:  3
+node:  None  lower:  4  upper: 3     
+
+```python
+class Solution:
+    def closestValue(self, root, target):
+        upper = root
+        lower = root
+        # don't change parameter's value
+        node = root
+
+        while node:
+            if node.val < target:
+                # lower is the biggest in the left part
+                lower = node
+                node = node.right
+            elif node.val > target:
+                # upper is the smallest in the right part
+                upper = node
+                node = node.left
+            else:
+                return node.val
+        
+        # there is a chance that upper is lower is actually upper
+        # so comparison must be made between absolute values 
+        if abs(upper.val - target) < abs(target - lower.val):
+            return upper.val
+        return lower.val
+```
+
+#### [272. Closest Binary Search Tree Value II](https://leetcode.com/problems/closest-binary-search-tree-value-ii/)
+
+Similar to [658. Find K Closest Elements](https://leetcode.com/problems/find-k-closest-elements/)
 

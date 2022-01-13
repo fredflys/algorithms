@@ -977,7 +977,7 @@ class Solution {
 }
 ```
 
-#### [183 · Wood Cut - LintCode](https://www.lintcode.com/problem/183/)
+#### [183 · Wood Cut - LintCode  ](https://www.lintcode.com/problem/183/)<span style="color:orange">Medium</span>
 
 Binary search on an answer set
 
@@ -1010,3 +1010,178 @@ class Solution:
     def cut_by(self, L, length):
         return sum(l // length for l in L)
 ```
+
+#### [78. Subsets](https://leetcode.com/problems/subsets/) <span style="color:orange">Medium</span> 
+
+Combinatorial Search Problem -> DFS. 
+
+Every element either exist in a subset or does not exist in a subset and in total there are $2^n$ combinations.
+
+ 									[ ]
+
+1?					[1] 						[ ]
+
+2?		[1, 2] 				 	[1] 				[2] [ ]
+
+3? 	[1, 2, 3] [1, 2] 	[1, 3]  [1]	 [2] [2, 3] 	[3] [ ]
+
+```java
+class Solution {
+    public List<List<Integer>> subsets(int[] nums) {
+		List<List<Integer>> results = new ArrayList<>();
+        if (nums == null)
+            return results;
+        Arrays.sort(nums);
+        dfs(nums, 0, new ArrayList<Integer>(), results);
+        return results;
+    }
+    
+    // current index, current subset, final results
+    private void dfs(int[] nums, int index, List<Integer> subset, List<List<Integer>> results) {
+        // stops when index if out of scope and a subset is found
+        if (index == nums.length) {
+            results.add(new ArrayList<Integer>(subset));
+            // stops
+            return;
+        }
+        
+        // any element is either added or not added
+        // element at index is added
+        subset.add(nums[index]);
+        dfs(nums, index + 1, subset, results);
+        
+        // element at index is not added
+        // backtrack
+        subset.remove(subset.size() - 1);
+        dfs(nums, index + 1, subset, results);
+    }
+}
+```
+
+A more general solution: Any subset starts with nums[0] .. nums[n - 1]. Since every subset is ascending, there is no need to go back, i.e. we are not gettting all the permutations here.
+
+​									[ ]
+
+​			[1] 					[2] 				[3]
+
+​		[1, 2]  [1, 3] 	[2, 3]
+
+​	[1, 2, 3]
+
+```java
+class Solution {
+    public List<List<Integer>> subsets(int[] nums) {
+		List<List<Integer>> results = new ArrayList<>();
+        if (nums == null)
+            return results;
+        Arrays.sort(nums);
+        dfs(nums, 0, new ArrayList<Integer>(), results);
+        return results;
+    }
+    
+    private void dfs(int[] nums, int startIndex, List<Integer> subset, List<List<Integer>> results) {
+		// use iteration to contorl the flow and end 
+        // so there is no need to place a stop case here
+        // for every subset, simply add it to the results
+        results.add(new ArrayList<Integer>(subset));
+        // never look back, start from startIndex instead of 0
+        for (int i = startIndex; i < nums.length; i++) {
+			subset.add(nums[i]);
+            dfs(nums, i + 1, subset, results);
+            // backtrack
+            subset.remove(subset.size() - 1);
+        }
+    }
+}
+```
+
+#### [90. Subsets II  ](https://leetcode.com/problems/subsets-ii/)<span style="color:orange">Medium</span>
+
+Combinatorial Search Probelm --> DFS while removing duplicates along the way 
+
+Keep in mind that getting all possibilites and then remoing duplicates is too high in time complexity. (Consider the test case: [1, 1, 1, 1, 1])
+
+```java
+class Solution {
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+		List<List<Integer>> results = new ArrayList<>();
+        if (nums == null)
+            return results;
+        Arrays.sort(nums);
+        dfs(nums, 0, new ArrayList<Integer>(), results);
+        return results;
+    }
+    
+    private void dfs(int[] nums, int startIndex, List<Integer> subset, List<List<Integer>> results) {
+        results.add(new ArrayList<Integer>(subset));
+        for (int i = startIndex; i < nums.length; i++) {
+            // skip if a duplicate is encountered
+            if(i > 0 && nums[i] == nums[i - 1] && i != startIndex) {
+               continue; 
+            }
+			subset.add(nums[i]);
+            dfs(nums, i + 1, subset, results);
+            // backtrack
+            subset.remove(subset.size() - 1);
+        }
+    }
+}
+```
+
+#### [46. Permutations](https://leetcode.com/problems/permutations/) <span style="color:orange">Medium</span>
+
+[<img src="https://s4.ax1x.com/2022/01/13/7lSavT.png" alt="7lSavT.png" style="zoom:50%;" />](https://imgtu.com/i/7lSavT)
+
+Permutation Search --> DFS
+
+$n!$ permutations for a n-element list
+
+```java
+class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> results = new ArrayList<>();
+        if (nums == null)
+            return results;
+        boolean[] visited = new boolean[nums.length];
+        dfs(nums, visited, new ArrayList<>(), results);
+        return results;
+    }
+    
+    private void dfs(int[] nums, boolean[] visited, List<Integer> subset, List<List<Integer>> results) {
+    	// deeper and deeper until all elements are in the subset
+        // add to the results only when all elements are contained
+        if (subset.size() == nums.length) {
+            // deep copy to avoid copying a reference
+            results.add(new ArrayList<Integer>(subset));
+            return;
+        }
+        
+        // for every level all elements are iterated so start from 0 
+        for (int i = 0; i < nums.length; i++) {
+            if (visited[i]) {
+            	continue;    
+            }
+            
+            subset.add(nums[i]);
+            visited[i] = true;
+            dfs(nums, visited, subset, results);
+            // backtrack
+            visited[i] = false;
+            subset.remove(subset.size() - 1);
+        }
+    }
+}
+```
+
+#### [816 · Traveling Salesman Problem - LintCode](https://www.lintcode.com/problem/816/)
+
+NP Problem, shortest path while traversing all nodes
+
+Permutation Style DFS
+
+Optimal Prunning
+
+State Compression Dynamic Programming (DP)  TIme Complexity: $O(2^n*n)$
+
+Randomization/Genetic/Simulated Annealing Algorithm
+
