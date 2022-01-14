@@ -1177,11 +1177,62 @@ class Solution {
 
 NP Problem, shortest path while traversing all nodes
 
-Permutation Style DFS
+**Permutation Style DFS** 
 
-Optimal Prunning
+A correct solution but will run into TLS because of low efficiency.
 
-State Compression Dynamic Programming (DP)  TIme Complexity: $O(2^n*n)$
+```python
+class Result:
+    def __init__(self):
+        # can contain traveling path if needed
+        self.min_cost = float("inf")
 
-Randomization/Genetic/Simulated Annealing Algorithm
+class Solution:
+    def minCost(self, n, roads):
+        result = Result()
+        roads_costs = self.build_graph(roads, n)
+        self.dfs(1, n, set([1]), 0, roads_costs, result)
+        return result.min_cost
+
+    def build_graph(self, roads, cities_count):
+        graph = {}
+        # A -> B : cost
+        # initialization
+        for city_from in range(1, cities_count + 1):
+            graph[city_from] = {}
+            for city_to in range(1, cities_count + 1):
+                graph[city_from][city_to] = float("inf")
+        
+        # assign real costs
+        for city_a, city_b, cost in roads:
+            graph[city_a][city_b] = min(graph[city_a][city_b], cost)
+            graph[city_b][city_a] = min(graph[city_b][city_a], cost)
+        
+        return graph
+
+
+    def dfs(self, city, cities_count, visited, cost, graph, result):
+        # stops when all cities are visited
+        if len(visited) == cities_count:
+            result.min_cost = min(result.min_cost, cost)
+            return
+
+        for next_city in graph[city].keys():
+            if next_city in visited:
+                continue
+            
+            visited.add(next_city)
+            self.dfs(next_city, cities_count, visited, cost + graph[city][next_city], graph, result)
+            visited.remove(next_city)
+```
+
+**Optimal Prunning**
+
+
+
+**State Compression Dynamic Programming (DP)**  
+
+TIme Complexity: $O(2^n*n)$
+
+**Randomization/Genetic/Simulated Annealing Algorithm**
 
