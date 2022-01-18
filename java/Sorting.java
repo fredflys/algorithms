@@ -22,7 +22,7 @@ public class Sorting {
 
         testPerf();
     }
-
+    
     public static void testPerf() throws Exception{
         // 生成测试数据
         int[] testArr = new int[100000];
@@ -39,7 +39,7 @@ public class Sorting {
         test("mergeHelper", testArr);
         
     }
-
+    
     public static void test(String funcName, int[] testArr) throws Exception{
         long start = System.currentTimeMillis();
         // 用反射调用方法
@@ -81,7 +81,7 @@ public class Sorting {
         }
         return arr;
     }
-
+    
     public static int[] selection(int[] arr){
         
         /*
@@ -107,7 +107,7 @@ public class Sorting {
         }
         return arr;
     }
-
+    
     public static int[] insertion(int[] arr){
         /*
         选择排序的思想是视位置0的元素为有序数组，依次从右侧取元素，插入到该有序数组中，使其不断向右扩展，最终使得整个数组按顺序排列
@@ -123,7 +123,7 @@ public class Sorting {
               t    i 
             3 5 5  7 2 6  t--
             t      i 
-
+    
             3 4 5  7 2 6  t+1
               t
             */
@@ -133,12 +133,12 @@ public class Sorting {
             }
             arr[targetIndex+1] = insertVal;
         }
-
+    
         return arr;
     }
-
+    
     public static int[] shellBySwap(int[] arr){
-
+    
         // index 0 1 2 3 4 5 6 7 8 9
         //       8 9 1 7 2 3 5 4 6 0
         //       .         .          length/2 一组
@@ -146,9 +146,9 @@ public class Sorting {
         //       . * . * . * . * . *  lenth/2/2 一组
         //       0 2 1 4 3 5 7 6 9 8
         //                            length/2/2/2 一组
- 
+     
         int tempForSwap;
-
+    
         int length = arr.length;
         for(int stride = length/2;stride>0;stride/=2){
             for(int rightCur=stride; rightCur<length; rightCur++){
@@ -160,12 +160,12 @@ public class Sorting {
                         arr[nextInGroup] = tempForSwap;
                     }
                 }
-
+    
             }
         }
         return arr;
     }
-
+    
     public static int[] shellByInsertion(int[] arr){
         // 希尔排序是对插入排序的改进
         int length = arr.length;
@@ -204,14 +204,14 @@ public class Sorting {
         }
         return arr;
     }
-
+    
     // 快速排序
     public static int[] quickHelper(int[] arr) {
         quick(arr, 0, arr.length-1);
-
+    
         return arr;
     }
-
+    
     public static void quick(int[] arr,  int low,  int high){
         int pivot;
         if(high>low){
@@ -220,7 +220,7 @@ public class Sorting {
             quick(arr, pivot+1, high);
         }
     }
-
+    
     public static int partition(int[] arr, int low, int high){
         // 对冒泡排序的改进
         /*
@@ -237,7 +237,7 @@ public class Sorting {
         int left = low;
         int right = high;
         int tempForSwap;
-
+    
         while(left<right){
             // 注意左右游标移动过程中不要越界
             while(arr[left] <= pivotVal && left<high){
@@ -252,22 +252,22 @@ public class Sorting {
                 arr[right] = tempForSwap;
             }
         }
-
+    
         arr[low] = arr[right];
         arr[right] = pivotVal;
-
+    
         return right;
     }
-
+    
     // 归并排序
     public static int[] mergeHelper(int[] arr){
         // divide and conquer
-
+    
         int[] tempArr = new int[arr.length];
         divideForMerge(arr, 0, arr.length-1, tempArr);
         return arr;
     }
-
+    
     public static void divideForMerge(int[] arr, int start, int end, int[] tempArr){
         // 分而治之
         if(start < end){
@@ -277,7 +277,7 @@ public class Sorting {
             merge(arr, start, mid, end, tempArr);
         }
     }
-
+    
     public static void merge(int[] arr, int start, int mid, int end, int[] tempArr){
         /*
         s     m            e         t
@@ -292,13 +292,13 @@ public class Sorting {
         --b
             * 1              r       1 2 3 4 5 6 7 
               * 1            r       1 2 3 4 5 6 7 8
-
+    
         */
         // merge次数: arr.length-1
         int leftCur = start;
         int rightCur = mid + 1;
         int tempCur = 0;
-
+    
         // a 依次从左有序数组和右有序数组向临时数组转移 
         while(leftCur <= mid && rightCur <= end){
             if(arr[leftCur] <= arr[rightCur]){
@@ -307,7 +307,7 @@ public class Sorting {
                 tempArr[tempCur++] = arr[rightCur++];
             }
         }
-
+    
         // b 把上次转移剩下的一股脑转移到临时数组
         while(leftCur<=mid){
             tempArr[tempCur++] = arr[leftCur++];
@@ -315,7 +315,7 @@ public class Sorting {
         while(rightCur<=end){
             tempArr[tempCur++] = arr[rightCur++];
         }
-
+    
         // 从临时数组往原数组转移
         tempCur = 0;
         int arrCur = start;
@@ -326,7 +326,9 @@ public class Sorting {
 
     }
 
-    
+
+​    
+
     public static int[] radix(int[] arr){
         // 待排序数组长度为n，创建长度为10的数组，表示0-9的基数桶，其中每个桶是长度为n的数组，用来盛放每次放入基数桶中的元素
         int[][] buckets = new int[10][arr.length];
@@ -355,7 +357,7 @@ public class Sorting {
         bucketsLength
         [10]
         */
-
+    
         // 每一位循环一次
         for(int round=0;round<maxDigit;round++){
             for(int arrCur=0;arrCur<arr.length;arrCur++){
@@ -364,7 +366,7 @@ public class Sorting {
                 buckets[currentDigitNum][bucketsLength[currentDigitNum]] = arr[arrCur];
                 bucketsLength[currentDigitNum]++;
             }
-
+    
             int arrCur = 0;
             for(int bucketCur=0;bucketCur<bucketsLength.length;bucketCur++){
                 if(bucketsLength[bucketCur] != 0){
@@ -377,15 +379,16 @@ public class Sorting {
             }
             System.out.println("Current round" + Arrays.toString(arr));
         }
-
+    
         return arr;
-
+    
     }
 
-
-
-
 }
+
+
+
+
 
 
 

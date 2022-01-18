@@ -403,4 +403,193 @@ class Solution:
         return topo_sort(graph)
 ```
 
-## 
+#### [816 · Traveling Salesman Problem - LintCode](https://www.lintcode.com/problem/816/)
+
+NP Problem, shortest path while traversing all nodes
+
+##### 1. Permutation Style DFS 
+
+A correct solution but will run into TLS because of low efficiency.
+
+```python
+class Result:
+    def __init__(self):
+        # can contain traveling path if needed
+        self.min_cost = float("inf")
+
+class Solution:
+    def minCost(self, n, roads):
+        result = Result()
+        roads_costs = self.build_graph(roads, n)
+        self.dfs(1, n, set([1]), 0, roads_costs, result)
+        return result.min_cost
+
+    def build_graph(self, roads, cities_count):
+        graph = {}
+        # A -> B : cost
+        # initialization
+        for city_from in range(1, cities_count + 1):
+            graph[city_from] = {}
+            for city_to in range(1, cities_count + 1):
+                graph[city_from][city_to] = float("inf")
+        
+        # assign real costs
+        for city_a, city_b, cost in roads:
+            graph[city_a][city_b] = min(graph[city_a][city_b], cost)
+            graph[city_b][city_a] = min(graph[city_b][city_a], cost)
+        
+        return graph
+
+
+    def dfs(self, city, cities_count, visited, cost, graph, result):
+        # stops when all cities are visited
+        if len(visited) == cities_count:
+            result.min_cost = min(result.min_cost, cost)
+            return
+
+        for next_city in graph[city].keys():
+            if next_city in visited:
+                continue
+            
+            visited.add(next_city)
+            self.dfs(next_city, cities_count, visited, cost + graph[city][next_city], graph, result)
+            visited.remove(next_city)
+```
+
+##### 2. Optimal Prunning
+```python
+class Result:
+    def __init__(self):
+        self.min_cost = float("inf")
+
+class Solution:
+    def minCost(self, n, roads):
+        result = Result()
+        roads_costs = self.build_graph(roads, n)
+        self.dfs(1, n, set([1]), [1], 0, roads_costs, result)
+        return result.min_cost
+
+    def build_graph(self, roads, cities_count):
+        graph = {}
+        # A -> B : cost
+        # initialization
+        for city_from in range(1, cities_count + 1):
+            graph[city_from] = {}
+            for city_to in range(1, cities_count + 1):
+                graph[city_from][city_to] = float("inf")
+        
+        # assign real costs
+        for city_a, city_b, cost in roads:
+            graph[city_a][city_b] = min(graph[city_a][city_b], cost)
+            graph[city_b][city_a] = min(graph[city_b][city_a], cost)
+        
+        return graph
+
+
+    def dfs(self, city, cities_count, visited, path, cost, graph, result):
+        if len(visited) == cities_count:
+            result.min_cost = min(result.min_cost, cost)
+            return
+
+        for next_city in graph[city].keys():
+            # there is no need to stay put
+            if next_city in visited:
+                continue
+            
+            if self.has_shorter_path(path, graph, next_city):
+                continue
+            
+            visited.add(next_city)
+            path.append(next_city)
+            self.dfs(next_city, cities_count, visited, path, cost + graph[city][next_city], graph, result)
+            path.pop()
+            visited.remove(next_city)
+
+    def has_shorter_path(self, path, graph, new_city):
+        # starting point is fixed so start from the second city
+        for i in range(1, len(path)):
+            end_city = path[-1]
+            current_city = path[i]
+            previous_city = path[i - 1]
+            natrual_path = graph[previous_city][current_city] + graph[end_city][new_city]
+            try_path = graph[previous_city][end_city] + graph[current_city][new_city]
+            if try_path < natrual_path:
+                return True
+        return False
+```
+
+
+##### 3. State Compression Dynamic Programming (DP)**
+
+TIme Complexity: $O(2^n*n)$
+
+Say the salesman start from 1 and arrives at 4 and along the way we pass by 2 and 3, so he has the routes below:
+
+1 --> 2 --> 3 --> 4 or 1 --> 3 --> 2 --> 4
+
+If start and end are fixed, the path that has a lower cost is the best route for now and  it can be taken as the locally optimal solution. The process could repeat itself until the end. The problem now is converted into a combination problem.
+
+$dp[start, b, c, ... , end][end]$ This matrix stored the min cost when the salesman start and then pass by b, c... and arrives at end.
+
+examples: 
+
+$dp[1, 2][2] = dp[1, 1] + costs[1][2]$: the lowest cost from 1 to 2 is the lowest cost from 1 to 1 plus the cost from 1 to 2
+
+$dp[1,2,3,4][4] = min(dp[1, 2, 3][3] + costs[3][4] , dp[1,2,3][2] + costs[2][4])$ :  
+
+- 1 --> 2 --> 3 --> 4 the cost starting from 1, passing by 2 and 3, arriving at 3 plus the cost from 3 to 4
+- 1 --> 3 --> 2 -- >4 the cost starting from 1, passing by 2 and 3, arriving at 2 (i. e. from 3 to 2) plus the cost from 2 to 4
+
+But an array can not be used as indexing so it is represented by a sequence of binary numbers. For example, 1 --> 3 --> 5 is 10101 and $2^0 + 2^2 + 2^4 = 21$.  
+
+```python
+class Solution:
+    def minCost(self, n, roads):
+        # costs[a][b] means how much is the cost going from a to b
+        costs = self.build_graph(roads, n)
+        routes_count = 1 << n # 2 ^ n combinations
+        dp = [
+            [float('inf')] * (n + 1)   # n + 1 possible ends (first city is 1 not 0 so here is n + 1 instead of n)
+            for _ in range(routes_count) # 2 ^ n - 1 possible routes
+        ]
+        dp[1][1] = 0
+        for route in range(routes_count):
+            # start is fixed as 1 so at least the salesman arrives at 2
+            for end in range(2, n + 1):
+                compressed_end = 1 << (end - 1)
+                # AND: only both
+                # skip if end is not in the route
+                if route & compressed_end == 0:
+                    continue
+                # XOR: either one but not both
+                # remove end from the route 
+                previous_route = route ^ compressed_end
+                for last_passed in range(1, n + 1):
+                    compressed_last_passed = 1 << (last_passed - 1)
+                    # skip if l
+                    if previous_route & compressed_last_passed == 0:
+                        continue
+                    dp[route][end] = min(dp[route][end], dp[previous_route][last_passed] + costs[last_passed][end])
+        return min(dp[routes_count - 1])
+        
+    def build_graph(self, roads, cities_count):
+        graph = {}
+        # A -> B : cost
+        # initialization
+        for city_from in range(1, cities_count + 1):
+            graph[city_from] = {}
+            for city_to in range(1, cities_count + 1):
+                graph[city_from][city_to] = float("inf")
+        
+        # assign real costs
+        for city_a, city_b, cost in roads:
+            graph[city_a][city_b] = min(graph[city_a][city_b], cost)
+            graph[city_b][city_a] = min(graph[city_b][city_a], cost)
+        
+        return graph
+```
+
+
+
+##### 4. Randomization/Genetic/Simulated Annealing Algorithm
+
