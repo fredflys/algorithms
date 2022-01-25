@@ -589,7 +589,53 @@ class Solution:
         return graph
 ```
 
-
-
 ##### 4. Randomization/Genetic/Simulated Annealing Algorithm
 
+I don't understand how it works so leave this space empty for now.
+
+#### [17. Letter Combinations of a Phone Number](https://https://leetcode.com/problems/letter-combinations-of-a-phone-number/) <span style="color:orange">Medium</span>
+DFS
+e.g. 23 => "abc", "def"
+              ""
+0        a      b        c
+1  ad ae af  bd be bf cd ce cf
+```java
+class Solution {
+    public static final String[] KEYBOARD = {
+        "",  // 0
+        "",  // 1 
+        "abc",
+        "def",
+        "ghi",
+        "jkl",
+        "mno",
+        "pqrs",
+        "tuv",
+        "wxyz"
+    };
+
+    public List<String> letterCombinations(String digits) {
+        List<String> combinations = new ArrayList<String>();
+        if (digits.length() == 0 || digits == null) {
+            return combinations;
+        }
+
+        dfs(digits, 0, "", combinations);
+        return combinations;
+    }
+
+    public void dfs(String digits, int index, String combination, List<String> combinations) {
+        if (index == digits.length()) {
+            combinations.add(combination);
+            return;
+        }
+
+        int digit = digits.charAt(index) - '0';
+        String letters = KEYBOARD[digit];
+        for (int i = 0; i < letters.length(); i++) {
+            // backtrack implicitly
+            dfs(digits, index + 1, combination + letters.charAt(i), combinations);
+        }
+    }
+}
+```
