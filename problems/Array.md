@@ -1173,4 +1173,35 @@ class Solution {
 }
 ```
 [LintCode 90 · k Sum II](https://www.lintcode.com/problem/90/)
-DFS
+Combination, DFS
+```java
+public class Solution {
+    public List<List<Integer>> kSumII(int[] A, int k, int target) {
+        List<List<Integer>> combinations = new ArrayList();
+        List<Integer> combination = new ArrayList();
+        dfs(A, 0, k, target, combination, combinations);
+        return combinations;
+    }
+
+    public void dfs(int[] A, int index, int k, int target, List<Integer> combination, List<List<Integer>> combinations) {
+        // stop conditions: target is reached and k and only k numbers are used
+        if (k == 0 && target == 0) {
+            System.out.println(Arrays.toString(combination.toArray()));
+            // add a copy instead of a reference because every element addedd into the combination will be removed afterwards
+            combinations.add(new ArrayList(combination));
+            return;
+        }
+
+        // stop condition: k numbers are used but target is not met or target is met but not k numbers are used
+        if (k == 0 || target == 0) {
+            return;
+        }
+
+        for (int i = index; i < A.length; i++) {
+            combination.add(A[i]);
+            dfs(A, i + 1, k - 1, target - A[i], combination, combinations);
+            combination.remove(combination.size() - 1);
+        }
+    }
+}
+```

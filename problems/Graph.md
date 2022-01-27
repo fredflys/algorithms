@@ -594,7 +594,7 @@ class Solution:
 I don't understand how it works so leave this space empty for now.
 
 #### [17. Letter Combinations of a Phone Number](https://https://leetcode.com/problems/letter-combinations-of-a-phone-number/) <span style="color:orange">Medium</span>
-DFS
+Combination, DFS
 e.g. 23 => "abc", "def"
               ""
 0        a      b        c
