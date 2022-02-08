@@ -222,7 +222,7 @@ class Solution(object):
 ```
 
 ```python
-# two pointers
+# two-pointers
 class Solution(object):
     def twoSum(self, nums, target):
         if not nums:

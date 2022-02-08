@@ -125,7 +125,7 @@ class Solution {
 }
 ```
 
-#### 209 Minimum Size Subarray Sum <span style="color:orange">Medium</span>
+#### (209 Minimum Size Subarray Sum)[https://leetcode.com/problems/minimum-size-subarray-sum/] <span style="color:orange">Medium</span>
 
 brute force
 
@@ -206,9 +206,7 @@ class Solution:
         return result if result != len(nums) + 1 else 0
 ```
 
-
-
-#### 904 Fruits into Baskets <span style="color:orange">Medium</span>
+#### [904 Fruits into Baskets](https://leetcode.com/problems/fruit-into-baskets/) <span style="color:orange">Medium</span>
 
 自己想出来的循环法，空间占用小，但耗时较多。start 用来标记水果 A 的起点，middle 用来标记水果 B 的起点，end 用来标记挑选停止的位置。
 
@@ -271,6 +269,7 @@ class Solution {
 
 #### 76 Minimum Window Substring <span style="color:red">Hard</span>
 
+sliding window
 第一次用自己的思路写，只能通过一半的测试用例，错误在于我没有考虑到 t 中可以有重复字符，错将 t 中字符与该字符在 s 中出现的位置当成了 HashMap 的 key 与 value，应该记录出现的次数。在看了力扣的视频题解后，才对滑动窗口有了更深的认识，并改写了自己的版本。
 
 ```java
@@ -347,6 +346,32 @@ class Solution {
 
     }
 }
+```
+
+#### [567. Permutation in String](https://leetcode-cn.com/problems/permutation-in-string/) <span style="color:orange">Medium</span>
+fixed-size sliding window / two pointers
+When it comes to permutaion, only chars' count matters and how they are arranged doesn't matter. Also, a sub-string is required, thus comes the sliding window.
+```python
+class Solution:
+    def checkInclusion(self, pattern: str, text: str) -> bool:
+        left = 0 
+        right = len(pattern) - 1
+        pattern_counter = collections.Counter(pattern)
+        # window size is pattern length minus 1 now 
+        window_counter = collections.Counter(text[0: right])
+        while right < len(text):
+            # for every iteration, the char on the right end is first added to the window
+            window_counter[text[right]] += 1
+            if pattern_counter == window_counter:
+                return True
+            window_counter[text[left]] -= 1
+            # if count is zero, remove it from the counter 
+            if window_counter[text[left]] == 0:
+                del window_counter[text[left]]
+            left += 1
+            right += 1
+
+        return False
 ```
 
 #### 1248 Count Number of Nice Subarrays <span style="color:orange">Medium</span>
@@ -1172,7 +1197,7 @@ class Solution {
     }
 }
 ```
-[LintCode 90 · k Sum II](https://www.lintcode.com/problem/90/)
+#### [LintCode 90 · k Sum II](https://www.lintcode.com/problem/90/)
 Combination, DFS
 ```java
 public class Solution {
@@ -1204,4 +1229,27 @@ public class Solution {
         }
     }
 }
+```
+#### [39. Combination Sum](https://leetcode.com/problems/combination-sum/) <span style="color:orange">Medium</span> 
+Combination DFS
+```python
+class Solution:
+    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+        results = []
+        if not candidates:
+            return results
+        self.dfs(0, target, sorted(candidates), [], results)
+        return results
+
+    def dfs(self, index, remaining_target, candidates, combination, combinations):
+        if remaining_target == 0:
+            return combinations.append(list(combination))
+        
+        for i in range(index, len(candidates)):
+            if remaining_target < candidates[i]:
+                break
+            combination.append(candidates[i])
+            # every candidate can be used more than once, so start from i again instead of i + 1
+            self.dfs(i, remaining_target - candidates[i], candidates, combination, combinations)
+            combination.pop()
 ```

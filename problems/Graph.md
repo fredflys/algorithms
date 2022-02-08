@@ -639,3 +639,140 @@ class Solution {
     }
 }
 ```
+
+#### [79. Word Search](https://leetcode-cn.com/problems/word-search/) <span style="color:orange">Medium</span> 
+
+
+#### [212. Word Search II](https://leetcode-cn.com/problems/word-search-ii/) <span style="color:red">Hard</span> 
+Permutation DFS
+```python
+class Solution:
+    # up, down, left, right
+    DIRECTIONS = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+    def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+        if not board or not board[0]:
+            return []
+        words = set(words)
+        answers = [] 
+        board_counter = self.count_board(board)
+        for word in words:
+            if not self.possible_on_board(word, board_counter):
+                continue
+            
+            found = False
+            for i in range(len(board)):
+                for j in range(len(board[0])):
+                    if self.search(word, 0, board, (i, j), set()):
+                        answers.append(word)
+                        found = True
+                        # break from inner loop
+                        break
+                # break from outer loop
+                if found:
+                    break
+        return answers
+
+    # count how many times each letter is used   
+    def count_board(self, board):
+        counter = collections.Counter()
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                counter[board[i][j]] += 1
+        return counter
+    
+    # if not enough letters exist on the board, the word cannot be found
+    def possible_on_board(self, word, board_counter):
+        word_counter = collections.Counter(word)
+        for char in word_counter:
+            if word_counter[char] > board_counter[char]:
+                return False
+        return True
+    
+    def search(self, word, index, board, position, visited):
+        # successful exit: every char is matched and the word is found
+        if index == len(word):
+            return True
+
+        if position in visited:
+            return False
+        
+        # pruning: stop when moving outside the board
+        if not self.on_board(position, board):
+            return False 
+        
+        if board[position[0]][position[1]] == word[index]:
+            visited.add(position)
+            index += 1
+            for _x, _y in self.DIRECTIONS:
+                if self.search(word, index, board, (position[0] + _x, position[1] + _y), visited):
+                    return True
+            visited.remove(position)
+        return False
+    
+    def on_board(self, position, board):
+        return 0 <= position[0] < len(board) and 0 <= position[1] < len(board[0])
+```
+
+another way of doing dfs, but this method will fail due to TLE. It runs too slow even after pruning.
+```python
+class Solution:
+    # up, down, left, right
+    DIRECTIONS = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+    # another way of doing dfs, but this method will fail due to TLE
+    def findWords2(self, board: List[List[str]], words: List[str]) -> List[str]:
+        if not board or not board[0]:
+            return []
+
+        word_set = set(words)
+        prefix_set = self.get_prefix_set(words)
+        result_set = set()
+        for x in range(len(board)):
+            for y in range(len(board[0])):
+                self.dfs(x, y, board[x][y], board, word_set, prefix_set, set([(x, y)]), result_set)
+        return list(result_set)
+
+
+    def get_prefix_set(self, words):
+        prefix_set = set()
+        for word in words:
+            for i in range(len(word)):
+                prefix_set.add(word[:i + 1])
+        return prefix_set
+
+    def dfs(self, x, y, word, board, word_set, prefix_set, visited,  result_set):
+        # pruning: early exit
+        if not self.is_prefix(word, prefix_set):
+            return
+
+        # catch valid words
+        if word in word_set:
+            if word in prefix_set:
+                prefix_set.remove(word)
+            result_set.add(word)
+        
+        # try all four directions
+        for delta_x, delta_y in self.DIRECTIONS:
+            _x = x + delta_x
+            _y = y + delta_y
+
+            # not on board? skip the move 
+            if not self.on_board((_x, _y), board):
+                continue
+            # already visited? skip the move
+            if (_x, _y) in visited:
+                continue
+            
+            visited.add((_x, _y))
+            self.dfs(_x, _y, word + board[_x][_y], board, word_set, prefix_set, visited, result_set)
+            visited.remove((_x, _y))
+        
+    def is_prefix(self, word, prefix_set):
+        if word in prefix_set:
+            return True
+        for prefix in prefix_set:
+            if word in prefix:
+                return True
+        return False
+```
