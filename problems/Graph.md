@@ -110,6 +110,172 @@ class Solution:
         return similar_words
 ```
 
+#### [126. Word Ladder II](https://leetcode-cn.com/problems/word-ladder-ii/) <span style="color:red">Hard</span>
+BFS
+```java
+public class Solution {
+	class Node {
+		int distance;
+		List<String> path;
+		Node(int distance, List<String> path) {
+			this.distance = distance;
+			this.path = path;
+        }
+    }
+	
+    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+        List<List<String>> results = new ArrayList<>();
+        if (wordList == null || wordList.size() == 0) {
+            return results;
+        }
+        
+        Set<String> wordDict = new HashSet<>(wordList);
+        Set<String> visited = new HashSet<>();
+        Queue<Node> queue = new LinkedList<>();
+        queue.offer(buildNode(beginWord, 0, new ArrayList<String>()));
+        Integer shortestDist = null;
+        
+        while (!queue.isEmpty()) {
+            // Record what we meet at this level
+            Set<String> thisLevelVisited = new HashSet<>();
+            int size = queue.size();
+            for (int k = 0; k < size; k++) {
+                Node node = queue.poll();
+				List<String> path = node.path;
+				String word = path.get(path.size() - 1);
+				int distance = node.distance;
+                
+                // If this level has a distance greater than shortest distance, we don't need to consider it any more
+                if (shortestDist != null && distance > shortestDist) {
+                    continue;
+                }
+                
+                // If we find the endWord, then we have the shortest distance
+                if (word.equals(endWord)) {
+                    if (shortestDist == null) {
+                        shortestDist = distance;
+                    }
+                    results.add(path);
+                    continue;
+                }
+                
+				for (String nextWord: wordDict) {
+					if (!isNeighbor(word, nextWord) || visited.contains(nextWord)) {
+						continue;
+					}
+					
+                    queue.offer(buildNode(nextWord, distance, new ArrayList<String>(path)));
+                    thisLevelVisited.add(nextWord); 	
+				}
+            }
+            visited.addAll(thisLevelVisited);
+        }
+        return results;
+    }
+	
+	private Node buildNode(String word, int distance, List<String> path) {
+		path.add(word);
+		return new Node(distance + 1, path);
+	}
+    
+	private boolean isNeighbor(String a, String b) {
+        int diff = 0;
+        for (int i = 0; i < a.length() && diff < 2; i++) {
+            if (a.charAt(i) != b.charAt(i)) {
+                diff++;
+            }
+        }
+        return diff == 1;
+    }
+}
+```
+BFS + DFS
+DFS will go deeper and deeper and along the way a path can be stored. What's not good about DFS is that it will not stop until it reaches a dead end, which means a lot of needless attempts. But this can be fixed with BFS because a path is extended layer by layer in BFS, which means roundabout paths can be skipped. So in essence, BFS is employed to prune the tree for DFS to walk through.
+![](https://s2.loli.net/2022/02/12/dBEA3NC5LZKUFXa.png)
+```java
+class Solution {
+    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+        List<List<String>> results = new ArrayList<>();
+        if (wordList == null || !wordList.contains(endWord)) {
+           return results; 
+        }
+        
+        Set<String> wordDict = new HashSet<>(wordList);
+        wordDict.add(beginWord);
+        // distance from begin word to another word
+        Map<String, Integer> distanceTo = new HashMap<>();
+        // a word to other words that can be reached without extra steps
+        Map<String, List<String>> nearWordsTo = new HashMap<>();
+        for (String word : wordDict) {
+            nearWordsTo.put(word, new ArrayList<String>());
+        }
+        
+        bfs(nearWordsTo, distanceTo, beginWord, endWord, wordDict);
+        
+        // there is no way to arrive at end word
+        if (distanceTo.get(endWord) == null) {
+            return results;
+        }
+        dfs(results, new ArrayList<String>(), beginWord, endWord, nearWordsTo, 
+        return results;
+    }
+    
+    private void bfs(Map<String, List<String>> nearWordsTo, Map<String, Integer> distanceTo, String beginWord, String endWord, Set<String> wordDict) {
+        // begin word to begin word requires no moevement
+        distanceTo.put(beginWord, 0);
+        Queue<String> queue = new LinkedList<String>();
+        // add begin word for initialization
+        queue.offer(beginWord);
+        
+        while(!queue.isEmpty()) {
+            String word = queue.poll();
+            for (String nextWord: wordDict) {
+                if (!isNeighbor(word, nextWord)) {
+                    continue;
+                }
+                
+                if (!distanceTo.containsKey(nextWord) || distanceTo.get(nextWord) == distanceTo.get(word) + 1) {
+                    nearWordsTo.get(word).add(nextWord);
+                }
+                
+                if (!distanceTo.containsKey(nextWord)) {
+                    distanceTo.put(nextWord, distanceTo.get(word) + 1);
+                    queue.offer(nextWord);
+                }
+            }
+        }
+    }
+    
+    private void dfs(List<List<String>> results, List<String> path, String word, String endWord, Map<String, List<String>> nearWordsTo, int minLen) {
+        if (path.size() == minLen + 1) {
+            return;
+        }
+        
+        path.add(word);
+        if (word.equals(endWord)) {
+            results.add(new ArrayList<String>(path));
+        }
+        else {
+            for (String nextWord : nearWordsTo.get(word)) {
+                dfs(results, path, nextWord, endWord, nearWordsTo, minLen);
+            }
+        }
+
+        path.remove(path.size() - 1);
+    }
+    
+    private boolean isNeighbor(String a, String b) {
+        int diff = 0;
+        for (int i = 0; i < a.length() && diff < 2; i++) {
+            if (a.charAt(i) != b.charAt(i)) {
+                diff++;
+            }
+        }
+        return diff == 1;
+    }
+}
+```
+
 #### [200. Number of Islands ](https://leetcode-cn.com/problems/number-of-islands/)<span style="color:orange">Medium</span>
 
 BFS on a matrix to get number of connected blocks
@@ -644,7 +810,7 @@ class Solution {
 
 
 #### [212. Word Search II](https://leetcode-cn.com/problems/word-search-ii/) <span style="color:red">Hard</span> 
-Permutation DFS
+If Path Exists, DFS
 ```python
 class Solution:
     # up, down, left, right
