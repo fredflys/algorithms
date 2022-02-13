@@ -807,7 +807,68 @@ class Solution {
 ```
 
 #### [79. Word Search](https://leetcode-cn.com/problems/word-search/) <span style="color:orange">Medium</span> 
+```python
+class Solution:
+    DIRECTIONS = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+    def exist(self, board: List[List[str]], word: str) -> bool:
+        if not board or not board[0]:
+            return []
+        
+        # early exit
+        # if the board has not enough characters, the word cannot be found
+        board_counter = self.count_board(board)
+        if not self.possible_on_board(word, board_counter):
+                return False
 
+        found = False
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if self.dfs(word, 0, board, (i, j), set()):
+                    found = True
+                    break
+            if found:
+                break
+        return True if found else False
+    
+    def count_board(self, board):
+        counter = collections.Counter()
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                counter[board[i][j]] += 1
+        return counter
+    
+    def possible_on_board(self, word, board_counter):
+        word_counter = collections.Counter(word)
+        for char in word_counter:
+            if word_counter[char] > board_counter[char]:
+                return False
+        return True
+
+    def dfs(self, word, index, board, position, visited):
+        if index == len(word):
+            return True
+
+        # out of board boundary
+        if not self.on_board(position, board):
+            return False
+        # already visited
+        if position in visited:
+            return False
+
+        x, y = position
+        # no match
+        if board[x][y] != word[index]:
+            return False
+
+        visited.add(position)
+        for _x, _y in self.DIRECTIONS:
+            if self.dfs(word, index + 1, board, (x + _x, y + _y),  visited):
+                return True
+        visited.remove(position)
+
+    def on_board(self, position, board):
+        return 0 <= position[0] < len(board) and 0 <= position[1] < len(board[0])
+```
 
 #### [212. Word Search II](https://leetcode-cn.com/problems/word-search-ii/) <span style="color:red">Hard</span> 
 If Path Exists, DFS
@@ -879,7 +940,6 @@ class Solution:
     def on_board(self, position, board):
         return 0 <= position[0] < len(board) and 0 <= position[1] < len(board[0])
 ```
-
 another way of doing dfs, but this method will fail due to TLE. It runs too slow even after pruning.
 ```python
 class Solution:
