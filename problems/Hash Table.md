@@ -439,3 +439,44 @@ class Solution {
     }
 }
 ```
+
+#### [LintCode 685 · First Unique Number in Data Stream](https://www.lintcode.com/problem/685/)
+```java
+public class Solution {
+    /**
+     * @param nums: a continuous stream of numbers
+     * @param number: a number
+     * @return: returns the first unique number
+     */
+    public int firstUniqueNumber(int[] nums, int number) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+
+        Map<Integer, Boolean> numUniqueMap = new HashMap<>();
+        for (int num: nums) {
+            // unique: not in map  
+            numUniqueMap.put(num, !numUniqueMap.containsKey(num));
+            if (num == number) {
+                break;
+            }
+        }
+
+        if (!numUniqueMap.containsKey(number)) {
+            return -1;
+        }
+
+        // as long as the map contains the number, there must be an answer.
+        // there is no need to break when num == number
+        // since hash map is unordered, loop the nums to get the first unique number
+        for (int num : nums) {
+            if (numUniqueMap.get(num)) {
+                return num;
+            }
+        }
+
+        return -1;
+    }
+}
+```
+#### [LintCode 960 · First Unique Number in Data Stream II](https://www.lintcode.com/problem/960/)
