@@ -480,3 +480,96 @@ public class Solution {
 }
 ```
 #### [LintCode 960 · First Unique Number in Data Stream II](https://www.lintcode.com/problem/960/)
+```java
+public class DataStream {
+    private class ListNode {
+        int val;
+        ListNode next;
+        ListNode (int val) {
+            this.val = val;
+        }
+        ListNode (int val, ListNode next) {
+            this.val = val;
+            // a one-way linked node
+            this.next = next;
+        }
+    }
+
+    // a linked list is used to save all unique nodes
+    // with a dummy node, the head can be treated just as other nodes
+    private ListNode dummy;
+    private ListNode tail;
+    // a map is used to store a previous node to every node, which can be quite helpful when reorder the linked list 
+    private Map<Integer, ListNode> numToPrevNode;
+    private Set<Integer> duplicates;
+
+    public DataStream(){
+        dummy = new ListNode(0);
+        tail = dummy;
+        numToPrevNode = new HashMap<>();
+        duplicates = new HashSet<>();
+    }
+    /**
+     * @param num: next number in stream
+     * @return: nothing
+     */
+    public void add(int num) {
+        // only unique numbers can be added
+        // so if the incoming number is a duplicate (already happened 2 twos), ignore it
+        if (duplicates.contains(num)) {
+            return;
+        }
+
+        // already came once, then now it's the second time, so remove it from the linked list and mark it as a duplicate
+        if (numToPrevNode.containsKey(num)) {
+            remove(num);
+            duplicates.add(num);
+            return;
+        }
+
+        // coming in for the first time
+        addToTail(num);
+    }
+
+    private void remove(int num) {
+        ListNode prev = numToPrevNode.get(num);
+        prev.next = prev.next.next;
+        numToPrevNode.remove(num);
+ 
+        /**
+        e.g.
+           prev   tail 
+        ... 7 --> 10 --> null
+        after removal:
+           prev
+        ... 7 --> null
+        **/
+        if (prev.next == null) {
+            tail = prev;
+        } else {
+            // update numToPrev map
+            numToPrevNode.put(prev.next.val, prev);
+        }
+    }
+
+    /**
+     * @return: the first unique number in stream
+     */
+    public int firstUnique() {
+        // no unique numbers or no numbers at all
+        if (dummy.next == null) {
+            return -1;
+        }
+        // the first node in the 
+        return dummy.next.val;
+    }
+
+    private void addToTail(int num) {
+        ListNode node = new ListNode(num);
+        tail.next = node;
+        numToPrevNode.put(num, tail);
+        // update the tail
+        tail = node;
+    }
+}
+```
