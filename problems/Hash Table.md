@@ -573,3 +573,127 @@ public class DataStream {
     }
 }
 ```
+
+#### [380. Insert Delete GetRandom O(1)](https://leetcode.com/problems/insert-delete-getrandom-o1/)
+```java
+import java.util.Random;
+
+class RandomizedSet {
+    ArrayList<Integer> nums;
+    HashMap<Integer, Integer> numToIndex;
+    Random rand;
+
+    public RandomizedSet() {
+        // store values
+        nums = new ArrayList<>();
+        // val -> its position in nums
+        numToIndex = new HashMap<>();
+        rand = new Random();
+    }
+    
+    public boolean insert(int val) {
+        boolean found = exists(val);
+        if (!found) {
+            nums.add(val);
+            numToIndex.put(val, nums.size() - 1);
+        }
+        // insertion is possible only when the num is not found
+        return !found;
+    }
+    
+    public boolean remove(int val) {
+        boolean found = exists(val);
+        if (found) {
+            int pos = numToIndex.get(val);
+            if (pos != nums.size() - 1) {
+                moveLastNumToPos(pos);
+            }
+
+            numToIndex.remove(val);
+            nums.remove(nums.size() - 1);
+        }
+        
+        // deletion is possible only when the num is found
+        return found;
+    }
+    
+    public int getRandom() {
+        int randomIndex = rand.nextInt(nums.size());
+        return nums.get(randomIndex);
+    }
+    
+    private boolean exists(int val) {
+        return numToIndex.containsKey(val);
+    }
+    
+    private void moveLastNumToPos(int pos) {
+        int lastNum = nums.get(nums.size() - 1);
+        nums.set(pos, lastNum);
+        numToIndex.put(lastNum, pos);
+    }
+}
+```
+#### [381. Insert Delete GetRandom O(1) - Duplicates allowed](https://leetcode.com/problems/insert-delete-getrandom-o1-duplicates-allowed/)
+```java
+class RandomizedCollection {
+    
+    ArrayList<Integer> nums;
+    // since duplicates are allowed, a number has multiple positions now
+    HashMap<Integer, Set<Integer>> numToIndexes;
+    Random rand;
+
+    public RandomizedCollection() {
+        nums = new ArrayList<>();
+        numToIndexes = new HashMap<>();
+        rand = new Random();
+    }
+    
+    public boolean insert(int val) {
+        boolean isMissing = missing(val);
+        if (isMissing) {
+            numToIndexes.put(val, new HashSet<>());
+        }
+        nums.add(val);
+        numToIndexes.get(val).add(nums.size() - 1);
+        return isMissing;
+    }
+    
+    public boolean remove(int val) {
+        if (missing(val)) {
+            return false;
+        }
+        
+        // get one position and remove it
+        int position = numToIndexes.get(val).iterator().next();
+        numToIndexes.get(val).remove(position);
+        if (position < nums.size() - 1) {
+            moveLastNumToPos(position);
+        }
+        
+        nums.remove(nums.size() - 1);
+        
+        // be sure to clean up 
+        if (missing(val)) {
+            numToIndexes.remove(val);
+        }
+        return true;
+    }
+    
+    public int getRandom() {
+        int randomIndex = rand.nextInt(nums.size());
+        return nums.get(randomIndex);
+    }
+    
+    private boolean missing(int val) {
+        // the num is never inserted or it was once inserted but now has only 0 occurance
+        return !numToIndexes.containsKey(val) || numToIndexes.get(val).isEmpty();
+    }
+    
+    private void moveLastNumToPos(int pos) {
+        int lastNum = nums.get(nums.size() - 1);
+        nums.set(pos, lastNum);
+        numToIndexes.get(lastNum).remove(nums.size() - 1);
+        numToIndexes.get(lastNum).add(pos);
+    }
+}
+```
