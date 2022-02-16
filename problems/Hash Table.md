@@ -440,7 +440,7 @@ class Solution {
 }
 ```
 
-#### [LintCode 685 · First Unique Number in Data Stream](https://www.lintcode.com/problem/685/)
+#### [LintCode 685 · First Unique Number in Data Stream](https://www.lintcode.com/problem/685/) Medium
 ```java
 public class Solution {
     /**
@@ -479,7 +479,7 @@ public class Solution {
     }
 }
 ```
-#### [LintCode 960 · First Unique Number in Data Stream II](https://www.lintcode.com/problem/960/)
+#### [LintCode 960 · First Unique Number in Data Stream II](https://www.lintcode.com/problem/960/) Medium
 ```java
 public class DataStream {
     private class ListNode {
@@ -574,7 +574,7 @@ public class DataStream {
 }
 ```
 
-#### [380. Insert Delete GetRandom O(1)](https://leetcode.com/problems/insert-delete-getrandom-o1/)
+#### [380. Insert Delete GetRandom O(1)](https://leetcode.com/problems/insert-delete-getrandom-o1/) Medium
 ```java
 import java.util.Random;
 
@@ -633,7 +633,7 @@ class RandomizedSet {
     }
 }
 ```
-#### [381. Insert Delete GetRandom O(1) - Duplicates allowed](https://leetcode.com/problems/insert-delete-getrandom-o1-duplicates-allowed/)
+#### [381. Insert Delete GetRandom O(1) - Duplicates allowed](https://leetcode.com/problems/insert-delete-getrandom-o1-duplicates-allowed/) Hard
 ```java
 class RandomizedCollection {
     
@@ -697,3 +697,87 @@ class RandomizedCollection {
     }
 }
 ```
+#### [146. LRU Cache](https://leetcode.com/problems/lru-cache/) Medium
+```python
+class LinkedNode:
+    def __init__(self, key=None, value=None, next=None):
+        self.key = key
+        self.value = value
+        self.next = next
+        
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.dummy = LinkedNode()
+        self.tail = self.dummy
+        self.key_to_prev = {}
+
+    def get(self, key: int) -> int:
+        if key not in self.key_to_prev:
+            return -1
+        
+        self.move_to_tail(key)
+        return self.tail.value
+
+    def put(self, key: int, value: int) -> None:
+        # update
+        if key in self.key_to_prev:
+            self.move_to_tail(key)
+            return
+        
+        # add
+        key_node = LinkedNode(key, value)
+        self.place_on_tail(key_node)
+        
+        # remove first node if overloaded
+        if self.size() > self.capacity:
+            self.pop_head()
+        
+    def move_to_tail(self, key):
+        # previous node
+        prev = self.key_to_prev[key]
+        # key node
+        key_node = prev.next
+        
+        # key node is on the tail
+        if key_node == self.tail:
+            return
+        
+        self.link_prev_to_next(prev, key_node)
+        self.place_on_tail(key_node)
+    
+    # remove first node
+    def pop_head(self):
+        head = self.dummy.next
+        del self.key_to_prev[head.key]
+        self.link_prev_to_next(self.dummy, head)
+    
+    def size(self):
+        return len(self.key_to_prev)
+    
+    # link previous node to next node
+    def link_prev_to_next(self, prev_node, current_node):
+        next_node = current_node.next
+        prev_node.next = next_node
+        self.key_to_prev[next_node.key] = prev_node
+    
+    # place a node on tail
+    def place_on_tail(self, node):
+        self.key_to_prev[node.key] = self.tail
+        self.tail.next = node
+        self.tail = node
+```
+Ordered dict
+```java
+
+```
+
+## Heap
+Heap is a complete binary tree.
+![](https://s2.loli.net/2022/02/16/dUt4lZWLpfRXFsI.png)
+![](https://s2.loli.net/2022/02/16/xhb2lm1d7T9GLFZ.png)
+
+#### [263. Ugly Number](https://leetcode.com/problems/ugly-number/) Easy
+
+#### [264. Ugly Number II](https://leetcode.com/problems/ugly-number-ii/) Medium
+
