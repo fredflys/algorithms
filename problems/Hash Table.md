@@ -769,7 +769,40 @@ class LRUCache:
 ```
 Ordered dict
 ```java
+class LRUCache {
+    
+    Map<Integer, Integer> map = new LinkedHashMap<Integer, Integer>();
+    int cap;
+    
+    public LRUCache(int capacity) {
+        cap = capacity;
+    }
+    
+    public int get(int key) {
+        if(!map.containsKey(key)) {
+            return -1;
+        }
+        int val = map.remove(key);
+        map.put(key, val);
+        return val;
+    }
+    
+    public void put(int key, int value) {
+        // update
+        if(map.containsKey(key)) {
+            map.remove(key);
+            map.put(key, value);
+            return;
+        }
 
+        // add
+        map.put(key, value);
+        // if overloaded
+        if(map.size() > cap) {
+            map.remove(map.entrySet().iterator().next().getKey());
+        }
+    }
+}
 ```
 
 ## Heap
@@ -778,6 +811,58 @@ Heap is a complete binary tree.
 ![](https://s2.loli.net/2022/02/16/xhb2lm1d7T9GLFZ.png)
 
 #### [263. Ugly Number](https://leetcode.com/problems/ugly-number/) Easy
+```python
+class Solution:
+    def isUgly(self, n: int) -> bool:
+        if n == 0:
+            return False
+            
+        while n != 1:
+            result = self.divide(n)
+            if result == -1:
+                return False
+            n = result
+        return True
+
+    def divide(self, n):
+        factors = [2, 3, 5]
+        for f in factors:
+            if n % f == 0:
+                return n / f
+        return -1
+```
 
 #### [264. Ugly Number II](https://leetcode.com/problems/ugly-number-ii/) Medium
+Heap
+```java
+class Solution {
+    public int nthUglyNumber(int n) {
+        // nth ugly number might be a very large number, so it's better to use long
+        PriorityQueue<Long> heap = new PriorityQueue<>();
+        Set<Long> seen = new HashSet<>();
+        // initialization
+        heap.add(1L);
+        seen.add(1L);
 
+        int[] factors = new int[] {2, 3, 5};
+        long ugly = 1, newUgly;
+
+        // to get the nth number, n - 1 times are needed
+        for (int i = 0; i < n; ++i) {
+            ugly = heap.poll();
+            for (int factor: factors) {
+                newUgly = ugly * factor;
+                if (!seen.contains(newUgly)) {
+                    heap.add(newUgly);
+                    seen.add(newUgly);
+                }
+            }
+        }
+
+        return (int)ugly;
+    }
+}
+```
+DP
+```java
+```
