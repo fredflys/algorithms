@@ -864,5 +864,65 @@ class Solution {
 }
 ```
 DP
-```java
+```python
+class Solution:
+    def nthUglyNumber(self, n: int) -> int:
+        """
+        dp[0] = 1
+        dp[1[ = min(dp[0] * 2, dp[0] * 3, dp[0] * 5) = 2
+        dp[2] = min(dp[1} * 2，dp[0] * 3, dp[0] * 5) = 3
+        dp[3] = min(dp[1} * 2，dp[1] * 3, dp[0] * 5) = 4
+        dp[4] = min(dp[2} * 2，dp[1] * 3, dp[0] * 5) = 5
+
+        """
+        dp = [0] * n
+        dp[0] = 1
+        p2, p3, p5 = 0, 0, 0
+        for i in range(1, n):
+            dp[i] = min(dp[p2] * 2, dp[p3] * 3, dp[p5] * 5)
+            if dp[i] == 2 * dp[p2]:
+                p2 += 1
+            if dp[i] == 3 * dp[p3]:
+                p3 += 1
+            if dp[i] == 5 * dp[p5]:
+                p5 += 1
+        return dp[n - 1]
+```
+
+#### [973. K Closest Points to Origin](https://leetcode.com/problems/k-closest-points-to-origin/) Medium
+max heap - reversed min heap
+```python
+class Solution:
+    def kClosest(self, points: List[List[int]], k: int) -> List[List[int]]:
+        heap = []
+        results = []
+        for point in points:
+            dist = self.get_distance(point)
+            # longest distance will now be the shortest distance
+            heapq.heappush(heap, (-dist, point[0], point[1]))
+            # when lenght exceeds k, then shortest(actually the furest point) distance will be popped
+            if len(heap) > k:
+                heapq.heappop(heap)
+        while len(heap) > 0:
+            _, x, y = heapq.heappop(heap)
+            results.append([x, y])
+            
+        return results
+        
+    def get_distance(self, point):
+        return point[0] ** 2 + point[1] ** 2
+```
+#### [215. Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/) Medium
+max heap - reversed min heap
+```python
+class Solution:
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        heap = []
+        result = []
+        for num in nums:
+            heapq.heappush(heap, -num)
+        while k > 0:
+            result = -heapq.heappop(heap)
+            k -= 1
+        return result
 ```
