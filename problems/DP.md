@@ -1,3 +1,29 @@
+
+#### Background
+Recursion vs Dynamic Programming
+![](https://s2.loli.net/2022/02/27/IqKkAerxpcDJsH5.png)
+
+Scenarios
+- maxmium or minimum 
+- whether a solution exists
+- total number of solutions
+
+Problem Type
+- coordinates *
+  - dp[i][j]: solutions/max/min/is possilbe from start to end
+- prefix *
+  - dp[i] ... for the first i chars
+  - dp[i][j] ... for j parts of the first i chars
+  - dp[i][j] ... for the first 1 chars of the first string and the first j chars of the second string
+- backpack 
+  - ... for the first i items that weigh no more than j in total 
+- interval 
+  - dp[i][j] ... between i and j
+- game
+- tree
+- state compression
+
+
 #### [509. Fibonacci Number <span style="color:green">Easy</span>](https://leetcode-cn.com/problems/fibonacci-number/)
 
 ```python
@@ -217,7 +243,6 @@ class Solution(object):
 ```
 
 
-
 #### [292. Nim Game](https://leetcode.com/problems/nim-game/) Easy
 Memoization will stack over flow when dealing with DP problems with $O(n)$ time complexity.
 If time complexity and recursion depth both reaches O(n), a stack overflow error is likely to ensue. n might be a very large number, say $10^8$, and this is not allowed for recursion depth.($10^5$ is the maximum for python) But when time complexity is $O(n^2)$, say $(10^4)^2$, recursion depth is only $O(n)$, i.e. $10^4$, and this is acceptable.
@@ -251,3 +276,108 @@ class Solution(object):
     def canWinNim(self, n):
         return n % 4 > 0
 ```
+
+
+#### [62. Unique Paths](https://leetcode.com/problems/unique-paths/) Medium
+##### DP from top down
+```python
+class Solution:
+    def uniquePaths(self, m: int, n: int) -> int:
+        # possible unique paths from starting point to grid[i][j]
+        dp = [[0] * n for _ in range(m)]
+        # initialization
+        """
+        to get to the first column, there is only one possible path
+        o ...
+        o ...
+        """
+        for i in range(m):
+            dp[i][0] = 1
+        """
+        to get to the first row, there is only one possible path
+        o o o ..
+        """
+        for j in range(n):
+            dp[0][j] = 1
+        
+        """
+                           o o <- from [i -1][j]
+        from [i][j - 1] -> o * -- to get here 
+        """
+        for i in range(1, m):
+            for j in range(1, n):
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
+
+        return dp[m - 1][n - 1]
+```
+
+##### DP from bottom up
+```python
+class Solution:
+    def uniquePaths(self, m: int, n: int) -> int:
+        # possible unique paths from grid[i][j] to grid[m - 1][n - 1] (end point)
+        dp = [[0] * n for _ in range(m)]
+        # initialization
+        """
+        to reach the end, there is only one possible path for the last column
+        ... o
+        ... o
+        ... *
+        """
+        for i in range(m):
+            dp[i][n - 1] = 1
+        """
+        to reach the end, there is only one possible path for the last row
+        .....
+        .....
+        o o *
+        """
+        for j in range(n):
+            dp[m - 1][j] = 1
+        
+        """
+            to get here -- * o <- from [i][j + 1]
+        from [i + 1][j] -> o o  
+        """
+        for i in range(m - 2, -1, -1):
+            for j in range(n - 2, -1, -1):
+                dp[i][j] = dp[i][j + 1] + dp[i + 1][j]
+
+        return dp[0][0]
+```
+
+#### [63. Unique Paths II](https://leetcode-cn.com/problems/unique-paths-ii/) Medium
+
+#### [55. Jump Game](https://leetcode-cn.com/problems/jump-game/) Medium
+DP: Wheter a solution exists.
+```java
+class Solution {
+    public boolean canJump(int[] nums) {
+        // dp[i] whether nums[i] can be reached
+        boolean[] dp = new boolean[nums.length];
+        // initialzation: starting point is certainly reachable
+        dp[0] = true;
+
+        // get states for every position other than the starting point
+        for (int i = 1; i < nums.length; i++) {
+            // for a position, as long as it can be reached from any position that comes before it, mark it as reachable
+            // try every position before 
+            // example: . . . i => j .. i or . j . i or . . j i 
+            for (int j = 0; j < i; j++) {
+                // j if reachable and i can be reached from j
+                if (dp[j] && nums[j] + j >= i) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+
+        return dp[nums.length - 1];
+    }
+}
+```
+
+#### [45. Jump Game II](https://leetcode-cn.com/problems/jump-game-ii/) Medium
+
+#### [1306. Jump Game III](https://leetcode-cn.com/problems/jump-game-iii/) Medium
+
