@@ -427,8 +427,8 @@ class Solution:
         
 		"""
 		   i
-		[o,3,o,o,o]
-		     _ _ _
+		[o,2,o,o,o]
+		     _ _ 
 		"""
 		# calculdate for every position other than the starting point
         for position in range(n):
@@ -443,7 +443,28 @@ class Solution:
         return dp[n - 1]
 ```
 
-
-
 #### [1306. Jump Game III](https://leetcode-cn.com/problems/jump-game-iii/) Medium
+
+
+#### [LintCode 630 · Knight Shortest Path II](https://www.lintcode.com/problem/630/) Medium
+
+#### [LintCode 92 · Backpack](https://www.lintcode.com/problem/92/) Medium
+
+#### [LintCode 125 · Backpack II](https://www.lintcode.com/problem/125/) Medium
+
+#### [LintCode 440 · Backpack III](https://www.lintcode.com/problem/440/) Medium
+
+#### [LintCode 562 · Backpack IV](https://www.lintcode.com/problem/562/) Medium
+
+#### [LintCode 563 · Backpack V](https://www.lintcode.com/problem/563/) Medium
+
+#### [322. Coin Change](https://leetcode.com/problems/coin-change/) Medium
+
+#### [518. Coin Change 2](https://leetcode.com/problems/coin-change-2/) Medium
+
+#### [139. Word Break](https://leetcode-cn.com/problems/word-break/) Medium
+
+
+
+
 
