@@ -416,5 +416,34 @@ class Solution {
 
 #### [45. Jump Game II](https://leetcode-cn.com/problems/jump-game-ii/) Medium
 
+```python
+class Solution:
+    def jump(self, nums: List[int]) -> int:
+        # dp[i] represents the leats number of jumps to arrive at nums[i]
+        n = len(nums)
+        # initialize: since the end is reachable, the maximum jumps are n - 1
+        dp = [n for _ in nums]
+        dp[0] = 0
+        
+		"""
+		   i
+		[o,3,o,o,o]
+		     _ _ _
+		"""
+		# calculdate for every position other than the starting point
+        for position in range(n):
+            # jump from one position to nums[i] positions (included)
+            # e.g. 2 .. for index 0, jump 1 to index 1 and jump 2 to index 2
+            for jump in range(1, nums[position] + 1):
+                # out of bound
+                if position + jump >= n:
+                    return dp[n - 1]
+                dp[position + jump] = min(dp[position + jump], dp[position] + 1)
+        
+        return dp[n - 1]
+```
+
+
+
 #### [1306. Jump Game III](https://leetcode-cn.com/problems/jump-game-iii/) Medium
 
