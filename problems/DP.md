@@ -1,7 +1,7 @@
 
 #### Background
 Recursion vs Dynamic Programming
-![](https://s2.loli.net/2022/02/27/IqKkAerxpcDJsH5.png)
+<img src="https://s2.loli.net/2022/02/27/IqKkAerxpcDJsH5.png" style="zoom:50%;" />
 
 Scenarios
 - maxmium or minimum 
@@ -346,9 +346,46 @@ class Solution:
         return dp[0][0]
 ```
 
-#### [63. Unique Paths II](https://leetcode-cn.com/problems/unique-paths-ii/) Medium
+#### [63. Unique Paths II](https://leetcode.com/problems/unique-paths-ii/) Medium
 
-#### [55. Jump Game](https://leetcode-cn.com/problems/jump-game/) Medium
+```python
+class Solution:
+    def uniquePathsWithObstacles(self, obstacleGrid: List[List[int]]) -> int:
+        def blocked(i,j):
+            return obstacleGrid[i][j] > 0
+        
+        # if the starting point blocked, it is not possible to move
+        if blocked(0, 0):
+            return 0
+
+        # build 
+        m = len(obstacleGrid) # rows
+        n = len(obstacleGrid[0]) # columns
+        # dp[i][j] represents the number of unique paths to the ending point
+        dp = [[0] * n for _ in range(m)]
+
+        # initialize
+        dp[0][0] = 1
+        for i in range(1, m):
+            if blocked(i, 0):
+                break
+            dp[i][0] = 1
+        for j in range(1, n):
+            if blocked(0, j):
+                break
+            dp[0][j] = 1
+		
+        # calculate
+        for i in range(1, m):
+            for j in range(1, n):
+                if not blocked(i, j):
+                    dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
+
+        return dp[m - 1][n - 1]
+```
+
+#### [55. Jump Game](https://leetcode.com/problems/jump-game/) Medium
+
 DP: Wheter a solution exists.
 ```java
 class Solution {
