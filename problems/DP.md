@@ -443,16 +443,147 @@ class Solution:
         return dp[n - 1]
 ```
 
-#### [1306. Jump Game III](https://leetcode-cn.com/problems/jump-game-iii/) Medium
-
-
 #### [LintCode 630 · Knight Shortest Path II](https://www.lintcode.com/problem/630/) Medium
+
+Since knight is allowed to move only right, there is no circular dependency and DP can be used.
+
+```python
+class Solution:
+    """
+    @param grid: a chessboard included 0 and 1
+    @return: the shortest path
+    """
+    def shortest_path2(self, grid: List[List[bool]]) -> int:
+        # write your code here
+        # since 
+        """
+        Possible Moves
+        o x o o -2 1
+        o o x o -1 2
+        * o o o
+        o o x o 1  2
+        o x o o 2  1
+
+        Possilbe Previous Positions (all on the left)
+        o x o o -2 -1
+        x o o o -1 -2
+        o o * o
+        x o o o 1  -2
+        o x o o 2  -1
+        """
+        # since we are build dp from top down, previous positions instead of possible moves are needed
+        previous_positions = [(-2, -1), (-1, -2), (1, -2), (2, -1)]
+
+        m = len(grid)
+        n = len(grid[0])
+        # dp[i][j] represents the least moves to arrive at grid[i][j]
+        dp = [[m * n] * n for _ in range(m)]
+        dp[0][0] = 0   
+		
+        """
+        any previous position is on the left, so all the points in the first column will not be reached
+        iterating from the frist row will mark the first row as non-reachable, which is wrong
+        
+        dp when Iterating from the first row (wrong):
+        o o o o
+        o o 1 o
+        o 1 o o
+        dp when Iterating from the first column:
+        o o 2 o
+        o o 1 o
+        o 1 o 3
+        """
+        for j in range(n):
+            for i in range(m):
+                if grid[i][j] > 0:
+                    continue
+                for _x, _y in previous_positions:
+                    x = i + _x
+                    y = j + _y
+                    if 0 <= x < m and 0 <= y < n:
+                        dp[i][j] = min(dp[i][j], dp[x][y] + 1)
+
+        if dp[m - 1][n - 1] == m * n:
+            return -1 
+        
+        return dp[m - 1][n - 1]
+```
 
 #### [LintCode 92 · Backpack](https://www.lintcode.com/problem/92/) Medium
 
+An item is either put in or left outside.
+
+```python
+class Solution:
+    def back_pack(self, backpack_size: int, weights) -> int:
+        # dp[i][j] represents the max weight, which is less than or equal to j (a possible backpack size), of the first i items
+        count = len(weights)
+        dp = [[0] * (backpack_size + 1) for _ in range(count + 1)]
+        # if backpack is strong enough to hold the number i item
+
+        for i in range(1, count + 1):
+            for j in range(0, backpack_size + 1):
+                # if backpack is large enough to hold the i (index is i - 1) item
+                if j >= weights[i - 1]:
+                    # either not putting in the i itme in the same backpack: dp[i - 1][j]
+                    # or putting in the i item by reserving the space for the i item and putting in the i item
+                    dp[i][j] = max(dp[i - 1][j], dp[i -1][j - weights[i - 1]] + weights[i - 1])
+                    continue
+
+                # the i item is too heavy to fit into the backpack
+                dp[i][j] = dp[i - 1][j]
+
+        return dp[count][backpack_size]
+```
+
 #### [LintCode 125 · Backpack II](https://www.lintcode.com/problem/125/) Medium
 
+Now every item has a different value.
+
+The solution is almost identical to that to LintCode 92. Just modify one line by adding up values instead of weights
+
+```python
+class Solution:
+    def back_pack_i_i(self, backpack_size: int, weights: List[int], values: List[int]) -> int:
+        # dp[i][j] represents the max value of the some of the first i items put in a j-size bag
+        count = len(weights)
+        dp = [[0] * (backpack_size + 1) for _ in range(count + 1)]
+
+        for i in range(1, count + 1):
+            for j in range(0, backpack_size + 1):
+                if j >= weights[i - 1]:
+                    # this line is the only difference
+                    # adding up values instead of weights
+                    dp[i][j] = max(dp[i - 1][j], dp[i -1][j - weights[i - 1]] + values[i - 1])
+                    continue
+
+                dp[i][j] = dp[i - 1][j]
+
+        return dp[count][backpack_size]
+```
+
 #### [LintCode 440 · Backpack III](https://www.lintcode.com/problem/440/) Medium
+
+Items can be put in multiple times.
+
+$ dp[i][j] = max(dp[i - 1][j], dp[i -1][j - repeat * weights[i - 1]] + repeat * values[i - 1])$  $0 <= repeat <= j /A[i - 1]$
+
+```python
+class Solution:
+    def back_pack_i_i_i(self, weights, values, backpack_size: int) -> int:
+        # dp[i][j] represents the max value of the some of the first i items put in a j-size bag
+        count = len(weights)
+        dp = [[0] * (backpack_size + 1) for _ in range(count + 1)]
+
+        for i in range(1, count + 1):
+            for j in range(0, backpack_size + 1):
+                if j >= weights[i - 1]:
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - weights[i - 1]] + values[i - 1])
+                    continue
+                    
+                dp[i][j] = dp[i - 1][j]
+        return dp[count][backpack_size]
+```
 
 #### [LintCode 562 · Backpack IV](https://www.lintcode.com/problem/562/) Medium
 
@@ -464,7 +595,9 @@ class Solution:
 
 #### [139. Word Break](https://leetcode-cn.com/problems/word-break/) Medium
 
+#### [2035. Partition Array Into Two Arrays to Minimize Sum Difference ](https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/)Hard
 
+#### [877. Stone Game ](https://leetcode.com/problems/stone-game/)Medium
 
 
 
