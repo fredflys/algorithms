@@ -511,7 +511,7 @@ class Solution:
 
 #### [LintCode 92 · Backpack](https://www.lintcode.com/problem/92/) Medium
 
-An item is either put in or left outside.
+0-1 Knapsack: An item is either put in or left outside.
 
 ```python
 class Solution:
@@ -538,7 +538,7 @@ class Solution:
 
 #### [LintCode 125 · Backpack II](https://www.lintcode.com/problem/125/) Medium
 
-Now every item has a different value.
+0-1 Knapsack with values: Now every item has a different value.
 
 The solution is almost identical to that to LintCode 92. Just modify one line by adding up values instead of weights
 
@@ -564,9 +564,11 @@ class Solution:
 
 #### [LintCode 440 · Backpack III](https://www.lintcode.com/problem/440/) Medium
 
-Items can be put in multiple times.
+multiple Knapsack: to get the max value of items that can be put in a backpack. Items can be put in multiple times.
 
 $ dp[i][j] = max(dp[i - 1][j], dp[i -1][j - repeat * weights[i - 1]] + repeat * values[i - 1])$  $0 <= repeat <= j /A[i - 1]$
+
+![image-20220304171040811](C:\Users\v-xuyifei\AppData\Roaming\Typora\typora-user-images\image-20220304171040811.png)
 
 ```python
 class Solution:
@@ -578,6 +580,8 @@ class Solution:
         for i in range(1, count + 1):
             for j in range(0, backpack_size + 1):
                 if j >= weights[i - 1]:
+                    # 1. not putting in the i-th item 
+                    # 2. putting in the i-th item and still try to reserve the space for another i-th item
                     dp[i][j] = max(dp[i - 1][j], dp[i][j - weights[i - 1]] + values[i - 1])
                     continue
                     
@@ -586,6 +590,44 @@ class Solution:
 ```
 
 #### [LintCode 562 · Backpack IV](https://www.lintcode.com/problem/562/) Medium
+
+Complete Knapsack: number of ways to put in several items to reach a certain sum
+
+```
+[2,3,6,7]
+7
+dp:
+[1, 0, 0, 0, 0, 0, 0, 0], 
+[1, 0, 1, 0, 1, 0, 1, 0], 
+[1, 0, 1, 1, 1, 1, 2, 1], 
+[1, 0, 1, 1, 1, 1, 3, 1], 
+[1, 0, 1, 1, 1, 1, 3, 2]
+```
+
+```python
+class Solution:
+    def backPackIV(self, weights, size):
+        count = len(weights)
+        # dp[i][j] represents the number of ways to reach sum j choosing from the first i-th items
+        dp = [[0] * (size + 1) for _ in range(count + 1)]
+        # ther is one way to get sum of 0
+        dp[0][0] = 1
+        
+        for i in range(1, count + 1):
+            dp[i][0] = 1
+            for j in range(1, size + 1):
+                # # if the i-th item can be put in
+                if weights[i - 1] <= j:
+                    # either without the i-th item pr with 
+                    dp[i][j] = dp[i - 1][j] + dp[i][j - weights[i - 1]]
+                    continue
+
+                dp[i][j] = dp[i - 1][j]
+
+        return dp[count][size]
+```
+
+
 
 #### [LintCode 563 · Backpack V](https://www.lintcode.com/problem/563/) Medium
 
