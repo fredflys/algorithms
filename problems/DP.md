@@ -568,7 +568,7 @@ multiple Knapsack: to get the max value of items that can be put in a backpack. 
 
 $ dp[i][j] = max(dp[i - 1][j], dp[i -1][j - repeat * weights[i - 1]] + repeat * values[i - 1])$  $0 <= repeat <= j /A[i - 1]$
 
-![image-20220304171040811](C:\Users\v-xuyifei\AppData\Roaming\Typora\typora-user-images\image-20220304171040811.png)
+<img src="https://s2.loli.net/2022/03/07/8BKZI15bkQOWUlj.png" alt="image-20220304171040811.png" style="zoom:50%;" /> 
 
 ```python
 class Solution:
@@ -596,12 +596,13 @@ Complete Knapsack: number of ways to put in several items to reach a certain sum
 ```
 [2,3,6,7]
 7
-dp:
-[1, 0, 0, 0, 0, 0, 0, 0], 
-[1, 0, 1, 0, 1, 0, 1, 0], 
-[1, 0, 1, 1, 1, 1, 2, 1], 
-[1, 0, 1, 1, 1, 1, 3, 1], 
-[1, 0, 1, 1, 1, 1, 3, 2]
+dp:  
+               0  1  2  3  4  5  6  7
+first 0 item  [1, 0, 0, 0, 0, 0, 0, 0], 
+first 1 items [1, 0, 1, 0, 1, 0, 1, 0], 
+first 2 items [1, 0, 1, 1, 1, 1, 2, 1], 
+first 3 items [1, 0, 1, 1, 1, 1, 3, 1], 
+first 4 items [1, 0, 1, 1, 1, 1, 3, 2]
 ```
 
 ```python
@@ -610,7 +611,7 @@ class Solution:
         count = len(weights)
         # dp[i][j] represents the number of ways to reach sum j choosing from the first i-th items
         dp = [[0] * (size + 1) for _ in range(count + 1)]
-        # ther is one way to get sum of 0
+        # there is one way to get sum of 0
         dp[0][0] = 1
         
         for i in range(1, count + 1):
@@ -627,15 +628,86 @@ class Solution:
         return dp[count][size]
 ```
 
-
-
 #### [LintCode 563 · Backpack V](https://www.lintcode.com/problem/563/) Medium
 
 #### [322. Coin Change](https://leetcode.com/problems/coin-change/) Medium
 
 #### [518. Coin Change 2](https://leetcode.com/problems/coin-change-2/) Medium
 
-#### [139. Word Break](https://leetcode-cn.com/problems/word-break/) Medium
+#### [139. Word Break](https://leetcode.com/problems/word-break/) Medium
+
+DFS + Memoization 
+
+Recursion
+
+```python
+class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        if not s:
+            return True
+
+        if not wordDict:
+            return False
+
+        max_length = len(max(wordDict, key = len))
+        return self.dfs(s, 0, max_length, wordDict, {})
+
+    def dfs(self, s, index, max_length, wordDict, memo):
+        if index in memo:
+            return memo[index]
+
+    
+        length = len(s)
+        if index == len(s):
+            return True
+
+        
+        for end in range(index + 1, length + 1):
+            # end will only get bigger in the next iteration
+            # so it is safe to stop the iteration
+            if (end - index) > max_length:
+                break
+            
+            partial_word = s[index : end]
+
+            # give it another shot when the word is not found
+            if partial_word not in wordDict:
+                continue
+
+            if self.dfs(s, end, max_length, wordDict, memo):
+                return True
+
+        memo[index] = False
+        return False
+```
+
+Iteration
+
+```python
+class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        length = len(s)
+        return self.canBreak(0, length, s, wordDict, {})
+
+    def canBreak(self, index, length, s, wordDict, memo):
+        if index == length:
+            return True
+
+        if index in memo:
+            return memo[index]
+
+        for end in range(index + 1, length + 1):
+            partial = s[index : end]
+            
+            if partial not in wordDict:
+                continue
+            
+            if self.canBreak(end, length, s, wordDict, memo):
+                memo[index] = True
+                return True
+        memo[index] = False
+        return False
+```
 
 #### [2035. Partition Array Into Two Arrays to Minimize Sum Difference ](https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/)Hard
 
