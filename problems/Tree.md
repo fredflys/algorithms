@@ -91,7 +91,7 @@ class Solution:
         path.pop()
 ```
 
-Divideand conquer 
+Divide and conquer 
 
 Whole tree paths = left tree paths + right tree paths
 
@@ -142,7 +142,7 @@ class Solution:
 
 #### [173. Binary Search Tree Iterator](https://leetcode-cn.com/problems/binary-search-tree-iterator/) <span style="color:orange">Medium</span>
 
-Divide and Conquer, BST, Iterate
+Divide and Conquer, BST, Iteration
 
 Without recursion, user has to use a stack to keep running paths and control backtracking. 
 
@@ -194,7 +194,7 @@ class BSTIterator {
 }
 ```
 
-A simpler implementaion: only unused nodes are put in the stack
+A simpler implementation: only unused nodes are put in the stack
 
 ```python
 class BSTIterator:

@@ -1,14 +1,19 @@
 
 #### Background
-Recursion vs Dynamic Programming
+##### Recursion vs Dynamic Programming
+
 <img src="https://s2.loli.net/2022/02/27/IqKkAerxpcDJsH5.png" style="zoom:50%;" />
 
-Scenarios
+##### Scenarios
+
 - maxmium or minimum 
 - whether a solution exists
 - total number of solutions
 
-Problem Type
+##### Problem Type
+
+![image-20220308180358329.png](https://s2.loli.net/2022/03/08/Uzl8Net4DaI9qsQ.png) 
+
 - coordinates *
   - dp[i][j]: solutions/max/min/is possilbe from start to end
 - prefix *
@@ -22,6 +27,17 @@ Problem Type
 - game
 - tree
 - state compression
+
+##### Memoization Search (From DFS to DP)
+
+- Like cahce in system design
+- Applies to pure function
+
+##### Dynamic Programming
+
+- A problems's solution rely on its sub-problems' solutions
+- reduce subproblems that overlap (no overlap for divide-and-conquer)
+- unlike the greedy algorithm, which always maxmizes its interests for every step, dp will trade a short-term loss for long-term interests 
 
 
 #### [509. Fibonacci Number <span style="color:green">Easy</span>](https://leetcode-cn.com/problems/fibonacci-number/)
@@ -75,14 +91,344 @@ class Solution {
 }
 ```
 
-Memoization Search (From DFS to DP)
-- Like cahce in system design
-- Applies to pure function
+#### [139. Word Break](https://leetcode.com/problems/word-break/) Medium
 
-Dynamic Programming
-- A problems's solution rely on its sub-problems' solutions
-- reduce subproblems that overlap (no overlap for divide-and-conquer)
-- unlike the greedy algorithm, which always maxmizes its interests for every step, dp will trade a short-term loss for long-term interests 
+<img src="https://s2.loli.net/2022/03/08/V1vpmzxlMD48tid.png" alt="image-20220308151400417.png" style="zoom:50%;" /> 
+
+"leetcode" breakable for ["leet", "code"] ? 
+
+- **l** is in word dictionary and the remaining sub-string breakable
+- or **le** is in word dictionary and the remaining sub-string breakable
+- .......
+
+<img src="https://s2.loli.net/2022/03/08/1xnkIKOjmG84sM5.png" alt="image-20220308111425087.png" style="zoom:50%;" /> 
+
+##### DFS + Memoization 
+
+Recursion
+
+```python
+class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        if not s:
+            return True
+
+        if not wordDict:
+            return False
+
+        max_length = len(max(wordDict, key = len))
+        return self.dfs(s, 0, max_length, wordDict, {})
+
+    def dfs(self, s, index, max_length, wordDict, memo):
+        if index in memo:
+            return memo[index]
+
+    
+        length = len(s)
+        if index == len(s):
+            return True
+
+        
+        for end in range(index + 1, length + 1):
+            # end will only get bigger in the next iteration
+            # so it is safe to stop the iteration
+            if (end - index) > max_length:
+                break
+            
+            partial_word = s[index : end]
+
+            # give it another shot when the word is not found
+            if partial_word not in wordDict:
+                continue
+
+            if self.dfs(s, end, max_length, wordDict, memo):
+                return True
+
+        memo[index] = False
+        return False
+```
+
+Iteration
+
+```python
+class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        length = len(s)
+        return self.canBreak(0, length, s, wordDict, {})
+
+    def canBreak(self, index, length, s, wordDict, memo):
+        if index == length:
+            return True
+
+        if index in memo:
+            return memo[index]
+
+        for end in range(index + 1, length + 1):
+            partial = s[index : end]
+            
+            if partial not in wordDict:
+                continue
+            
+            if self.canBreak(end, length, s, wordDict, memo):
+                memo[index] = True
+                return True
+            
+        memo[index] = False
+        return False
+```
+
+##### BFS 
+
+<img src="https://s2.loli.net/2022/03/08/mnfqRBsltovkZPI.png" alt="image-20220308113200235.png" style="zoom:50%;" /> 
+
+```python
+class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        length = len(s)
+        visited = []
+        queue = collections.deque([])
+        queue.append(0)
+        while len(queue) > 0:
+            start = queue.popleft()
+            if start in visited:
+                continue
+            visited.append(start)
+            
+            for end in range(start + 1, length + 1):
+                partial_word = s[start : end]
+                
+                if partial_word not in wordDict:
+                    continue
+                if end == length:
+                    return True
+                
+                queue.append(end)
+       	return False
+```
+
+##### DP
+
+Divide into sub-problems
+
+- the the sub-string starting from 0 and ending at i is breakable
+- the remaining part (from i to end + 1) is in word dict
+
+<img src="https://s2.loli.net/2022/03/08/TZ52rJVtLYumWMD.png" alt="image-20220308124812728.png" style="zoom:50%;" /> 
+
+```python
+class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        length = len(s)
+        # dp[i] represents if the sub-string starting from 0 and ending at i (not included) is breakable
+        dp = [False for _ in range(length + 1)]
+        dp[0] = True
+        
+        """
+              e
+        l e e t c o d e 
+            s
+          s
+        s
+        """
+        # from bottom up
+        for end in range(1, length + 1):
+            for start in range(end - 1, -1, -1):
+                partial = s[start : end]
+                # the latter part is in word dictionary and the former part is breakable
+                if partial in wordDict and dp[start]:
+                    dp[end] = True
+                    break
+        
+        return dp[length]
+```
+
+#### [140. Word Break II](https://leetcode-cn.com/problems/word-break-ii/) Hard
+
+Use DP to quicken the process
+
+```python
+class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+        length = len(s)
+        dp = [False for _ in range(length + 1)]
+        dp[0] = True
+        
+        for end in range(1, length + 1):
+            for start in range(end - 1, -1, -1):
+                partial = s[start : end]
+                if partial in wordDict and dp[start]:
+                    dp[end] = True
+                    break
+        
+        results = []
+        if dp[length]:
+            path = collections.deque([])
+            self.dfs(wordDict, dp, path, results, s, length)
+        return results
+    
+    def dfs(self, wordDict, dp, path, results, s, length):
+        # break is finished when breaking from the start
+        if length == 0:
+            results.append(" ".join(path))
+        """
+                i     
+        l e e t c o d e
+        <dp[4]> {  p  }
+        
+        i
+        l e e t
+  dp[0] {  p  }
+        
+        """
+        # break from right to left
+        for	i in range(length - 1, -1 , -1):
+            partial = s[i : length]
+            if dp[i] and partial in wordDict:
+                path.appendleft(partial)
+                self.dfs(wordDict, dp, path, results, s, i)
+                path.popleft()
+```
+
+#### [131. Palindrome Partitioning](https://leetcode-cn.com/problems/palindrome-partitioning/) Medium
+
+#### [LintCode 829 · Word Pattern II](https://www.lintcode.com/problem/829/) Medium
+
+DFS
+
+Memoization cannot be applied because when parameters remain the same (pattern, target) the output is not stable since mapping is constantly changing.
+
+![image-20220308161320667.png](https://s2.loli.net/2022/03/08/6jO7oHAsau9Y4Xh.png)
+
+```python
+class Solution:
+    """
+    @param pattern: a string,denote pattern string
+    @param target: a string, denote matching string
+    @return: a boolean
+    """
+    def word_pattern_match(self, pattern: str, target: str) -> bool:
+        return self.is_match(pattern, target, {})
+
+    def is_match(self, pattern, target, mapping):
+        # nothing in pattern for match
+        if not pattern:
+            # nothing in target for match
+            return not target
+
+        char = pattern[0]
+
+        if char in mapping:
+            word = mapping[char]
+            if not target.startswith(word):
+                return False
+            return self.is_match(pattern[1:], target[len(word):], mapping)
+
+        # if char has not a mapping in target string
+        # every prefix is a possible mapping
+        for i in range(len(target)):
+            word = target[:i + 1]
+
+            # char -> word must be a unique pair
+            # e.g. if x is mapped to ab, y cannot be mapped to ab
+            if word in mapping.values():
+                continue
+
+            mapping[char] = word
+            if self.is_match(pattern[1:], target[i + 1:], mapping):
+                return True
+            del mapping[char]
+        
+        return False
+```
+
+#### [44. Wildcard Matching](https://leetcode-cn.com/problems/wildcard-matching/) Hard
+
+DFS + Memoization
+
+![image-20220308172953248.png](https://s2.loli.net/2022/03/08/LgxyNMuz5fvj3km.png)
+
+Pruning
+
+![image-20220308172801752.png](https://s2.loli.net/2022/03/08/wUvbmiknyWLq4rp.png)
+
+```java
+class Solution {
+    public boolean isMatch(String s, String p) {
+        boolean[][] memo = new boolean[s.length()][p.length()];
+        boolean[][] visited = new boolean[s.length()][p.length()];
+        return dfs(s, 0, p, 0, memo, visited);
+    }
+
+    public boolean dfs(String source, int sIndex, String pattern, int pIndex, boolean[][] memo, boolean[][] visited) {
+        // nothing in pattern for match
+        if (pIndex == pattern.length()) {
+            // nothing in source for match
+            return sIndex == source.length();
+        }
+
+        // nothing in source for match
+        if (sIndex == source.length()) {
+            // pattern is not exhuasted and all left is stars, which can match empty string
+            // this is considered matched
+            return allLeftStars(pattern, pIndex);
+        }
+
+        if (visited[sIndex][pIndex]) {
+            return memo[sIndex][pIndex];
+        }
+
+        char sChar = source.charAt(sIndex);
+        char pChar = pattern.charAt(pIndex);
+        boolean matched;
+        
+        if (pChar != '*') {
+            matched = charMatch(sChar, pChar) && dfs(source, sIndex + 1, pattern, pIndex + 1, memo, visited);
+        } else {
+            // instead of matching (matching will move sIndex and pIndex at the same time), * eats a char from source string
+            matched = dfs(source, sIndex + 1, pattern, pIndex, memo, visited) 
+			// * matches empty string
+            || dfs(source, sIndex, pattern, pIndex + 1, memo, visited);
+        }
+
+        visited[sIndex][pIndex] = true;
+        memo[sIndex][pIndex] = matched;
+        return matched;
+
+
+        // * can match zero or many chars
+        // for (int i = sIndex; i <= source.length(); i++) {
+        //     // match zero to the whole source string
+        //     if (dfs(source, i, pattern, pIndex + 1)) {
+        //         return true;
+        //     }
+        // }
+        // return false;
+
+        /*
+        pruning by removing the iteration
+        */
+        // return dfs(source, sIndex + 1, pattern, pIndex) || dfs(source, sIndex, pattern, pIndex + 1)
+        
+    }
+
+    public boolean allLeftStars(String pattern, int pIndex) {
+        for (int i = pIndex; i < pattern.length(); i++){
+            if (pattern.charAt(i) != '*') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean charMatch(char sChar, char pChar) {
+        // ? can match any char
+        return sChar == pChar || pChar == '?';
+    }
+}
+```
+
+#### [10. Regular Expression Matching ](https://leetcode-cn.com/problems/regular-expression-matching/)Hard
 
 #### [120. Triangle](https://leetcode.com/problems/triangle/) Medium
 
@@ -95,6 +441,7 @@ e.g. routes
 2 3
 45 56
 Time Complexity: $2^n$
+
 ```python
 class Solution(object):
     def minimumTotal(self, triangle):
@@ -634,84 +981,12 @@ class Solution:
 
 #### [518. Coin Change 2](https://leetcode.com/problems/coin-change-2/) Medium
 
-#### [139. Word Break](https://leetcode.com/problems/word-break/) Medium
-
-DFS + Memoization 
-
-Recursion
-
-```python
-class Solution:
-    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
-        if not s:
-            return True
-
-        if not wordDict:
-            return False
-
-        max_length = len(max(wordDict, key = len))
-        return self.dfs(s, 0, max_length, wordDict, {})
-
-    def dfs(self, s, index, max_length, wordDict, memo):
-        if index in memo:
-            return memo[index]
-
-    
-        length = len(s)
-        if index == len(s):
-            return True
-
-        
-        for end in range(index + 1, length + 1):
-            # end will only get bigger in the next iteration
-            # so it is safe to stop the iteration
-            if (end - index) > max_length:
-                break
-            
-            partial_word = s[index : end]
-
-            # give it another shot when the word is not found
-            if partial_word not in wordDict:
-                continue
-
-            if self.dfs(s, end, max_length, wordDict, memo):
-                return True
-
-        memo[index] = False
-        return False
-```
-
-Iteration
-
-```python
-class Solution:
-    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
-        length = len(s)
-        return self.canBreak(0, length, s, wordDict, {})
-
-    def canBreak(self, index, length, s, wordDict, memo):
-        if index == length:
-            return True
-
-        if index in memo:
-            return memo[index]
-
-        for end in range(index + 1, length + 1):
-            partial = s[index : end]
-            
-            if partial not in wordDict:
-                continue
-            
-            if self.canBreak(end, length, s, wordDict, memo):
-                memo[index] = True
-                return True
-        memo[index] = False
-        return False
-```
-
 #### [2035. Partition Array Into Two Arrays to Minimize Sum Difference ](https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/)Hard
 
 #### [877. Stone Game ](https://leetcode.com/problems/stone-game/)Medium
+
+#### 
+
 
 
 
