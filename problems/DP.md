@@ -1,14 +1,20 @@
+### Background
 
-#### Background
 ##### Recursion vs Dynamic Programming
 
-<img src="https://s2.loli.net/2022/02/27/IqKkAerxpcDJsH5.png" style="zoom:50%;" />
+<img src="https://s2.loli.net/2022/02/27/IqKkAerxpcDJsH5.png" style="zoom:50%;" /> 
 
 ##### Scenarios
 
+![image-20220308181206142.png](https://s2.loli.net/2022/03/08/PciAqnNtrZERa25.png) 
+
 - maxmium or minimum 
 - whether a solution exists
-- total number of solutions
+- total number of solutions 
+
+##### Limits
+
+ ![image-20220308181344404.png](https://s2.loli.net/2022/03/08/VLnXrkaxDcKusjP.png)
 
 ##### Problem Type
 
@@ -38,6 +44,10 @@
 - A problems's solution rely on its sub-problems' solutions
 - reduce subproblems that overlap (no overlap for divide-and-conquer)
 - unlike the greedy algorithm, which always maxmizes its interests for every step, dp will trade a short-term loss for long-term interests 
+
+
+
+### Memoization
 
 
 #### [509. Fibonacci Number <span style="color:green">Easy</span>](https://leetcode-cn.com/problems/fibonacci-number/)
@@ -430,6 +440,10 @@ class Solution {
 
 #### [10. Regular Expression Matching ](https://leetcode-cn.com/problems/regular-expression-matching/)Hard
 
+
+
+### Dynamic Programming
+
 #### [120. Triangle](https://leetcode.com/problems/triangle/) Medium
 
 ##### DFS
@@ -527,6 +541,7 @@ class Solution(object):
         # dp[i][j] represents the shortest distance frm (i, j) to the bottom level
         dp = [[0] * (i + 1) for i in range(n)]
 
+        # initialization
         """
         [0]
         [0,0]
@@ -573,7 +588,6 @@ class Solution(object):
         # intialization: points on the left-most and right-most side because down right move (i + 1, j + 1) is not possible 
         dp[0][0] = triangle[0][0]    
         for i in range(1, n):
-            # 
             dp[i][0] = triangle[i][0] + dp[i - 1][0]
             dp[i][i] = triangle[i][i] + dp[i - 1][i - 1]
         
@@ -589,8 +603,33 @@ class Solution(object):
         return min(dp[n - 1])  
 ```
 
+##### Use Rolling array to save space
+
+<img src="https://s2.loli.net/2022/03/10/uYbITGasvP5jSyK.png" alt="image-20220310162627894.png" style="zoom:50%;" /> 
+
+Modulo operation (% 2) will roll the array. Space complexity is reduced from $O(n^2)$ to $O(n)$.
+
+```python
+class Solution(object):
+    def minimumTotal(self, triangle):
+        n = len(triangle)
+
+        # [[0] * n ] * 2 is not the right way to build the matrix
+        dp = [[0] * n, [0] * n] 
+        dp[0][0] = triangle[0][0]    
+
+        for i in range(1, n):
+            dp[i % 2][0] = triangle[i][0] + dp[(i - 1) % 2][0]
+            dp[i % 2][i] = triangle[i][i] + dp[(i - 1) % 2][i - 1]
+            for j in range(1, i):
+                dp[i % 2][j] = triangle[i][j] + min(dp[(i - 1) % 2][j - 1], dp[(i - 1) % 2][j])
+        return min(dp[(n - 1) % 2])     
+```
+
+
 
 #### [292. Nim Game](https://leetcode.com/problems/nim-game/) Easy
+
 Memoization will stack over flow when dealing with DP problems with $O(n)$ time complexity.
 If time complexity and recursion depth both reaches O(n), a stack overflow error is likely to ensue. n might be a very large number, say $10^8$, and this is not allowed for recursion depth.($10^5$ is the maximum for python) But when time complexity is $O(n^2)$, say $(10^4)^2$, recursion depth is only $O(n)$, i.e. $10^4$, and this is acceptable.
 ```pyhton
@@ -985,7 +1024,6 @@ class Solution:
 
 #### [877. Stone Game ](https://leetcode.com/problems/stone-game/)Medium
 
-#### 
 
 
 
