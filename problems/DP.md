@@ -605,6 +605,8 @@ class Solution(object):
 
 ##### Use Rolling array to save space
 
+<img src="https://s2.loli.net/2022/03/14/AF5r8OT974aBdSJ.png" alt="image-20220314171240868.png" style="zoom:50%;" /> 
+
 <img src="https://s2.loli.net/2022/03/10/uYbITGasvP5jSyK.png" alt="image-20220310162627894.png" style="zoom:50%;" /> 
 
 Modulo operation (% 2) will roll the array. Space complexity is reduced from $O(n^2)$ to $O(n)$.
@@ -632,7 +634,8 @@ class Solution(object):
 
 Memoization will stack over flow when dealing with DP problems with $O(n)$ time complexity.
 If time complexity and recursion depth both reaches O(n), a stack overflow error is likely to ensue. n might be a very large number, say $10^8$, and this is not allowed for recursion depth.($10^5$ is the maximum for python) But when time complexity is $O(n^2)$, say $(10^4)^2$, recursion depth is only $O(n)$, i.e. $10^4$, and this is acceptable.
-```pyhton
+
+```python
 class Solution(object):
     def canWinNim(self, n):
         return self.memo_search(n, {})
@@ -895,6 +898,30 @@ class Solution:
         return dp[m - 1][n - 1]
 ```
 
+#### [300. Longest Increasing Subsequence ]([Longest Increasing Subsequence - LeetCode](https://leetcode.com/problems/longest-increasing-subsequence/))**Medium**
+
+DP: from left to right, best solution
+
+```python
+class Solution:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        length = len(nums)
+        # dp[i] represents the longest subsequence ending at i and starting from 0
+        dp = [1 for _ in nums]
+        for i in range(1, length):
+            for j in range(i):
+                if nums[j] < nums[i]:
+                    dp[i] = max(dp[i], dp[j] + 1)
+                    
+        # the longest subsequence may not end at length - 1
+        # so instead of returning dp[length - 1], return max(dp)
+        return max(dp)
+```
+
+#### [329. Longest Increasing Path in a Matrix](https://leetcode.com/problems/longest-increasing-path-in-a-matrix/) **Hard**
+
+
+
 #### [LintCode 92 · Backpack](https://www.lintcode.com/problem/92/) Medium
 
 0-1 Knapsack: An item is either put in or left outside.
@@ -1024,7 +1051,7 @@ class Solution:
 
 #### [877. Stone Game ](https://leetcode.com/problems/stone-game/)Medium
 
-
+#### 
 
 
 
