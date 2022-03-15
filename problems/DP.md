@@ -920,6 +920,65 @@ class Solution:
 
 #### [329. Longest Increasing Path in a Matrix](https://leetcode.com/problems/longest-increasing-path-in-a-matrix/) **Hard**
 
+DP: from smaller numbers to big numbers (instead of matrix direction), best solution
+
+```python
+class Solution:
+    def longestIncreasingPath(self, matrix: List[List[int]]) -> int:
+        def is_valid(x,  y):
+            return 0 <= x < m and 0 <= y < n
+        
+        def get_max(dp):
+            result = 0
+            for i in range(m):
+                row_max = max(dp[i])
+                if result < row_max:
+                    result = row_max
+            return result
+        
+        m, n = len(matrix), len(matrix[0])
+        # dp[i][j] represents the longest increasing sequence ending at matrix[i][j]
+        dp = [[1 for _ in range(n)] for _ in range(m)]
+        
+        # reorder matrix in increasing order for iteration
+        points = []
+        for i in range(m):
+            for j in range(n):
+                # value, position (row, column)
+                points.append((matrix[i][j], i, j))
+
+        """
+        Why bothering to sort? The problem is about increasing sequence, i.e. from
+        small numbers to big numbers. This indicates a direction. Starting from the
+        smallest number will ensure that samller numbers are already updated for dp
+        before iterating to larger numbers. If iteration starts from left to right
+        and top to bottom, the first row in dp will be updated to 2 at most, which
+        is not right.
+        """
+		# sorting based on the first element of the tuple
+        points.sort()
+        
+        # move in four possible directions
+        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        for i in range(len(points)):
+            x = points[i][1]
+            y = points[i][2]
+            
+            for _x, _y in directions:
+                new_x, new_y = x + _x, y + _y
+                # skip if the possible point is not in matrix
+                if not is_valid(new_x, new_y):
+                    continue
+                
+                # update
+                if matrix[new_x][new_y] < matrix[x][y]:
+                    dp[x][y] = max(dp[x][y], dp[new_x][new_y] + 1)
+        
+        return get_max(dp)
+```
+
+#### [368. Largest Divisible Subset](https://leetcode.com/problems/largest-divisible-subset/) Medium
+
 
 
 #### [LintCode 92 · Backpack](https://www.lintcode.com/problem/92/) Medium
