@@ -668,6 +668,7 @@ class Solution(object):
 
 
 #### [62. Unique Paths](https://leetcode.com/problems/unique-paths/) Medium
+coordinates, DP
 ##### DP from top down
 ```python
 class Solution:
@@ -736,7 +737,7 @@ class Solution:
 ```
 
 #### [63. Unique Paths II](https://leetcode.com/problems/unique-paths-ii/) Medium
-
+coordinates, DP
 ```python
 class Solution:
     def uniquePathsWithObstacles(self, obstacleGrid: List[List[int]]) -> int:
@@ -774,7 +775,7 @@ class Solution:
 ```
 
 #### [55. Jump Game](https://leetcode.com/problems/jump-game/) Medium
-
+coordinates
 DP: Wheter a solution exists.
 ```java
 class Solution {
@@ -804,7 +805,7 @@ class Solution {
 ```
 
 #### [45. Jump Game II](https://leetcode-cn.com/problems/jump-game-ii/) Medium
-
+coordinates, DP
 ```python
 class Solution:
     def jump(self, nums: List[int]) -> int:
@@ -833,7 +834,7 @@ class Solution:
 ```
 
 #### [LintCode 630 · Knight Shortest Path II](https://www.lintcode.com/problem/630/) Medium
-
+coordinates
 Since knight is allowed to move only right, there is no circular dependency and DP can be used.
 
 ```python
@@ -899,7 +900,7 @@ class Solution:
 ```
 
 #### [300. Longest Increasing Subsequence ]([Longest Increasing Subsequence - LeetCode](https://leetcode.com/problems/longest-increasing-subsequence/))**Medium**
-
+coordinates
 DP: from left to right, best solution
 
 ```python
@@ -919,7 +920,7 @@ class Solution:
 ```
 
 #### [329. Longest Increasing Path in a Matrix](https://leetcode.com/problems/longest-increasing-path-in-a-matrix/) **Hard**
-
+coordinates
 DP: from smaller numbers to big numbers (instead of matrix direction), best solution
 
 ```python
@@ -978,7 +979,52 @@ class Solution:
 ```
 
 #### [368. Largest Divisible Subset](https://leetcode.com/problems/largest-divisible-subset/) Medium
+coordinates, DP
+```python
+class Solution:
+    def largestDivisibleSubset(self, nums: List[int]) -> List[int]:
+        # check if a can be divided by b or vice versa
+        def divisible(a, b):
+            return a % b == 0 or b % a == 0
+        
+        # build the answer from prev
+        def build_result(dp, prev, nums):
+            result = []
+            # the largetst divisible set may not end at the tail
+            # so get the ending index
+            last = dp.index(max(dp))
+            cursor = last
+            while cursor > -1:
+                result.insert(0, nums[cursor])
+                cursor = prev[cursor]
+            return result
 
+        nums.sort()
+        n = len(nums)
+        # dp[i] represents the size of the largest divisible set ending at nums[i]
+        dp = [1 for _ in nums]
+        # since a specific set is what is nedded, instead of a max length, a prev set is used to store the previous indices  
+        # prev[i] represens the index of the previous divisible number to nums[i] 
+        prev = [-1 for _ in nums]
+
+        for i in range(1, n):
+            for j in range(i):
+                if not divisible(nums[i], nums[j]):
+                    continue
+                
+                """
+                if the largest number can be divided by all the other numbers and the other numbers cannot
+                be divided by each other, prev will be wrongly updated.
+                e.g.
+                nums is [2,4,5,20] and prev is updated whenever num[i] and nums[j] are divisible
+                prev would be updated to [-1, 0, 1, 2]， which should be [-1, 0, -1, 1]
+                """
+                if dp[j] + 1 > dp[i]:
+                    dp[i] = max(dp[i], dp[j] + 1)
+                    prev[i] = j
+        result = build_result(dp, prev, nums)
+        return result
+```
 
 
 #### [LintCode 92 · Backpack](https://www.lintcode.com/problem/92/) Medium
