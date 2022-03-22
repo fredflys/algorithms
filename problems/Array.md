@@ -1,8 +1,9 @@
 ## Array
+
 - two pointers
 - sliding window
 - binary search
-  
+- DFS
 #### 26 Remove Duplicates <span style="color:green">Easy</span>
 
 two-pointers: 不要想着从原数组内移除重复的元素，而是从空数组开始，一点点将不重复的元素添加进去。快指针用来遍历原数组，慢指针则负责追踪结果数组的最后一个位置。
@@ -230,6 +231,8 @@ class Solution:
         return result
 ```
 
+### Sliding window
+
 #### [209 Minimum Size Subarray Sum](https://leetcode.com/problems/minimum-size-subarray-sum/) <span style="color:orange">Medium</span>
 
 brute force
@@ -456,6 +459,7 @@ class Solution {
 #### [567. Permutation in String](https://leetcode-cn.com/problems/permutation-in-string/) <span style="color:orange">Medium</span>
 fixed-size sliding window / two pointers
 When it comes to permutaion, only chars' count matters and how they are arranged doesn't matter. Also, a sub-string is required, thus comes the sliding window.
+
 ```python
 class Solution:
     def checkInclusion(self, pattern: str, text: str) -> bool:
@@ -811,8 +815,10 @@ class Solution {
     }
 }
 ```
+### Binary search
+
 Keywords for binary search: 
-array, target, sorted, equal or close to target, O(NlogN)
+array, target, sorted, equal or close to target, $O(nlogn)$
 
 #### [34. Find First and Last Position of Element in Sorted Array](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/) <span style="color:orange">Medium</span>
 
@@ -1138,6 +1144,19 @@ class Solution:
     def cut_by(self, L, length):
         return sum(l // length for l in L)
 ```
+
+
+
+#### [74. Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/) Medium
+
+binary search on a sorted input 
+
+- find a row: binary search on first column to get the largest point smaller than the target
+- find target in the row: binary search  on the row
+
+This approach involves two binary searches, which is not so efficient. The matrix can also be treated as a one-dimensional array so that only one binary search is needed.
+
+### DFS
 
 #### [78. Subsets](https://leetcode.com/problems/subsets/) <span style="color:orange">Medium</span> 
 
