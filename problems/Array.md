@@ -1145,8 +1145,6 @@ class Solution:
         return sum(l // length for l in L)
 ```
 
-
-
 #### [74. Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/) Medium
 
 binary search on a sorted input 
@@ -1154,7 +1152,71 @@ binary search on a sorted input
 - find a row: binary search on first column to get the largest point smaller than the target
 - find target in the row: binary search  on the row
 
-This approach involves two binary searches, which is not so efficient. The matrix can also be treated as a one-dimensional array so that only one binary search is needed.
+This approach involves two binary searches, which is not so efficient. The matrix can also be treated as a one-dimensional sorted array so that only one binary search is needed. 
+
+```python
+class Solution:
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        # get a matrix value from an index 
+        def get_value(index):
+            """
+            0 [0][0] 1 [0][1] 2 [0][2]
+            3 [1 * 3][+0] 4 [1 * 3][+1] 5 [1 * 3][+2]
+            Think of the matrix (m * n) as an m*n-long array. Row number is index divided by columns
+            and column number is its modulo.
+            """
+            x = index // n
+            y = index % n
+            return matrix[x][y]
+        
+        m = len(matrix)
+        n = len(matrix[0])
+        
+        start = 0
+        end = m * n - 1
+        while start + 1 < end:
+            mid = (start + end) // 2
+            mid_num = get_value(mid)
+            if target < mid_num:
+                end = mid
+            else:
+                start = mid
+                
+        if target == get_value(start):
+            return True
+        if target == get_value(end):
+            return True
+```
+
+#### [240. Search a 2D Matrix II](https://leetcode.com/problems/search-a-2d-matrix-ii/) Medium
+
+Binary search cannot be used here because the matrix is not strictly ascending. But it is known that each row and each column is ascending. The solution may start from here. Take a look at corner points.
+
+$matrix[0][0]$ is the smallest point and $matrix[m - 1][n - 1]$ the largest. Both points is of no help to exclude certain points when searching for a target. For $matrix[m - 1][0]$, all the points that come before it in the column are smaller and all the points that come after it in the row are bigger. And vice versa for $matrix[0][n - 1]$. This knowledge will come to handy for excluding certain points. Say $target < matrix[m - 1][0]$ or $target > matrix[m - 1][0]$ , it's safe to conclude that target is not in $matrix[m - 1]$ or not in $matrix[0..m-1][0]$. This way a row or column is excluded and the search range is narrowed down.
+
+```python
+class Solution:
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        m = len(matrix)
+        n = len(matrix[0])
+        
+        # start from left bottom corner
+        x = m - 1
+        y = 0
+        # x will only decrease and y will only increase
+        while x >= 0 and y < n:
+            if target > matrix[x][y]:
+                # the leftmost column is excluded
+                y += 1
+            elif target < matrix[x][y]:
+                # the bottom row is excluded
+                x -= 1
+            else:
+                return True
+        return False
+```
+
+
 
 ### DFS
 
