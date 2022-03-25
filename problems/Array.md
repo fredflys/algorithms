@@ -1216,6 +1216,132 @@ class Solution:
         return False
 ```
 
+#### [600 · Smallest Rectangle Enclosing Black Pixels - LintCode ](https://www.lintcode.com/problem/600/)Hard
+
+leetcode: [302. Smallest Rectangle Enclosing Black Pixels'](https://leetcode.com/problems/smallest-rectangle-enclosing-black-pixels/)
+
+binary search on unsorted input
+
+A rectangle that can enclose all black pixels must cover leftmost/rightmost/top/bottom black pixels. Binary search is used to find these dotted pixels.
+
+```python
+class Solution:
+    def min_area(self, image: List[List[str]], x: int, y: int) -> int:
+        def is_column_dotted(column_num):
+            return '1' in [row[column_num] for row in image]
+        
+        def is_row_dotted(row_num):
+            return '1' in image[row_num]
+
+        # searching for the first one means the left part is prefered
+        def search_first(start, end, is_dotted):
+            while start + 1 < end:
+                mid = (start + end) // 2
+                print(start, mid, end)
+                if is_dotted(mid):
+                    # try to find the first, search in the left part
+                    end = mid
+                else:
+                    # no better option, have to search in the right part
+                    start = mid
+            
+            # still try left part as the first option
+            if is_dotted(start):
+                return start
+            return end
+
+        def search_last(start, end, is_dotted):
+            while start + 1 < end:
+                mid = (start + end) // 2
+                if is_dotted(mid):
+                    # try to find the first, search in the left part
+                    start = mid
+                else:
+                    # no better option, have to search in the right part
+                    end = mid
+           
+            # still try left part as the first option
+            if is_dotted(end):
+                return end
+            return start
+
+        if not image or not image[0]:
+            return 0
+
+        m = len(image)
+        n = len(image[0])
+        
+        # the leftmost point must not be on the right to the given point
+        # search from 0-th column to y-th column
+        left = search_first(0, y, is_column_dotted)
+        # the top point must
+        top = search_first(0, x, is_row_dotted)
+        right = search_last(y, n - 1, is_column_dotted)
+        bottom = search_last(x, m - 1, is_row_dotted)
+        print(top, bottom, left, right)
+
+        return (right - left + 1) * (bottom - top + 1)
+```
+
+#### [437 · Copy Books - LintCode](https://www.lintcode.com/problem/437/) Medium
+
+binary search on an answer set
+
+There is a turning point in the answer set: less than certain time copying cannot be finished for k people and more than a certain point coping can be completed for k people in whatever manners. The fact that such a turning point exists makes binary search a possible choice.
+
+```python
+class Solution:
+    def copy_books(self, pages: List[int], k: int) -> int:
+        def get_copiers_copying_within_limit(pages, time_limit):
+            page_per_minute = 1
+            copiers = 0
+            # for forst book initialization
+            copy_time_spent = time_limit
+            
+            for page in pages:
+                time_needed = page * page_per_minute
+                # not sufficient time
+                if time_needed > time_limit:
+                    return len(pages) + 1
+
+                # copy time already spent plus the time for copying current book is more than time limit
+                # this is when a new copier is needed
+                if copy_time_spent + time_needed > time_limit:
+                    # add a copier
+                    copiers += 1
+                    # the copier hasn't started copying yet
+                    copy_time_spent = 0
+
+                # current copier is able to handle
+                copy_time_spent += time_needed
+
+            return copiers
+		
+        # early exit for abnormal input
+        if not pages:
+            return 0
+        if k <= 0:
+            return 0
+        
+        # define the range of the answer set
+        # bottom: there is a copier for every book
+        start = max(pages)
+        # top: suppose a copier copies all the books
+        end = sum(pages)
+
+        while start + 1 < end:
+            mid = (start + end) // 2
+            if get_copiers_copying_within_limit(pages, mid) <= k:
+                end = mid
+            else:
+                start = mid
+
+        if get_copiers_copying_within_limit(pages, start) <= k:
+            return start
+        return end
+
+```
+
 
 
 ### DFS
