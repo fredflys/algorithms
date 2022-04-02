@@ -136,7 +136,7 @@ class Solution:
         n = len(s)
         left = 0
         result = 0
-        
+
         for left in range(n):
             # "1" instead of 1
             if s[left] != '1':
@@ -148,10 +148,10 @@ class Solution:
               l l   l l l
             0 1 1 0 1 1 1
                   r       r
-              2 1   3 2 1 
+              2 1   3 2 1
             """
             result += right - left
-            
+
         return result
 ```
 2. get substring lengths of 1s and then calculate the combinations of every substring and add them up
@@ -169,8 +169,8 @@ class Solution:
                 # a simple continue will cause infinite loop here
                 left += 1
                 continue
-            
-            # the start of a substring is detected 
+
+            # the start of a substring is detected
             right = left + 1
             # find the right boundary of current substring
             while right < n and s[right] == "1":
@@ -178,16 +178,16 @@ class Solution:
 
             subs.append(right - left)
             left = right
-        
+
         result = 0
         for s in subs:
             result += s * (s + 1) / 2 % 1000000007
-        
+
         return int(result)
 ```
 #### [424. Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/) Medium
 two pointers
-longest repeating -> least replacements  -> replace infrequent letters with the most frequent letter 
+longest repeating -> least replacements  -> replace infrequent letters with the most frequent letter
 ```python
 class Solution:
     def characterReplacement(self, s: str, k: int) -> int:
@@ -208,12 +208,12 @@ class Solution:
             while right < n and right - left - max_frequency <= k:
                 freqs[convert(s[right])] += 1
                 max_frequency = max(max_frequency, freqs[convert(s[right])])
-                
+
                 # right pointer is moved after the update
                 # [left, right)
                 # move right pointer and never go back
                 right += 1
-            
+
             # requires more than k replacements
             if right - left - max_frequency > k:
                 # sub from the previous position
@@ -224,10 +224,10 @@ class Solution:
                 # [left, right)
                 result = max(result, right - left)
 
-            # update because left pointer is moved 
+            # update because left pointer is moved
             freqs[convert(s[left])] -= 1
             max_frequency = max(freqs)
-            
+
         return result
 ```
 
@@ -300,7 +300,7 @@ class Solution:
         while(right < len(nums)):
             # enlarge the window to the right
             sum += nums[right]
-            # now the subarray between left and right has a sum that meets the condition 
+            # now the subarray between left and right has a sum that meets the condition
             while(sum >= target):
                 # compare with the old result and get a new result
                 result = min(result, right - left + 1)
@@ -310,7 +310,7 @@ class Solution:
                 left += 1
             # drive the outer iteration
             right += 1
-            
+
         return result if result != len(nums) + 1 else 0
 ```
 
@@ -463,10 +463,10 @@ When it comes to permutaion, only chars' count matters and how they are arranged
 ```python
 class Solution:
     def checkInclusion(self, pattern: str, text: str) -> bool:
-        left = 0 
+        left = 0
         right = len(pattern) - 1
         pattern_counter = collections.Counter(pattern)
-        # window size is pattern length minus 1 now 
+        # window size is pattern length minus 1 now
         window_counter = collections.Counter(text[0: right])
         while right < len(text):
             # for every iteration, the char on the right end is first added to the window
@@ -474,7 +474,7 @@ class Solution:
             if pattern_counter == window_counter:
                 return True
             window_counter[text[left]] -= 1
-            # if count is zero, remove it from the counter 
+            # if count is zero, remove it from the counter
             if window_counter[text[left]] == 0:
                 del window_counter[text[left]]
             left += 1
@@ -537,7 +537,7 @@ class Solution:
         count_zeros = 0
         # use an array to save the number of zeros between ones
         # example: [0,0,1,0,1,0,0,0] zeros_between_ones: [3, 2, 4]
-        zeros_between_ones = []	
+        zeros_between_ones = []
 
         for num in nums:
             if(num == 0):
@@ -582,7 +582,7 @@ class Solution:
 
 #### [992. Subarrays with K Different Integers](https://leetcode-cn.com/problems/subarrays-with-k-different-integers/) <span style="color:red">Hard</span>
 
-**恰好**由k个不同整数组成的子序列个数 = **最多**由k个不同整数组成的子序列个数 - **最多**由k - 1个不同整数组成的子序列个数   
+**恰好**由k个不同整数组成的子序列个数 = **最多**由k个不同整数组成的子序列个数 - **最多**由k - 1个不同整数组成的子序列个数
 
 ```python
 class Solution:
@@ -590,7 +590,7 @@ class Solution:
         return self.distinctAtMost(nums, k) - self.distinctAtMost(nums, k - 1)
     def distinctAtMost(self, nums, k):
         length = len(nums)
-        # to track how many different integers are in the window 
+        # to track how many different integers are in the window
         distinct = 0
         # to count frequency of every different integer in the window
         counter = collections.Counter()
@@ -601,17 +601,17 @@ class Solution:
             # right points to a number that has not been seen in the window
             if counter[nums[right]] == 0:
                 distinct += 1
-            # right moves and 
+            # right moves and
             counter[nums[right]] += 1
             while distinct > k:
                 counter[nums[left]] -= 1
                 # left points to a number that disappears from the window now
-                if counter[nums[left]] == 0: 
+                if counter[nums[left]] == 0:
                     distinct -= 1;
                 # left moves forwar
                 left += 1
             result += right - left + 1
-            
+
             # right moves forward
             right += 1
         return result
@@ -628,7 +628,7 @@ class Solution:
         prefix_sums = [0]
         # assume the result is the largest posssible number plus one
         result = len(nums) + 1;
-        # 
+        #
         left_candidates = collections.deque()
         for index, num in enumerate(nums):
             prefix_sums.append(prefix_sums[index] + num)
@@ -664,7 +664,7 @@ class Solution {
 		int end = n * n;
 		while(current <= end){
 			// from top left to top right
-			for(int i = left; i <= right; i++) matrix[top][i] = current++; 
+			for(int i = left; i <= right; i++) matrix[top][i] = current++;
 			top++;
 			// from right top to right bottom
 			for(int i = top; i <= bottom; i++) matrix[i][right] = current++;
@@ -693,15 +693,15 @@ class Solution {
     public int[] sortArray(int[] nums) {
         if(nums.length <= 1)
             return nums;
-        
+
 		quicksort(nums, 0, nums.length - 1);
         return nums;
     }
-    
+
     private void quicksort(int[] nums, int start, int end){
         if(start >= end)
             return;
-        
+
         int left = start, right = end;
         int pivot = nums[(start + end) / 2];
         // make sure that left and right do not stop at the same position to avoid stack over flow error
@@ -720,7 +720,7 @@ class Solution {
                 right--;
             }
         }
-        
+
         quicksort(nums, start, right);
         quicksort(nums, left, end);
     }
@@ -735,21 +735,21 @@ public class Solution {
         mergeSort(nums, 0, nums.length - 1, sorted);
         return sorted;
     }
-    
+
     public void mergeSort(int[] nums, int start, int end, int[] temp) {
         if(start >= end)
             return;
-        
+
         int mid = (start + end) / 2;
-        
+
         mergeSort(nums, start, mid, temp);
         mergeSort(nums, mid + 1, end, temp);
         merge(nums, start, mid, end, temp);
     }
-    
+
     public void merge(int[] nums, int start, int mid, int end, int[] temp) {
         int left = start, right = mid + 1, tempIndex = left;
-        
+
         while (left <= mid && right <= end) {
         	if(nums[left] < nums[right]) {
                 temp[tempIndex++] = nums[left++];
@@ -757,12 +757,12 @@ public class Solution {
                 temp[tempIndex++] = nums[right++];
             }
         }
-        
+
         while (left <= mid)
             temp[tempIndex++] = nums[left++];
         while (right <= end)
         	temp[tempIndex++] = nums[right++];
-        
+
         for (int i = start; i <= end; i++)
             nums[i] = temp[i];
     }
@@ -793,7 +793,7 @@ class Solution {
             nums1[index++] = temp[left++];
         while(right < n)
             nums1[index++] = nums2[right++];
- 
+
     }
 }
 ```
@@ -803,7 +803,7 @@ class Solution {
 class Solution {
     public void merge(int[] nums1, int m, int[] nums2, int n) {
         int index = nums1.length;
-        
+
         while(n > 0) {
             if (m > 0 && nums1[m - 1] > nums2[n - 1]) {
                 nums1[--index] = nums1[--m];
@@ -817,7 +817,7 @@ class Solution {
 ```
 ### Binary search
 
-Keywords for binary search: 
+Keywords for binary search:
 array, target, sorted, equal or close to target, $O(nlogn)$
 
 #### [34. Find First and Last Position of Element in Sorted Array](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/) <span style="color:orange">Medium</span>
@@ -829,7 +829,7 @@ class Solution:
     def searchRange(self, nums, target):
         if not nums:
             return [-1, -1]
-        
+
         def binary_search_left(nums, target):
             left, right = 0, len(nums) - 1
             while left < right:
@@ -839,7 +839,7 @@ class Solution:
                 else:
                     right = mid
             return left if nums[left] == target else -1
-        
+
         def binary_search_right(nums, target):
             left, right = 0, len(nums) - 1
             while left < right:
@@ -849,7 +849,7 @@ class Solution:
                 else:
                     left = mid
             return left if nums[left] == target else -1
-        
+
         return [binary_search_left(nums, target), binary_search_right(nums, target)]
  ```
 
@@ -900,7 +900,7 @@ class Solution:
     def findClosestElements(self, nums: List[int], k: int, target: int) -> List[int]:
         right = self.findUpperClosest(nums, target)
         left = right - 1
-        
+
         results = []
         for _ in range(k):
             if self.isLeftCloser(nums, target, left, right):
@@ -909,9 +909,9 @@ class Solution:
             else:
                 results.append(nums[right])
                 right += 1
-        
+
         return sorted(results)
-    
+
     # binary search template code
     def findUpperClosest(self, nums, target):
         start, end = 0, len(nums) - 1
@@ -921,27 +921,27 @@ class Solution:
                 end = mid
             else:
                 start = mid
-        
+
         if nums[start] >= target:
             return start
         if nums[end] >= target:
             return end
-        
+
         return len(nums)
-    
+
     def isLeftCloser(self, nums, target, left, right):
         if left < 0:
             return False
 
         if right >= len(nums):
             return True
-        
+
         return abs(target - nums[left]) <= abs(target - nums[right])
 ```
 
 #### [852. Peak Index in a Mountain Array](https://leetcode-cn.com/problems/peak-index-in-a-mountain-array/) <span style="color:green">Easy</span>
 
-<img src="https://s2.loli.net/2021/12/30/nJgIpRw2Ld3kN9V.png" alt="image-20211230224558606" style="zoom:33%;" /> 
+<img src="https://s2.loli.net/2021/12/30/nJgIpRw2Ld3kN9V.png" alt="image-20211230224558606" style="zoom:33%;" />
 
 XXXYYYY  Binary search is used to find the turning point.
 
@@ -950,7 +950,7 @@ class Solution {
     public int peakIndexInMountainArray(int[] nums) {
         if(nums == null || nums.length == 0)
             return -1;
-        
+
         int start = 0, end = nums.length - 1;
         while(start + 1 < end){
             int mid = start + (end - start) / 2;
@@ -961,7 +961,7 @@ class Solution {
                 start = mid;
             }
         }
-        
+
         if(nums[start] > nums[end])
             return start;
         return end;
@@ -980,7 +980,7 @@ class Solution:
     def findMin(self, nums: List[int]) -> int:
         if not nums:
             return -1
-        
+
         start, end = 0, len(nums) - 1
         while start + 1 < end:
             mid = (start + end) // 2
@@ -1034,7 +1034,7 @@ class Solution:
                 end = mid
             else:
                 start = mid
-            
+
         if nums[start] == target:
             return start
         if nums[end] == target:
@@ -1050,7 +1050,7 @@ class Solution:
     def search(self, nums: List[int], target: int) -> int:
         if not nums:
             return -1
-        
+
         start, end = 0 , len(nums) - 1
         while start + 1 < end:
             mid = (start + end) // 2
@@ -1064,12 +1064,12 @@ class Solution:
                     start = mid
                 else:
                     end = mid
-        
+
         if nums[start] == target:
             return start
         if nums[end] == target:
             return end
-        
+
         return -1
 ```
 
@@ -1131,14 +1131,14 @@ class Solution:
 
         if end < 1:
             return 0
-        
+
         while start + 1 < end:
             mid = (start + end) // 2
             if self.cut_by(L, mid) >= k:
                 start = mid
             else:
                 end = mid
-        
+
         return end if self.cut_by(L, end) >= k else start
 
     def cut_by(self, L, length):
@@ -1147,17 +1147,17 @@ class Solution:
 
 #### [74. Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/) Medium
 
-binary search on a sorted input 
+binary search on a sorted input
 
 - find a row: binary search on first column to get the largest point smaller than the target
 - find target in the row: binary search  on the row
 
-This approach involves two binary searches, which is not so efficient. The matrix can also be treated as a one-dimensional sorted array so that only one binary search is needed. 
+This approach involves two binary searches, which is not so efficient. The matrix can also be treated as a one-dimensional sorted array so that only one binary search is needed.
 
 ```python
 class Solution:
     def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
-        # get a matrix value from an index 
+        # get a matrix value from an index
         def get_value(index):
             """
             0 [0][0] 1 [0][1] 2 [0][2]
@@ -1168,10 +1168,10 @@ class Solution:
             x = index // n
             y = index % n
             return matrix[x][y]
-        
+
         m = len(matrix)
         n = len(matrix[0])
-        
+
         start = 0
         end = m * n - 1
         while start + 1 < end:
@@ -1181,7 +1181,7 @@ class Solution:
                 end = mid
             else:
                 start = mid
-                
+
         if target == get_value(start):
             return True
         if target == get_value(end):
@@ -1199,7 +1199,7 @@ class Solution:
     def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
         m = len(matrix)
         n = len(matrix[0])
-        
+
         # start from left bottom corner
         x = m - 1
         y = 0
@@ -1229,7 +1229,7 @@ class Solution:
     def min_area(self, image: List[List[str]], x: int, y: int) -> int:
         def is_column_dotted(column_num):
             return '1' in [row[column_num] for row in image]
-        
+
         def is_row_dotted(row_num):
             return '1' in image[row_num]
 
@@ -1244,7 +1244,7 @@ class Solution:
                 else:
                     # no better option, have to search in the right part
                     start = mid
-            
+
             # still try left part as the first option
             if is_dotted(start):
                 return start
@@ -1259,7 +1259,7 @@ class Solution:
                 else:
                     # no better option, have to search in the right part
                     end = mid
-           
+
             # still try left part as the first option
             if is_dotted(end):
                 return end
@@ -1270,7 +1270,7 @@ class Solution:
 
         m = len(image)
         n = len(image[0])
-        
+
         # the leftmost point must not be on the right to the given point
         # search from 0-th column to y-th column
         left = search_first(0, y, is_column_dotted)
@@ -1297,7 +1297,7 @@ class Solution:
             copiers = 0
             # for forst book initialization
             copy_time_spent = time_limit
-            
+
             for page in pages:
                 time_needed = page * page_per_minute
                 # not sufficient time
@@ -1316,13 +1316,13 @@ class Solution:
                 copy_time_spent += time_needed
 
             return copiers
-		
+
         # early exit for abnormal input
         if not pages:
             return 0
         if k <= 0:
             return 0
-        
+
         # define the range of the answer set
         # bottom: there is a copier for every book
         start = max(pages)
@@ -1342,13 +1342,11 @@ class Solution:
 
 ```
 
-
-
 ### DFS
 
-#### [78. Subsets](https://leetcode.com/problems/subsets/) <span style="color:orange">Medium</span> 
+#### [78. Subsets](https://leetcode.com/problems/subsets/) <span style="color:orange">Medium</span>
 
-Combinatorial Search Problem -> DFS. 
+Combinatorial Search Problem -> DFS.
 
 Every element either exist in a subset or does not exist in a subset and in total there are $2^n$ combinations.
 
@@ -1370,7 +1368,7 @@ class Solution {
         dfs(nums, 0, new ArrayList<Integer>(), results);
         return results;
     }
-    
+
     // current index, current subset, final results
     private void dfs(int[] nums, int index, List<Integer> subset, List<List<Integer>> results) {
         // stops when index if out of scope and a subset is found
@@ -1379,12 +1377,12 @@ class Solution {
             // stops
             return;
         }
-        
+
         // any element is either added or not added
         // element at index is added
         subset.add(nums[index]);
         dfs(nums, index + 1, subset, results);
-        
+
         // element at index is not added
         // backtrack
         subset.remove(subset.size() - 1);
@@ -1413,9 +1411,9 @@ class Solution {
         dfs(nums, 0, new ArrayList<Integer>(), results);
         return results;
     }
-    
+
     private void dfs(int[] nums, int startIndex, List<Integer> subset, List<List<Integer>> results) {
-		// use iteration to contorl the flow and end 
+		// use iteration to contorl the flow and end
         // so there is no need to place a stop case here
         // for every subset, simply add it to the results
         results.add(new ArrayList<Integer>(subset));
@@ -1432,7 +1430,7 @@ class Solution {
 
 #### [90. Subsets II  ](https://leetcode.com/problems/subsets-ii/)<span style="color:orange">Medium</span>
 
-Combinatorial Search Probelm --> DFS while removing duplicates along the way 
+Combinatorial Search Probelm --> DFS while removing duplicates along the way
 
 Keep in mind that getting all possibilites and then remoing duplicates is too high in time complexity. (Consider the test case: [1, 1, 1, 1, 1])
 
@@ -1446,13 +1444,13 @@ class Solution {
         dfs(nums, 0, new ArrayList<Integer>(), results);
         return results;
     }
-    
+
     private void dfs(int[] nums, int startIndex, List<Integer> subset, List<List<Integer>> results) {
         results.add(new ArrayList<Integer>(subset));
         for (int i = startIndex; i < nums.length; i++) {
             // skip if a duplicate is encountered
             if(i > 0 && nums[i] == nums[i - 1] && i != startIndex) {
-               continue; 
+               continue;
             }
 			subset.add(nums[i]);
             dfs(nums, i + 1, subset, results);
@@ -1481,7 +1479,7 @@ class Solution {
         dfs(nums, visited, new ArrayList<>(), results);
         return results;
     }
-    
+
     private void dfs(int[] nums, boolean[] visited, List<Integer> subset, List<List<Integer>> results) {
     	// deeper and deeper until all elements are in the subset
         // add to the results only when all elements are contained
@@ -1490,13 +1488,13 @@ class Solution {
             results.add(new ArrayList<Integer>(subset));
             return;
         }
-        
-        // for every level all elements are iterated so start from 0 
+
+        // for every level all elements are iterated so start from 0
         for (int i = 0; i < nums.length; i++) {
             if (visited[i]) {
-            	continue;    
+            	continue;
             }
-            
+
             subset.add(nums[i]);
             visited[i] = true;
             dfs(nums, visited, subset, results);
@@ -1540,7 +1538,7 @@ public class Solution {
     }
 }
 ```
-#### [39. Combination Sum](https://leetcode.com/problems/combination-sum/) <span style="color:orange">Medium</span> 
+#### [39. Combination Sum](https://leetcode.com/problems/combination-sum/) <span style="color:orange">Medium</span>
 Combination DFS
 ```python
 class Solution:
@@ -1554,7 +1552,7 @@ class Solution:
     def dfs(self, index, remaining_target, candidates, combination, combinations):
         if remaining_target == 0:
             return combinations.append(list(combination))
-        
+
         for i in range(index, len(candidates)):
             if remaining_target < candidates[i]:
                 break
@@ -1564,3 +1562,108 @@ class Solution:
             combination.pop()
 ```
 
+### Other
+
+Algorithms that has time complexity better than linear, i.e. less than $O(n)$
+
+#### [4. Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/) Hard
+recursive, something like a binary search in terms of perspective
+
+Think from the perspective of time complexity. A better solution than a linear one would be a logrithmatic one. Since there are two sorted arrays, the searching range can be narrowed by half if search can be down in two arrays at the same time by seaching k/2-th number in both arrays.
+```java
+public class Solution {
+    public double findMedianSortedArrays(int A[], int B[]) {
+        int n = A.length + B.length;
+
+        if (n % 2 == 0) {
+            // get average of two middle numbers
+            return (
+                // middle left
+                findKth(A, 0, B, 0, n / 2) +
+                // middle right
+                findKth(A, 0, B, 0, n / 2 + 1)
+            ) / 2.0;
+        }
+
+        return findKth(A, 0, B, 0, n / 2 + 1);
+    }
+
+    // find kth number of two sorted array
+    // a is the search starting point in A and so is b in B
+    public static int findKth(int[] A, int a,
+                              int[] B, int b,
+                              int k){
+        // starting point is not in A, then the first k numbers must be in B
+        if (a >= A.length) {
+            return B[b + k - 1];
+        }
+        // starting point is not in B, then the first k numbers must be in A
+        if (b >= B.length) {
+            return A[a + k - 1];
+        }
+        // trying to find the first number? either the first element of A or that of B
+        if (k == 1) {
+            return Math.min(A[a], B[b]);
+        }
+
+        // get the k/2-th number in A and B
+        int halfKthOfA = a + k / 2 - 1 < A.length
+            ? A[a + k / 2 - 1]
+            : Integer.MAX_VALUE;
+        int halfKthOfB = b + k / 2 - 1 < B.length
+            ? B[b + k / 2 - 1]
+            : Integer.MAX_VALUE;
+
+        if (halfKthOfA < halfKthOfB) {
+            // k-th number is not in the first k/2 part of A starting from a
+            return findKth(A, a + k / 2, B, b, k - k / 2);
+        } else {
+            // k-th number is not in the first k/2 part of B starting from b
+            return findKth(A, a, B, b + k / 2, k - k / 2);
+        }
+    }
+}
+```
+```python
+class Solution:
+    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
+        length = len(nums1) + len(nums2)
+        if length % 2 == 1:
+            return self.findKth(nums1, 0, nums2, 0, length // 2 + 1)
+
+        middle_left = self.findKth(nums1, 0, nums2, 0, length // 2)
+        middle_right = self.findKth(nums1, 0, nums2, 0, length // 2 + 1)
+        return (middle_left + middle_right) / 2
+
+    def findKth(self, A, a, B, b, k):
+        # A start is out, all k numbers are in B
+        if a >= len(A):
+            return B[b + k - 1]
+        # B start is out, all k numbers are in A
+        if b >= len(B):
+            return A[a + k - 1]
+        # first number is either the first of A or the first of B
+        if k == 1:
+            return min(A[a], B[b])
+
+        """
+        What if k/2 > len(A) ?
+        k/2-th number might exist in A, because if k/2-th exists in first k/2 elements of B, A does not have enough elements to contain the other k/2-th half
+                 k/2
+        A . . .
+        B . . . . . . . . .
+        """
+        A_key = math.inf
+        B_key = math.inf
+        if a + (k // 2) <= len(A):
+            A_key = A[a + k // 2 - 1]
+        if b + (k // 2) <= len(B):
+            B_key = B[b + k // 2 - 1]
+
+
+        if A_key < B_key:
+            # k/2 numbers are removed by searching
+            return self.findKth(A, a + k // 2, B, b, k - k // 2)
+        return self.findKth(A, a, B, b + k // 2,  k - k // 2)
+```
+#### [315. Count of Smaller Numbers After Self](https://leetcode.com/problems/count-of-smaller-numbers-after-self/) Hard
