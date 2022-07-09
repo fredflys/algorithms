@@ -1391,6 +1391,65 @@ class Solution {
 }
 ```
 
+BFS 1
+```java
+class Solution {
+    public List<List<Integer>> subsets(int[] nums) {
+        if (nums == null) {
+            return new ArrayList<>();
+        }
+        
+        List<List<Integer>> queue = new ArrayList<>();
+        int index = 0;
+        
+        // to avoid add the same number repetitively
+        Arrays.sort(nums);
+        // initialize: start from empty subset
+        queue.add(new ArrayList<Integer>());
+        while (index < queue.size()) {
+            List<Integer> subset = queue.get(index++);
+            for (int i = 0; i < nums.length; i++) {
+                if (subset.size() != 0 && nums[i] <= subset.get(subset.size() - 1)) {
+                    continue;
+                }
+
+                // add every element as individual subset
+                // then make every subset longer
+                // []. [1], [2], [3], [1,2] ...
+                List<Integer> newSubset = new ArrayList<>(subset);
+                newSubset.add(nums[i]);
+                queue.add(newSubset);
+            }
+        }
+        return queue;
+    }
+}
+```
+BFS 2
+[] | [1] | [2] [1,2] | [3] [1,3] [2,3] [1,2,3]
+```java
+class Solution {
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> candidates = new ArrayList<>();
+        // initialize: empty subset
+        candidates.add(new LinkedList<>());
+        Arrays.sort(nums);
+
+        for (int num: nums) {
+            int size = candidates.size();
+            for (int i = 0; i < size; i++) {
+                List<Integer> subset = new ArrayList<>(candidates.get(i));
+                // there is no replicates in candidates
+                subset.add(num);
+                candidates.add(subset);
+            }
+        }
+        return candidates;
+    }
+}
+```
+
+
 A more general solution: Any subset starts with nums[0] .. nums[n - 1]. Since every subset is ascending, there is no need to go back, i.e. we are not gettting all the permutations here.
 
 ​									[ ]
@@ -1562,6 +1621,245 @@ class Solution:
             combination.pop()
 ```
 
+#### [51. N-Queens](https://leetcode.com/problems/n-queens/) Hard
+DFS, search tree
+```python
+class Solution:
+    def solveNQueens(self, n):
+        # entry
+        results = []
+        # try column places in every row, starting from an empty board
+        self.search(n, [], results)
+        return results
+    
+    # hom many queens (n) are placed at which columns one by one (queen_columns)
+    # answers are collected into results (results)
+    def search(self, n, queen_columns, results):
+        queen_row = len(queen_columns)
+        # exit: there is a queen in all rows now
+        if queen_row == n:
+            results.append(self.draw_board(queen_columns))
+            return
+        
+        # try every column in the current row
+        for queen_column in range(n):
+            # contradiction exists if a queen is placed in the current column
+            if not self.is_valid(queen_columns, queen_row, queen_column):
+                continue
+            queen_columns.append(queen_column)
+            self.search(n, queen_columns, results)
+            # backtrack
+            queen_columns.pop() 
+        
+        
+    def is_valid(self, queen_columns, new_queen_row, new_queen_col):
+        # check column
+        if new_queen_col in queen_columns:
+            return False
+        
+        # check diagonal
+        for queen_row, queen_col in enumerate(queen_columns):
+            # from top left to bottom right: increasing in row number and column number
+            if queen_row - queen_col == new_queen_row - new_queen_col:
+                return False
+            # from bottom left to top right: decreasing in row number and increasing in column number
+            if queen_row + queen_col == new_queen_row + new_queen_col:
+                return False
+        return True
+        
+    def draw_board(self, queen_columns):
+        n = len(queen_columns)
+        board = []
+        for row in range(n):
+            row_desc = ['Q' if col == queen_columns[row] else '.' for col in range(n)]
+            board.append(''.join(row_desc))
+        return board
+```
+
+#### [37. Sudoku Solver](https://leetcode.com/problems/sudoku-solver/) Hard
+DFS
+```python
+class Solution:
+    def solveSudoku(self, board: List[List[str]]) -> None:
+        used = self.prepare_occupied_info(board)
+        # starting from 0 and ending at 81
+        self.search(board, 0, used)
+        return board
+        
+    def prepare_occupied_info(self, board):
+        used = {
+            'rows': [set() for _ in range(9)],
+            'cols': [set() for _ in range(9)],
+            'boxes': [set() for _ in range(9)]
+        }
+        for row in range(9):
+            for col in range(9):
+                if board[row][col] == '.':
+                    continue
+                used['rows'][row].add(board[row][col])
+                used['cols'][col].add(board[row][col])
+                # convert (x, y) coordinate to the x-th box 
+                used['boxes'][row // 3 * 3 + col // 3].add(board[row][col])
+                
+        return used
+    
+    def search(self, board, index, used):
+        # exit: the last slot is already taken 
+        if index == 81:
+            return True
+        
+        x, y = index // 9, index % 9
+        # current slot is alreay taken
+        if board[x][y] != '.':
+            return self.search(board, index + 1, used)
+        
+        for val in range(1, 10):
+            val = str(val)
+            if not self.is_valid(used, x, y, val):
+                continue
+                
+            board[x][y] = val
+            used['rows'][x].add(val)
+            used['cols'][y].add(val)
+            used['boxes'][x // 3 * 3 + y // 3].add(val)
+            if self.search(board, index + 1, used):
+                return True
+            
+            board[x][y] = '.'
+            used['rows'][x].remove(val)
+            used['cols'][y].remove(val)
+            used['boxes'][x // 3 * 3 + y // 3].remove(val)
+        
+            
+    def is_valid(self, used, row, col, val):
+        if val in used['rows'][row]:
+            return False
+        if val in used['cols'][col]:
+            return False
+        if val in used['boxes'][row // 3 * 3 + col // 3]:
+            return False
+        return True
+```
+```java
+class Solution {
+    public void solveSudoku(char[][] board) {
+        dfs(board, 0);
+    }
+    
+    private boolean dfs(char[][] board, int index) {
+        if (index == 81) {
+            return true;
+        }
+        
+        int x = index / 9;
+        int y = index % 9;
+        
+        // alreay filled
+        if (board[x][y] != '.') {
+            return dfs(board, index + 1);
+        }
+        
+        for (char val = '1'; val <= '9'; val++) {
+            if (!isValid(board, x, y, val)) {
+                continue;
+            }
+            
+            board[x][y] = val;
+            if (dfs(board, index + 1)) {
+                return true;
+            }
+            board[x][y] = '.';
+        }
+        
+        return false;
+    }
+    
+    private boolean isValid(char[][] board, int x, int y, char val) {
+        for (int i = 0; i < 9; i++) {
+            // row
+            if (board[x][i] == val) {
+                return false;
+            }
+
+            // column
+            if (board[i][y] == val) {
+                return false;
+            }
+            
+            /** 
+              0 1 2 3 4 5 6 7 8
+            / 0 0 0 1 1 1 2 2 2 (row)
+            % 0 1 2 0 1 2 0 1 2 (column)
+            / 3 * 3 : set starting point to the top left corner in a box, then move from left to right and top to bottom
+            0 . . 3 . . 6 . .
+            . . . . . . . . .
+            . . . . . . . . .
+            3 . . 3 . . 6 . .
+            . . . . . . . . .
+            . . . . . . . . .
+            6 . . 3 . . 6 . .
+            . . . . . . . . .
+            . . . . . . . . .
+            **/
+            if (board[x / 3 * 3 + i / 3][y / 3 * 3 + i % 3] == val) {
+                return false;
+            }
+        }
+        return true;
+    } 
+}
+```
+Reduce search range for every slot so that the process can speed up
+```python
+class Solution:
+    def solveSudoku(self, board: List[List[str]]) -> None:
+        self.dfs(board)
+
+    def dfs(self, board):
+        x, y, possibilities = self.get_possible(board)
+        
+        if x is None:
+            return True
+
+        for p in possibilities:
+            board[x][y] = p
+            if self.dfs(board):
+                return True
+            board[x][y] = '.'
+        
+        return False
+
+    def get_possible(self, board):
+        x, y, possibilities = None, None, ['.'] * 10
+
+        for i in range(9):
+            for j in range(9):
+                if  board[i][j] != '.':
+                    continue
+                vals = []
+                for num in range(1, 10):
+                    val = str(num)
+                    if self.is_valid(board, i, j, val):
+                        vals.append(val)
+
+                x, y, possibilities = i, j, vals
+                return x, y, possibilities
+
+        return x, y, possibilities            
+
+
+    def is_valid(self, board, x, y, val):
+        for i in range(9):
+            if board[x][i] == val:
+                return False
+            if board[i][y] == val:
+                return False
+            if board[x // 3 * 3 + i // 3][y // 3 * 3 + i % 3] == val:
+                return False
+        return True
+```
+
+
 ### Other
 
 Algorithms that has time complexity better than linear, i.e. less than $O(n)$
@@ -1667,3 +1965,122 @@ class Solution:
         return self.findKth(A, a, B, b + k // 2,  k - k // 2)
 ```
 #### [315. Count of Smaller Numbers After Self](https://leetcode.com/problems/count-of-smaller-numbers-after-self/) Hard
+block search, my solution not fast for this problem, will cause TLE sometimes, check out Java solution for reference
+
+```python
+class Block:
+    def __init__(self):
+        self.total = 0
+        self.counter = {}
+        
+class BlockArray:
+    def __init__(self, max_value):
+        self.blocks = [
+            Block()
+            for _ in range(10000)
+        ]
+        
+    def get_position(self, val):
+        return val // 100
+        
+    def insert(self, val):
+        position = self.get_position(val)
+        self.blocks[position].counter[val] = self.blocks[position].counter.get(val, 0) + 1
+        self.blocks[position].total += 1
+    
+    def count_smaller(self, val):
+        count = 0
+        position = self.get_position(val)
+        # count of total from all blocks that come before the block where the val lies
+        for i in range(position):
+            count += self.blocks[i].total
+        
+        # count of all smaller numbers in this block
+        block = self.blocks[position]
+        for number in block.counter:
+            if number < val:
+                count += block.counter[number]
+                
+        return count
+        
+class Solution:
+    def countSmaller(self, nums: List[int]) -> List[int]:
+        results = []
+        block_array = BlockArray(10000)
+        # offset is used to deal with negative numbers
+        offset = 10000
+        for i in range(len(nums) - 1, -1, -1):
+            count = block_array.count_smaller(nums[i] + offset)
+            results.insert(0, count)
+            block_array.insert(nums[i] + offset)
+        return results
+```
+```java
+class Solution {
+    // not sure why 20000 is chosen
+    // maybe the largest number from input is less than 20000?
+    private final int SIZE = 20000;
+    // offset deals with negative numbers
+    // though I'm not sure why 10000 is chosen
+    // maybe the least negative number is larger than -10000
+    private static final int OFFSET = 10000;
+    public List<Integer> countSmaller(int[] nums) {
+        LinkedList<Integer> res = new LinkedList<>();
+        if (nums == null || nums.length == 0) {
+            return res;
+        }
+        
+        BlockArray blockArray = new BlockArray(SIZE);
+        // iterate nums backward
+        for (int i = nums.length - 1; i >= 0; i--) {
+            res.addFirst(blockArray.countSmaller(nums[i] + OFFSET));
+            blockArray.insert(nums[i] + OFFSET);
+        }
+        
+        return res;
+    }
+}
+
+
+class Block {
+    public int total;
+    public int[] counter;
+    public Block(int size) {
+        this.total = 0;
+        this.counter = new int[size];
+    }
+}
+
+class BlockArray {
+    public Block[] blocks;
+    public int blockSize;
+    public BlockArray(int capacity) {
+        this.blockSize = (int) Math.sqrt(capacity);
+        int numberOfBlocks = capacity / this.blockSize + 1;
+        this.blocks = new Block[numberOfBlocks];
+        for (int i = 0; i < numberOfBlocks; i++) {
+            this.blocks[i] = new Block(this.blockSize);
+        }
+    }
+    
+    public void insert(int value) {
+        int indexOfBlock = value / blockSize;
+        this.blocks[indexOfBlock].total++;
+        this.blocks[indexOfBlock].counter[value - this.blockSize * indexOfBlock]++;
+    }
+    
+    public int countSmaller(int value) {
+        int indexOfBlock = value / blockSize;
+        int count = 0;
+        for (int i = 0; i < indexOfBlock; i++) {
+            count += this.blocks[i].total;
+        }
+        
+        for (int i = 0; i < value - this.blockSize * indexOfBlock; i++) {
+            count += this.blocks[indexOfBlock].counter[i];
+        }
+        
+        return count;
+    }
+}
+```

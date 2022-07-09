@@ -110,6 +110,72 @@ class Solution:
         return similar_words
 ```
 
+double-end BFS
+![](https://s2.loli.net/2022/06/10/wWoMxDyiuk8LApv.png)
+This solution will not pass all test cases. Really cann't see where is wrong.
+
+```python
+from collections import deque
+chars = 'abcdefghijklmnopqrstuvwxyz'
+
+class Solution:
+    def ladderLength(self, start, end, wordList):
+        if end not in wordList:
+            return 0
+        
+        wordSet = set(wordList)
+        wordSet.add(start)
+        # wordSet.add(end)
+        
+        similar_words = self.build_graph(wordSet)
+        print(similar_words)
+        
+        forward_candidates = deque([start])
+        forward_visited = set([start])
+        backward_candidates = deque([end])
+        backward_visited = set([end])
+        
+        distance = 1
+        while forward_candidates and backward_candidates:
+            # add to distance first
+            distance += 1
+            if self.explore(similar_words, forward_candidates, forward_visited, backward_visited):
+                return distance
+            distance += 1
+            if self.explore(similar_words, backward_candidates, backward_visited, forward_visited):
+                return distance
+        return 0
+        
+    def build_graph(self, wordSet):
+        def get_similar_words(word, wordSet):
+            similar_words = set()
+            for i in range(len(word)):
+                for char in chars:
+                    if char == word[i]:
+                        continue
+                    next_word = word[:i] + char + word[i + 1:]
+                    if next_word in wordSet:
+                        similar_words.add(next_word)
+            return similar_words
+            
+        graph = {}
+        for word in wordSet:
+            graph[word] = get_similar_words(word, wordSet)
+        return graph
+    
+    def explore(self, graph, current_candidates, current_visited, opposite_visited):
+        for _ in range(len(current_candidates)):
+            word = current_candidates.popleft()
+            for next_word in graph[word]:
+                if next_word in current_visited:
+                    continue
+                if next_word in opposite_visited:
+                    return True 
+                current_candidates.append(next_word)
+                current_visited.add(next_word)
+            return False
+```
+
 #### [126. Word Ladder II](https://leetcode-cn.com/problems/word-ladder-ii/) <span style="color:red">Hard</span>
 BFS
 ```java
@@ -387,6 +453,71 @@ class Solution:
                 visited[(next_x, next_y)] = visited[(x, y)] + 1
 
         return -1
+```
+
+double-end BFS
+fixed start and end point
+```python
+from collections import deque
+
+moves = [
+    (-1,  2), (1,   2), # up left, up right
+    (-1, -2), (1,  -2), # down left, down right
+    (-2,  1), (-2, -1), # left up, left down
+    (2,   1), (2,  -1), # right up, right down
+]
+
+class Solution:
+    def shortest_path(self, grid, source, destination):
+        if not grid or not grid[0]:
+            return -1
+        if (source.x, source.y) == (destination.x, destination.y):
+            return 0
+
+        forward_candidates, forward_visited, backward_candidates, backward_visited = self.prepare(source, destination)
+
+        distance = 0
+        # if no candidates are found on one side
+        while forward_candidates and backward_candidates:
+            distance += 1
+            # explore from the start and see if matched from backward
+            if self.explore(grid, forward_candidates, forward_visited, backward_visited):
+                return distance        
+            distance += 1
+            # explore from the end and see if matched from forward
+            if self.explore(grid, backward_candidates, backward_visited, forward_visited):
+                return distance
+        return -1
+
+    def prepare(self, start, end):
+        fc = deque([(start.x, start.y)])
+        fv = set([(start.x, start.y)])
+        bc = deque([(end.x, end.y)])
+        bv = set([(end.x, end.y)])
+        return fc, fv, bc, bv
+
+    def explore(self, grid, current_candidates, current_visited, opposite_visited):
+        for _ in range(len(current_candidates)):
+            x, y = current_candidates.popleft()
+            for dx, dy in moves:
+                new_x, new_y = x + dx, y + dy
+                if not self.is_valid(grid, current_visited, new_x, new_y):
+                    continue
+                if (new_x, new_y) in opposite_visited:
+                    return True
+                current_candidates.append((new_x, new_y))
+                current_visited.add((new_x, new_y))
+        return False
+
+    
+    def is_valid(self, grid, visited, x, y):
+        # out of limits
+        if x < 0 or x >= len(grid) or y < 0 or y >= len(grid[0]):
+            return False
+        # position already occupied
+        if grid[x][y] == 1:
+            return False
+        return (x, y) not in visited
 ```
 
 #### [207. Course Schedule](https://leetcode-cn.com/problems/course-schedule/) <span style="color:orange">Medium</span>
