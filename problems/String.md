@@ -84,7 +84,7 @@ public int strStr(String source, String target){
 
 #### [459. Repeated Substring Pattern](https://leetcode-cn.com/problems/repeated-substring-pattern/) <span style="color:green">Easy</span>
 
-#### [5. Longest Palindromic Substring](https://leetcode-cn.com/problems/longest-palindromic-substring/) <span style="color:orange">Medium</span>
+#### [5. Longest Palindromic Substring](https://leetcode.com/problems/longest-palindromic-substring/) <span style="color:orange">Medium</span>
 
 ```python
 # brute force with nested loop
