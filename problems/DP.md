@@ -351,7 +351,7 @@ class Solution:
         return False
 ```
 
-#### [44. Wildcard Matching](https://leetcode-cn.com/problems/wildcard-matching/) Hard
+#### [44. Wildcard Matching](https://leetcode.com/problems/wildcard-matching/) Hard
 
 DFS + Memoization
 
@@ -1154,9 +1154,177 @@ class Solution:
 
 #### [2035. Partition Array Into Two Arrays to Minimize Sum Difference ](https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/)Hard
 
-#### [877. Stone Game ](https://leetcode.com/problems/stone-game/)Medium
+[LintCode 476 · Merging Stones by Two](https://www.lintcode.com/problem/476/)
+Interval, longer intervals depend on shorter intervals
+Greedy algorithm deals with how the first step is carried out
+DP deals with the last step.
 
-#### 
+```python
+class Solution:
+    """
+    @param a: An integer array
+    @return: An integer
+    """
+    def stone_game(self, a: List[int]) -> int:
+        n = len(a)
+
+        # nothing to merge
+        if n < 2:
+            return 0
+
+        range_sum = self.get_range_sum(a)
+
+        dp = [[float('inf')] * n for _ in range(n)]
+
+        for i in range(n):
+            dp[i][i] = 0
+
+        # length from 2 to n
+        for length in range(2, n + 1):
+            for i in range(n - length + 1):
+                j = i + length - 1
+                for mid in range(i, j):
+                    dp[i][j] = min(dp[i][j], dp[i][mid] + dp[mid + 1][j] + range_sum[i][j])
+        return dp[0][n - 1]
+        
+    def get_range_sum(self, a):
+        n = len(a)
+
+        # also uses dp to create the range sum
+        range_sum = [[0] * n for _ in range(n)]
+
+        # initialization
+        for i in range(n):
+            range_sum[i][i] = a[i]
+
+        for i in range(n):
+            for j in range(i + 1, n):
+                range_sum[i][j] = range_sum[i][j - 1] + a[j]
+
+        return range_sum
+```
+
+#### [312. Burst Balloons](https://leetcode.com/problems/burst-balloons/) Hard
+Subarray related, Interval, DP
+last to burst
+L ... k ... R
+k: last baloon to be burst
+L: L is on B's left and to be burst. All ballons between L and B are burst
+R: R is on B's right and to be burst. All baloons between B and R are burst
+dp[i][j] means the maximum point when bursting all baloons between nums[i] and nums[j], both end points not included (nums[i] and nums[j]). To make this work, two points are inserted at the start and the end.
+i |start .... baloon last to be burst ....   end| k
+
+dp[i][j] = max(dp[i][k] + dp[k][j] + nums[i] * nums[k] * nums[j])  (i < k < j)
+```python
+class Solution:
+    def maxCoins(self, nums: List[int]) -> int:
+        # insert virtual points on both ends
+        # tuple unpacking
+        nums = [1, *nums, 1]
+        n = len(nums)
+        
+        dp = [[0] * n for _ in range(n)]
+        
+        # dp[0][2] means burst the middle balloon nums[1]
+        # less than 3 balloons makes no sense because end points are not included
+        for length in range(3, n + 1):
+            for i in range(n - length + 1):
+                j = i + length - 1
+                for k in range(i + 1, j):
+                    dp[i][j] = max(
+                        dp[i][j],
+                        dp[i][k] + dp[k][j] + nums[i] * nums[k] * nums[j]
+                    )
+                    
+        return dp[0][n - 1]
+```
+
+```java
+class Solution {
+    public int maxCoins(int[] nums) {
+        if (nums == null) {
+            return 0;
+        }
+        
+        // initialization
+        // insert two virtual points on both ends
+        int n = nums.length + 2;
+        int[] extended = new int[n];
+        // push original array one position right
+        for (int i = 0; i < nums.length; i ++) {
+            extended[i + 1] = nums[i];
+        }
+        // assign 1 to virtual points
+        extended[0] = extended[n - 1] = 1;
+        
+        int[][] dp = new int[n][n];
+        for (int length = 3; length <= n; length ++) {
+            for (int i = 0; i < n - length + 1; i ++) {
+                int j = i + length - 1;
+                for (int k = i + 1; k < j; k++) {
+                    dp[i][j] = Math.max(
+                        dp[i][j],
+                        dp[i][k] + dp[k][j] + extended[i] * extended[k] * extended[j]
+                    );
+                }
+            }
+        }
+        
+        return dp[0][n - 1];
+        
+    }
+}
+```
+
+#### [5. Longest Palindromic Substring](https://leetcode-cn.com/problems/longest-palindromic-substring/) Medium
+Interval, DP
+- bigger intervals depend on smaller intervals
 
 
 
+#### [44. Wildcard Matching](https://leetcode.com/problems/wildcard-matching/) Hard
+prefix, matching, DP
+dp[i][j] : a boolean value that shows if the first i characters of the source string matches the first j characters of the pattern 
+last step: how the last character is matched?
+state
+pattern[j - 1] == '*' // if the j-th char of the pattern is *
+    dp[i][j] = dp[i][j - 1] // * matches no characters. the first i chars of the source already matches the first j - 1 chars of the pattern
+    
+    or
+
+    dp[i][j] = dp[i - 1][j] // * matches one or more characters
+        dp[i][j] = dp[i][j - 1] or | dp[i - 1][j - 1] or dp[i - 2][j - 1] or ... or dp[0][j - 1] |
+                 = ...          or   dp[i - 1][j]
+pattern[j - 1] == '*'
+    dp[i][j] = dp[i - 1][j - 1] and source[i - 1] matches pattern[j - 1]
+```python
+class Solution:
+    def isMatch(self, s: str, p: str) -> bool:
+        if s is None or p is None:
+            return False
+        
+        
+        source_length = len(s)
+        pattern_length = len(p)
+        
+        dp = [[False] * (pattern_length + 1) for _ in range(source_length + 1)]
+        
+        # initialization
+        dp[0][0] = True
+        # the first 0 chars matches the pattern only when the first j chars are *, which can match zero chars
+        for j in range(1, pattern_length + 1):
+            dp[0][j] = dp[0][j - 1] and p[j - 1] == '*'
+            
+        for i in range(1, source_length + 1):
+            for j in range(1, pattern_length + 1):
+                if p[j - 1] == '*':
+                    dp[i][j] = dp[i - 1][j] or dp[i][j - 1]
+                else:
+                    dp[i][j] = dp[i - 1][j - 1] and (
+                        s[i - 1] == p[j - 1] or p[j - 1] == '?'
+                    )
+            
+        return dp[source_length][pattern_length]
+```
+
+[1143. Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/) Medium
