@@ -1295,7 +1295,7 @@ pattern[j - 1] == '*' // if the j-th char of the pattern is *
     dp[i][j] = dp[i - 1][j] // * matches one or more characters
         dp[i][j] = dp[i][j - 1] or | dp[i - 1][j - 1] or dp[i - 2][j - 1] or ... or dp[0][j - 1] |
                  = ...          or   dp[i - 1][j]
-pattern[j - 1] == '*'
+pattern[j - 1] != '*'
     dp[i][j] = dp[i - 1][j - 1] and source[i - 1] matches pattern[j - 1]
 ```python
 class Solution:
@@ -1327,4 +1327,144 @@ class Solution:
         return dp[source_length][pattern_length]
 ```
 
-[1143. Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/) Medium
+#### [1143. Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/) Medium
+matching, DP
+dp[i][j]: LCS of the first i chars of the first string and the first j chars of the second string
+
+state transition
+s1[i - 1] != s2[j - 1]
+    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])  // s1[i - 1] and s2[j - 1] are not in LCS
+s1[i - 1] == s2[j - 1]
+    // although the chars might be same, one of them could be useless
+    // or both could be useful
+    // a b c       
+    // b c c       * useless
+    // a b c       * useful
+    // b a c
+    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1] + 1)
+
+inialization
+dp[i][0] = dp[0][j] = 0
+
+```python
+class Solution:
+    def longestCommonSubsequence(self, A: str, B: str) -> int:
+        if not A or not B:
+            return 0
+        
+        a = len(A)
+        b = len(B)
+        dp = [[0] * (b + 1) for i in range(a + 1)]
+        
+        for i in range(1, a + 1):
+            for j in range(1, b + 1):
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+                if A[i - 1] == B[j - 1]:
+                    dp[i][j] = max(dp[i][j], dp[i - 1][j - 1] + 1)
+        
+        return dp[a][b]
+```
+
+[72. Edit Distance](https://leetcode.com/problems/edit-distance/) Hard
+matching, DP
+dp[i][j]: the minimum steps it will take to change the first i chars of the first string to the first j chars of the second string
+
+state transition
+s1[i - 1] == s2[j - 1]
+    dp[i][j] = min(
+        // add s2[j - 1] to the first string to match 
+        dp[i][j - 1] + 1,
+        // remove the last char of the first string to match
+        dp[i - 1][j] + 1,
+        // simply match the two chars, no substitution
+        dp[i - 1][j - 1]
+    )
+s1[i - 1] != s2[j - 1]
+    dp[i][j = min(
+        dp[i][j - 1] + 1,
+        dp[i - 1][j] + 1,
+        // substitution, change the s1[i - 1] to s2[j - 1]
+        dp[i - 1][j - 1] + 1
+    )
+
+initialization
+dp[i][0] = i // remove i chars to be empty
+dp[0][j] = j // add j chars
+```python
+class Solution:
+    def minDistance(self, A: str, B: str) -> int:
+        if not A:
+            return len(B)
+        
+        if not B:
+            return len(A)
+        
+        a = len(A)
+        b = len(B)
+        dp= [[0] * (b + 1) for _ in range(a + 1)]
+        
+        # initialization
+        for i in range(a + 1):
+            dp[i][0] = i
+        for j in range(b + 1):
+            dp[0][j] = j
+        
+        for i in range(1, a + 1):
+            for j in range(1, b + 1):
+                dp[i][j] = min(dp[i - 1][j], dp[i][j - 1]) + 1
+                if A[i - 1] == B[j - 1]:
+                    dp[i][j] = min(dp[i][j], dp[i - 1][j - 1])
+                else:
+                    dp[i][j] = min(dp[i][j], dp[i - 1][j - 1] + 1)
+                            
+        return dp[a][b] 
+``` 
+
+[10. Regular Expression Matching](https://leetcode.com/problems/regular-expression-matching/) Hard
+dp[i][j]: a boolean value that indicates whether the first i chars of the source string can be matched with the first j chars of the pattern string
+
+state transition
+p[j - 1] == '*'
+    dp[i][j] = dp[i][j - 1] or dp[i - 1][j]
+p[j - 1] != '*'
+    dp[i][j] = dp[i - 1][j - 1] and s[i - 1] == p[j - 1]
+
+
+```python
+class Solution:
+    def isMatch(self, s: str, p: str) -> bool:
+        if not s or not p:
+            return False
+        
+        a = len(s)
+        b = len(p)
+        
+        dp = [[False] * (b + 1) for _ in range(a + 1)]
+        
+        # initialization
+        dp[0][0] = True
+        # remember constraint 4: there will be a previous valid character to match for each every '*'
+        # whenever dealing with '*', its previous character should always be considered
+        # so for a non-empty pattern to match an empty string, it mush be like 'a*b*'
+        for j in range(2, b + 1):
+            dp[0][j] = dp[0][j - 2] and p[j - 1] == '*'
+              
+        for i in range(1, a + 1):
+            print("i is ", i, "s[i - 1] = ", s[i - 1])
+            source_char = s[i - 1]
+            for j in range(1, b + 1):
+                pattern_char = p[j - 1]
+                previous_pattern_char = p[j - 2]
+                if pattern_char == '*' and j >= 2:
+                    # match none, one or more
+                    dp[i][j] = dp[i][j - 2] or (
+                        # this is a requisite if one or more chars need to be matched
+                        (previous_pattern_char == source_char or previous_pattern_char == '.')
+                    and
+                        dp[i - 1][j]
+                    )
+                else:
+                    dp[i][j] = dp[i - 1][j - 1] and (source_char == pattern_char or pattern_char == '.')
+        print(dp)
+        return dp[a][b]
+```
