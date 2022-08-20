@@ -1342,6 +1342,58 @@ class Solution:
 
 ```
 
+Division, minimum, prefix DP
+dp[i][j]: the minimum cost for the first i books to be copied by the first j persons
+    j - 1         j (last copier)  
+                    i
+. . . . . . .    |   . . .
+previous pages     remaining pages for last copier        
+                   
+                   cost: sum(pages[prev...i - 1])
+cost: max(dp[prev][j - 1])
+Since the last copier and other copiers start their work at the same time, whichever group spend the most time will be final result: max(sum(pages[prev...i - 1]), max(dp[prev][j - 1])). Then find the minimum result from all the possibilities.
+```python
+from typing import (
+    List,
+)
+
+class Solution:
+    """
+    @param pages: an array of integers
+    @param k: An integer
+    @return: an integer
+    """
+    def copy_books(self, pages: List[int], k: int) -> int:
+        # no books or no copiers
+        if not pages or not k:
+            return 0
+
+        # initialization
+        n = len(pages)
+        dp = [[float('inf')] * (k + 1) for _ in range(n + 1)]
+        # copying a book of 0 pages for whatever copiers costs no time
+        for j in range(k + 1):
+            dp[0][j] = 0
+        # no need to initialize 
+        # hiring 0 person to copy any amount of books is a task never to be finished
+
+        prev_books = [0] * (n + 1)
+        for p in range(1, n + 1):
+            # pages of previous i - 1 books plus the pages of current book
+            prev_books[p] = prev_books[p - 1] + pages[p - 1]
+
+        # the first i books
+        for i in range(1, n + 1):
+            # the first j copiers
+            for j in range(1, k + 1):
+                # all possibile ways to distribute current books to available copiers
+                for prev in range(i):
+                    final_copier_cost = prev_books[i] - prev_books[prev]
+                    dp[i][j] = min(dp[i][j], max(dp[prev][j - 1], final_copier_cost))
+
+        return dp[n][k]
+```
+
 ### DFS
 
 #### [78. Subsets](https://leetcode.com/problems/subsets/) <span style="color:orange">Medium</span>

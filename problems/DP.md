@@ -217,7 +217,7 @@ class Solution:
 ```
 
 ##### DP
-
+Division, DP
 Divide into sub-problems
 
 - the the sub-string starting from 0 and ending at i is breakable
@@ -225,6 +225,7 @@ Divide into sub-problems
 
 <img src="https://s2.loli.net/2022/03/08/TZ52rJVtLYumWMD.png" alt="image-20220308124812728.png" style="zoom:50%;" /> 
 
+where will that final cut be?
 ```python
 class Solution:
     def wordBreak(self, s: str, wordDict: List[str]) -> bool:
@@ -250,6 +251,72 @@ class Solution:
                     break
         
         return dp[length]
+```
+
+```java
+class Solution {
+    public boolean wordBreak(String s, List<String> wordDict) {
+        int n = s.length();
+        boolean[] dp = new boolean[n + 1];
+        
+        dp[0] = true;
+        
+        for (int end = 1; end <= n; end++) {
+            for (int start = 0; start < end; start++) {
+                if (!dp[start]) {
+                    continue;
+                }
+                
+                String word = s.substring(start, end);
+                if (wordDict.contains(word)) {
+                    dp[end] = true;
+                    // one way to break the word  is found, that's enough
+                    break;
+                }
+            }
+        }
+        
+        return dp[n];
+    }
+}
+```
+
+Improvement: a typical word, unlike string, will not be too long. A time complexity of n**2 is too much.
+Will be better if it is n * word length.
+```java
+class Solution {
+    public boolean wordBreak(String s, List<String> wordDict) {
+        int maxLength = 0;
+        for (String word: wordDict) {
+            maxLength = Math.max(maxLength, word.length());
+        }    
+
+        int n = s.length();
+        boolean[] dp = new boolean[n + 1];
+        dp[0] = true;
+        
+        for (int end = 1; end <= n; end++) {
+            // cut from higher end
+            // so start will be end minus wordLen
+            for (int wordLen = 1; wordLen <= maxLength; wordLen++) {
+                if (end < wordLen>) {
+                    break;
+                }
+                if (!dp[end - wordLen]) {
+                    continue;
+                }
+                
+                String word = s.substring(end - wordLen, end);
+                if (wordDict.contains(word)) {
+                    dp[end] = true;
+                    // one way to break the word  is found, that's enough
+                    break;
+                }
+            }
+        }   
+        return dp[n];
+    }
+}
 ```
 
 #### [140. Word Break II](https://leetcode-cn.com/problems/word-break-ii/) Hard
@@ -1467,4 +1534,36 @@ class Solution:
                     dp[i][j] = dp[i - 1][j - 1] and (source_char == pattern_char or pattern_char == '.')
         print(dp)
         return dp[a][b]
+```
+
+[91. Decode Ways](https://leetcode.com/problems/decode-ways/) Medium
+Division possibilities, DP
+final division: ways to cut at the end * 1 or 0 (e.g. 0 is not valid) + ways to cut at the second to the last * 1 or 0 (e.g. 01 is not valid)
+```python
+class Solution:
+    def numDecodings(self, s: str) -> int:
+        n = len(s)
+        # rolling array to save space
+        dp = [0, 0, 0]
+        
+        dp[0] = 1
+        dp[1] = self.decoded(s[0])
+        
+        # starting from 1 will result in invalid index when evaluatng i - 2
+        for i in range(2, n + 1):
+                        # cut before the last char
+            dp[i % 3] = dp[(i - 1) % 3] * self.decoded(s[i - 1 : i]) +\
+                        # cut before the second to the last
+                        dp[(i - 2) % 3] * self.decoded(s[i - 2 : i])
+            
+        return dp[n % 3]
+        
+    def decoded(self, s):
+        num = int(s)
+        # 01 cannot be decoded
+        if len(s) == 1 and num >=1 and num <= 9:
+            return 1
+        if len(s) == 2 and num >= 10 and num <= 26:
+            return 1
+        return 0
 ```
