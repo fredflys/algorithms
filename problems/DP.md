@@ -986,6 +986,96 @@ class Solution:
         return max(dp)
 ```
 
+Soliatre DP, combine greedy algorithm to improve efficiency
+```python
+class Solution:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        if not nums:
+            return 0
+        
+        # incrementaly update the LIST (longest increasing subsequence)
+        # 4 5 6 1 2 3
+        #       * 
+        #  0 1 2 3 4 5
+        # -x x x x x x
+        # -x 4 5 6 . .
+        # -x 1 5 6
+        lis = [float('inf')] * (len(nums) + 1)
+        lis[0] = -float('inf')
+        
+        longest = 0
+        for num in nums:
+            index = self.find_first_gte(lis, num)
+            lis[index] = num
+            longest = max(longest, index)
+        
+        return longest
+    
+    # the first num in the sequence that is the first to be greater than or equal to the target number
+    def find_first_gte(self, nums, target):
+        start, end = 0, len(nums) - 1
+        while start + 1 < end:
+            mid = (start + end) // 2
+            if nums[mid] >= target:
+                end = mid
+            else:
+                start = mid
+                
+        if nums[start] == target:
+            return start
+        return end
+```
+
+[354. Russian Doll Envelopes](https://leetcode.com/problems/russian-doll-envelopes/) Hard
+Solitare DP, LIS
+Envelopes have width and height and small envelopes can be put in bigger ones. If envelopes are arranged in ascending order by width, does it mean envelopes[2] can fit into envelopes[3】? No, height also has to be taken into consideration. If sorted envelopes are now arranged in descending order by height, the problem is turned into one of finding the longest increasing sequence.\
+[1, 8] 
+[2, 3] *
+[5, 4] *
+[5, 2]
+[6, 7] *
+[6, 4] 
+```python
+class Solution:
+    def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
+        # sort by asceding width and descending height
+        envelopes.sort(key = lambda x: (x[0], -x[1]))
+        # print('envelopes: ', envelopes)
+        
+        n = len(envelopes)
+        lis = [float('inf')] * (n + 1)
+        lis[0] = -float('inf')
+        # print('lis: ', lis)
+        
+        longest = 0
+        for (_, h) in envelopes:
+            index = self.find_first_gte(lis, h)
+            # print("height width, index: ", lis, h, index)
+            lis[index] = h
+            longest = max(longest, index)
+            print(longest, index)
+            # print('now longest: ', longest)
+            # print(lis)
+        
+        return longest
+    
+        # the first num in the sequence that is the first to be greater than or equal to the target number
+    def find_first_gte(self, nums, target):
+        start, end = 0, len(nums) - 1
+        while start + 1 < end:
+            mid = (start + end) // 2
+            if nums[mid] >= target:
+                end = mid
+            else:
+                start = mid
+                
+        if nums[start] >= target:
+            return start
+        return end
+```
+
+
+
 #### [329. Longest Increasing Path in a Matrix](https://leetcode.com/problems/longest-increasing-path-in-a-matrix/) **Hard**
 coordinates
 DP: from smaller numbers to big numbers (instead of matrix direction), best solution
@@ -1092,7 +1182,23 @@ class Solution:
         result = build_result(dp, prev, nums)
         return result
 ```
-
+Solitare DP, divisible， DP as a list of lists, easy to understand
+```python
+class Solution:
+    def largestDivisibleSubset(self, nums: List[int]) -> List[int]:
+        nums.sort()
+        # dp is a list of lists, like [[1], [2], ...]
+        dp = [[x] for x in nums]
+        # 0-th element remain the same
+        for j in range(1, len(nums)):
+            # backward from end to start
+            # the further away it is from nums[i], the less likely it will be processed
+            for i in range(j - 1, -1, -1):
+                if nums[j] % nums[i] == 0 and len(dp[i]) + 1 > len(dp[j]):
+                    dp[j] = dp[i] + [nums[j]]
+                    
+        return max(dp, key=len)
+```
 
 #### [LintCode 92 · Backpack](https://www.lintcode.com/problem/92/) Medium
 
