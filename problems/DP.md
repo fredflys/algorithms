@@ -1538,7 +1538,7 @@ class Solution:
         return dp[a][b]
 ```
 
-[72. Edit Distance](https://leetcode.com/problems/edit-distance/) Hard
+#### [72. Edit Distance](https://leetcode.com/problems/edit-distance/) Hard
 matching, DP
 dp[i][j]: the minimum steps it will take to change the first i chars of the first string to the first j chars of the second string
 
@@ -1593,7 +1593,7 @@ class Solution:
         return dp[a][b] 
 ``` 
 
-[10. Regular Expression Matching](https://leetcode.com/problems/regular-expression-matching/) Hard
+#### [10. Regular Expression Matching](https://leetcode.com/problems/regular-expression-matching/) Hard
 dp[i][j]: a boolean value that indicates whether the first i chars of the source string can be matched with the first j chars of the pattern string
 
 state transition
@@ -1642,7 +1642,7 @@ class Solution:
         return dp[a][b]
 ```
 
-[91. Decode Ways](https://leetcode.com/problems/decode-ways/) Medium
+#### [91. Decode Ways](https://leetcode.com/problems/decode-ways/) Medium
 Division possibilities, DP
 final division: ways to cut at the end * 1 or 0 (e.g. 0 is not valid) + ways to cut at the second to the last * 1 or 0 (e.g. 01 is not valid)
 ```python

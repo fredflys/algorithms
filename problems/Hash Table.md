@@ -386,6 +386,7 @@ class Solution:
                         d -= 1
                     else:
                         results.append([nums[a], nums[b], nums[c], nums[d]])
+                        # avoid duplicates
                         while c < d and nums[c + 1] == nums[c]:
                             c += 1
                         while c < d and nums[d - 1] == nums[d]:

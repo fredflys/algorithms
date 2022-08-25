@@ -1,6 +1,6 @@
 ## Array
 
-- two pointers
+- two pointers: no extra space needed
 - sliding window
 - binary search
 - DFS
@@ -580,8 +580,176 @@ class Solution:
         return []
 ```
 
-#### [992. Subarrays with K Different Integers](https://leetcode-cn.com/problems/subarrays-with-k-different-integers/) <span style="color:red">Hard</span>
+#### [170. Two Sum III - Data structure design](https://leetcode.com/problems/two-sum-iii-data-structure-design/) Easy
+User HashMap to save occurances (e.g. 2,4,4,5, 4 shows up two times, if the occurance is not noted down, a target 8 can never be reached)
+Typically a data structure problems involves trade-offs between different methods based upon how frequently each method is going to be used
+```java
+public class TwoSum {
+    // number : counter
+    private HashMap<Integer, Integer> counter;
 
+    public TwoSum() {
+        counter = new HashMap<Integer, Integer>();
+    }
+
+    /**
+     * @param number: An integer
+     * @return: nothing
+     * @time: O(1)
+     */
+    public void add(int number) {
+        counter.put(number, counter.getOrDefault(number, 0) + 1);
+    }
+
+    /**
+     * @param value: An integer
+     * @return: Find if there exists any pair of numbers which sum is equal to the value.
+     * @time: O(n)
+     */
+    public boolean find(int target) {
+         for (Integer num: counter.keySet()) {
+             int other = target - num;
+             int desiredCount = other == num ? 2 : 1;
+             if (counter.getOrDefault(other, 0) >= desiredCount) {
+                 return true;
+             }
+         }
+         return false;
+    }
+}
+```
+#### [15. 3Sum](https://leetcode.com/problems/3sum/) Medium
+Two pointers, dimension reduction
+This problem is turned into a two sum one with an outer loop.
+```python
+class Solution:
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        nums = sorted(nums)
+        n = len(nums)
+        results = []
+        
+        # dimension reduction
+        # change 3 sum problem to a two sum one with a loop
+        for i in range(n):
+            # avoid duplicates
+            # 
+            if i > 0 and nums[i] == nums[i - 1]:
+                continue
+            self.find_two_sums(nums, i + 1, -nums[i], results)
+        return results
+    
+    def find_two_sums(self, nums, left, target, results):
+        right = len(nums) - 1
+        last_pair = None
+        while left < right:
+            two_sum = nums[left] + nums[right]
+            if two_sum == target:
+                # avoid duplicates: if the pair is seen, never add it to the results
+                if (nums[left], nums[right]) != last_pair:
+                    results.append([-target, nums[left], nums[right]])
+                last_pair = (nums[left], nums[right])
+                right -= 1
+                left += 1
+            elif two_sum > target:
+                right -= 1
+            else:
+                left += 1      
+```
+
+#### [611. Valid Triangle Number](https://leetcode.com/problems/valid-triangle-number/) Medium
+a triangle definition: a <= b <= c and a + b < c
+two pointers
+```python
+class Solution:
+    def triangleNumber(self, nums: List[int]) -> int:
+        nums = sorted(nums)
+        n = len(nums)
+        answer = 0
+        
+        for i in range(n):
+            left = 0
+            right = i - 1
+            while left < right:
+                if nums[left] + nums[right] > nums[i]:
+                    answer += right - left
+                    right -= 1
+                else:
+                    left += 1
+        
+        return answer
+```
+
+[75. Sort Colors](https://leetcode.com/problems/sort-colors/submissions/) Medium
+partition, two pointers
+```python
+class Solution:
+    def sortColors(self, nums: List[int]) -> None:
+        n = len(nums)
+        index = 0
+        left = 0
+        right = n - 1
+        # 
+        # loop invariant
+        # - all in [0, left) == 0
+        # - all in [left, index) == 1
+        # - all in (right, n - 1] == 2
+        # starting from empty partitions, gradually enlarge each partition by moving pointers left or right 
+        while index <= right:
+            if nums[index] == 1:
+                index += 1
+            elif nums[index] < 1:
+                nums[index], nums[left] = nums[left], nums[index]
+                left += 1
+                index += 1
+            else:
+                nums[index], nums[right] = nums[right], nums[index]
+                # after the swap, nums[index] is not known, so index will not be incremented 
+                # so that in the next loop nums[index] will be dealt with 
+                right -= 1
+```
+
+[LintCode 143 · Sort Colors II](https://www.lintcode.com/problem/143/) Medium
+partition, merge sort, quick sort, two pointers
+nlogk
+```python
+from typing import (
+    List,
+)
+
+class Solution:
+    """
+    @param colors: A list of integer
+    @param k: An integer
+    @return: nothing
+    """
+    def sort_colors2(self, colors: List[int], k: int):
+        self.sort(colors, 1, k, 0, len(colors) - 1)
+
+    def sort(self, colors, color_from, color_to, index_from, index_to):
+        # no colors to sort or space to sort from
+        if color_from == color_to or index_from == index_to:
+            return
+
+        middle_color = (color_from + color_to) // 2
+        left, right = index_from, index_to
+        # partition
+        while left <= right:
+            while left <= right and colors[left] <= middle_color:
+                left += 1
+            while left <= right and colors[right] > middle_color:
+                right -= 1
+            if left <= right:
+                colors[left], colors[right] = colors[right], colors[left]
+                left += 1
+                right -= 1
+        # merge
+        self.sort(colors, color_from, middle_color, index_from, index_to)
+        self.sort(colors, middle_color + 1, color_to, index_from, index_to)
+```
+
+
+#### [992. Subarrays with K Different Integers](https://leetcode-cn.com/problems/subarrays-with-k-different-integers/) <span style="color:red">Hard</span>
+two pointers
 **恰好**由k个不同整数组成的子序列个数 = **最多**由k个不同整数组成的子序列个数 - **最多**由k - 1个不同整数组成的子序列个数
 
 ```python
