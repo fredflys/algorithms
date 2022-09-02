@@ -1206,7 +1206,8 @@ class Solution {
 }
 ```
 
-BST
+BST starts here
+------------------
 1. smaller left and bigger right, sub-tree included. Binary search operations possible.
 2. Inorder traversal will produce an ascending array. 
 
@@ -1836,3 +1837,396 @@ class Solution {
     }
 }
 ```
+
+#### [669. Trim a Binary Search Tree](https://leetcode.com/problems/trim-a-binary-search-tree/) Medium
+I am still trying to get the hang of depositional way of dealing with bst.
+```java
+class Solution {
+    public TreeNode trimBST(TreeNode root, int low, int high) {
+        if (root == null) {
+            return null;
+        }
+        
+        if (root.val < low) { 
+            // cut current node and its left sub-tree
+            return trimBST(root.right, low, high);
+        }
+        
+        if (root.val > high) {
+            // cut current node and its right sub-tree
+            return trimBST(root.left, low, high);
+        }
+        
+        root.left = trimBST(root.left, low, high);
+        root.right = trimBST(root.right, low, high);
+        
+        return root;
+    }
+}
+```
+
+#### [701. Insert into a Binary Search Tree](https://leetcode.com/problems/insert-into-a-binary-search-tree/) Medium
+Finally got one done! Easy piece.
+```java
+class Solution {
+    public TreeNode insertIntoBST(TreeNode root, int val) {
+        if (root == null) {
+            return new TreeNode(val);
+        }
+        
+        if (val > root.val) {
+            root.right = insertIntoBST(root.right, val);
+        }
+        
+        if (val < root.val) {
+            root.left = insertIntoBST(root.left, val);
+        }
+        
+        
+        return root;
+    }
+}
+```
+
+#### [783. Minimum Distance Between BST Nodes](https://leetcode.com/problems/minimum-distance-between-bst-nodes/) Easy
+```java
+class Solution {
+    int minDiff = Integer.MAX_VALUE;
+    TreeNode prev = null;
+    public int minDiffInBST(TreeNode root) {
+        traverse(root);
+        return minDiff;
+    }
+    
+    void traverse(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        
+        traverse(root.left);
+        if (prev != null) {
+            if (root.val - prev.val < minDiff) {
+                minDiff = root.val - prev.val;
+            }
+        }
+        prev = root;
+        traverse(root.right);
+    }
+}
+```
+
+#### [938. Range Sum of BST](https://leetcode.com/problems/range-sum-of-bst/) Easy
+```java
+class Solution {
+    int sum = 0;
+    public int rangeSumBST(TreeNode root, int low, int high) {
+        if (root == null) {
+            return 0;
+        }
+        
+        if (root.val < low) {
+            return rangeSumBST(root.right, low, high);
+        }
+        
+        if (root.val > high) {
+            return rangeSumBST(root.left, low, high);
+        }
+        
+        return root.val + rangeSumBST(root.left, low, high) + rangeSumBST(root.right, low, high);
+    }
+}
+```
+
+#### [1008. Construct Binary Search Tree from Preorder Traversal](https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/) Medium
+Wrote it myself. Seems I am beginning to understand more and more about recursion and decomposition when dealing with BST.
+```java
+class Solution {
+    public TreeNode bstFromPreorder(int[] preorder) {
+        return build(preorder, 0, preorder.length - 1);
+    }
+    
+    TreeNode build(int[] preorder, int lo, int hi) {
+        if (lo > hi) {
+            return null;
+        }
+        
+        TreeNode root = new TreeNode(preorder[lo]);
+        
+        int mid = lo + 1;
+        while (mid <= hi && preorder[mid] < preorder[lo]) {
+            mid++;
+        }
+        
+        // preorder[lo] is used
+        // preorder[mid] is larger than the root val so use its previous value
+        root.left = build(preorder, lo + 1, mid - 1);
+        root.right = build(preorder, mid, hi);
+        
+        
+        return root;
+    }
+}
+```
+
+#### [1038. Binary Search Tree to Greater Sum Tree](https://leetcode.com/problems/binary-search-tree-to-greater-sum-tree/) Medium
+```java
+class Solution {
+    int sum = 0;
+    public TreeNode bstToGst(TreeNode root) {
+        traverse(root);
+        return root;
+    }
+    
+    void traverse(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        
+        // visit right sub-tree first
+        // this will result in descending order
+        traverse(root.right);
+        sum += root.val;
+        root.val = sum;
+        traverse(root.left);
+    }
+}
+```
+
+#### [173. Binary Search Tree Iterator](https://leetcode.com/problems/binary-search-tree-iterator/) Medium
+Use stack to control flow and simulate recursion
+```java
+class BSTIterator {
+    // first in last out
+    private Stack<TreeNode> stk = new Stack<>(); 
+    
+    private void pushLeftBranch(TreeNode node) {
+        while (node != null) {
+            stk.push(node);
+            node = node.left;
+        }
+    }
+    
+    public BSTIterator(TreeNode root) {
+        pushLeftBranch(root);
+    }
+    
+    public int next() {
+        // left, root, right
+        TreeNode node = stk.pop();
+        pushLeftBranch(node.right);
+        return node.val;
+    }
+    
+    public boolean hasNext() {
+        return !stk.isEmpty();
+    }
+}
+```
+
+
+#### [1305. All Elements in Two Binary Search Trees](https://leetcode.com/problems/all-elements-in-two-binary-search-trees/) Medium
+My solution is not so efficient and takes up a lot of memeory. Almost brute force. Not so good.
+```java
+class Solution {
+    
+    public List<Integer> getAllElements(TreeNode root1, TreeNode root2) {
+        List<Integer> list1 = build(root1);
+        List<Integer> list2 = build(root2);
+        List<Integer> result = new ArrayList<>();
+        int i = 0, j = 0;
+        while (i < list1.size() && j < list2.size()) {
+            if (list1.get(i) < list2.get(j)) {
+                result.add(list1.get(i));
+                i++;
+            } else {
+                result.add(list2.get(j));
+                j++;
+            }
+        }
+        
+        while (i < list1.size()) {
+            result.add(list1.get(i));
+            i++;
+        }
+        
+        while (j < list2.size()) {
+            result.add(list2.get(j));
+            j++;
+        }
+        
+        return result;
+    }
+    
+    List<Integer> build(TreeNode root) {
+        List<Integer> result = new ArrayList<Integer>();
+        if (root == null) {
+            return result;
+        }
+        
+        result.addAll(build(root.left));
+        result.add(root.val);
+        result.addAll(build(root.right));
+        
+        return result;
+    }
+    
+}
+```
+
+Use Iterator to control the flow
+```java
+class Solution {
+    public List<Integer> getAllElements(TreeNode root1, TreeNode root2) {
+        BSTIterator tree1 = new BSTIterator(root1);
+        BSTIterator tree2 = new BSTIterator(root2);
+        LinkedList<Integer> res = new LinkedList<>();
+        while (tree1.hasNext() && tree2.hasNext()) {
+            if (tree1.peek() < tree2.peek()) {
+                res.add(tree1.next());
+            } else {
+                res.add(tree2.next());
+            }
+        }
+        
+        while (tree1.hasNext()) {
+            res.add(tree1.next());
+        }
+        
+        while (tree2.hasNext()) {
+            res.add(tree2.next());
+        }
+        
+        return res;
+    }
+}
+
+class BSTIterator {
+    private Stack<TreeNode> stk = new Stack<>(); 
+    
+    private void pushLeftBranch(TreeNode node) {
+        while (node != null) {
+            stk.push(node);
+            node = node.left;
+        }
+    }
+    
+    public BSTIterator(TreeNode root) {
+        pushLeftBranch(root);
+    }
+    
+    public int peek() {
+        return stk.peek().val;
+    }
+    
+    public int next() {
+        TreeNode node = stk.pop();
+        pushLeftBranch(node.right);
+        return node.val;
+    }
+    
+    public boolean hasNext() {
+        return !stk.isEmpty();
+    }
+}
+```
+
+#### [1373. Maximum Sum BST in Binary Tree](https://leetcode.com/problems/maximum-sum-bst-in-binary-tree/) Hard
+Get max sum of sub binary search trees:
+1. check if a root is bst
+   1. left sub-tree is bst
+   2. right sub-tree is bst
+   3. root itself is bst
+2. Get sum if root is bst
+3. Update a global var whenver there is a bigger bst sum
+
+Postorder, bst
+Here a result array is used to store multiple states when leaving a new tree. This is new to me. Never expect you can do this in a recursion. 
+```java
+class Solution {
+    int maxSum = 0;
+    
+    public int maxSumBST(TreeNode root) {
+        traverse(root);
+        return maxSum;
+    }
+    
+    int[] traverse(TreeNode root) {
+        if (root == null) {
+            return new int[] {
+                1, Integer.MAX_VALUE, Integer.MIN_VALUE, 0
+            };
+        }
+        
+        int[] left = traverse(root.left);
+        int[] right = traverse(root.right);
+        
+        int[] res = new int[4];
+
+        // postorder position
+        // check if the current root if bst
+        // left and right children are bst and root itself is bst
+        if (isBST(left) && isBST(right) && validateRoot(root, left, right)) {
+            res[0] = 1;
+            res[1] = Math.min(left[1], root.val);
+            res[2] = Math.max(right[2], root.val);
+            res[3] = left[3] + right[3] + root.val;
+            maxSum = Math.max(maxSum, res[3]);
+        } else {
+            res[1] = 0;
+        }
+        
+        return res;
+    }
+        
+    boolean isBST(int[] ans) {
+        return ans[0] == 1;
+    }
+    
+    boolean validateRoot (TreeNode root, int[] left, int[] right) {
+        // larger than the max value in the left sub-tree
+        // and smaller than the min value in the right sub-tree
+        return root.val > left[2] && root.val < right[1];
+    }
+}
+```
+
+#### [1382. Balance a Binary Search Tree](https://leetcode.com/problems/balance-a-binary-search-tree/) Medium
+Flattern and build
+```java
+class Solution {
+    public TreeNode balanceBST(TreeNode root) {
+        List<Integer> sortedNums = flatten(root);
+        TreeNode newRoot = buildBST(sortedNums, 0, sortedNums.size() - 1);
+        return newRoot;
+    }
+    
+    List<Integer> flatten(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if (root == null) {
+            return res;
+        }
+        
+        res.addAll(flatten(root.left));
+        res.add(root.val);
+        res.addAll(flatten(root.right));
+        
+        return res;
+    }
+    
+    TreeNode buildBST(List<Integer> nums, int lo, int hi) {
+        if (lo > hi) {
+            return null;
+        }
+        
+        int mid = (lo + hi) / 2;
+        TreeNode root = new TreeNode(nums.get(mid));
+        root.left = buildBST(nums, lo, mid - 1);
+        root.right = buildBST(nums, mid + 1, hi);
+        
+        return root;
+    }
+}
+```
+
+BST finishes here
+------------------
