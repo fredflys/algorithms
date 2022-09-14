@@ -1673,3 +1673,100 @@ class Solution:
             return 1
         return 0
 ```
+
+#### [198. House Robber](https://leetcode.com/problems/house-robber/) Medium
+dp, from bottom to top
+```java
+class Solution {
+    public int rob(int[] nums) {
+        int n = nums.length;
+        // dp[i] represents the maximum gain for the first i houses
+        int[] dp = new int[n + 1];
+        
+        // initialization
+        dp[0] = 0;
+        dp[1] = nums[0];
+        // state transition
+        for (int i = 2; i <= n; i++) {
+            /*
+            look at the last step, either the last house (nums[i - 1]) is robbed or not, whichever produces the greater gain wins
+            i-th house (nums[i - 1]) robbed: the second to the previous house (nums[i - 2]) then has to be skipped, so we have the maximum gain before (dp[i - 2]) plus the i-th house value
+            i-th house not robbed: simply look at the maxium gain before it, i.e. dp[i - 1]
+            */
+            dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i - 1]);
+        }
+        
+        return dp[n];
+    }
+}
+```
+recursion and dp, from top to bottom
+Recursion solution is easier to understand than an iteration one, though at an efficieny cost. Can be improved by memorization.
+```java
+class Solution {
+    // private int[] memo;
+    public int rob(int[] nums) {
+        // memo = new int[nums.length];
+        // Arrays.fill(memo, -1);
+
+        return dp(nums, 0);
+    }
+    
+    private int dp(int[] nums, int start) {
+        if (start >= nums.length) {
+            return 0;
+        }
+
+        // if (memo[start] != -1) return memo[start];
+        
+        int res = Math.max(
+            // skip current house and start from the next house
+            dp(nums, start + 1),
+            // rob current house and skip next house (start + 1)
+            nums[start] + dp(nums, start + 2)
+        );
+        
+        // memo[start] = res;
+        return res;
+    }
+}
+```
+
+#### [213. House Robber II](https://leetcode.com/problems/house-robber-ii/) Medium
+Now the first house and the last house are related.
+```java
+class Solution {
+    public int rob(int[] nums) {
+        int n = nums.length;
+        if (n == 1) return nums[0];
+        //
+        return Math.max(
+            // skip the last house and stops at the second to the last house
+            // skip the first house and stops at the last house
+            // whichever has the greater gain wins
+            robRange(nums, 0, n - 2),
+            robRange(nums, 1, n - 1)
+        );
+    }
+    
+    int robRange(int[] nums, int start, int end) {
+        int n = nums.length;
+        /*
+            pre : max gain until previous house
+            prePre: max gain until previous of previous house
+            prePre pre cur
+    prePre  pre    cur    <--
+        */
+        
+        int pre = 0, prePre = 0, cur = 0;
+        for (int i = end; i >= start; i--) {
+            // skip current house or rob current hosue
+            cur = Math.max(pre, nums[i] + prePre);
+            prePre = pre;
+            pre = cur;
+        }
+        
+        return cur;
+    }
+}
+```
