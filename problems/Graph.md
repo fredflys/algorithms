@@ -176,6 +176,179 @@ class Solution:
             return False
 ```
 
+#### [752. Open the Lock](https://leetcode.com/problems/open-the-lock/) Medium
+double-end BFS
+```java
+class Solution {
+    String start = "0000";
+    
+    public int openLock(String[] deadends, String target) {
+        return bfs(target, deadends);
+    }
+    
+    String moveUp(String s, int slot) {
+        char[] ch = s.toCharArray();
+        // character instead of integer
+        if (ch[slot] == '9') {
+            ch[slot] = '0';
+        } else {
+            ch[slot] += 1;   
+        }
+        return new String(ch);
+    }
+    
+    String moveDown(String s, int slot) {
+        char[] ch = s.toCharArray();
+        if (ch[slot] == '0') {
+            ch[slot] = '9';
+        } else {
+            ch[slot] -= 1;   
+        }
+        return new String(ch);
+    }
+    
+    Set<String> convertToSet(String[] deadends) {
+        Set<String> deads = new HashSet<>();
+        for(String dead: deadends) deads.add(dead);
+        return deads;
+    }
+    
+    int bfs(String target, String[] deadends) {
+        Set<String> q1 = new HashSet<>();
+        Set<String> q2 = new HashSet<>();
+        Set<String> deads = convertToSet(deadends);
+        Set<String> visited = new HashSet<>();
+        
+        q1.add(start);
+        q2.add(target);
+        int step = 0;
+        
+        while (!q1.isEmpty() && !q2.isEmpty()) {
+            Set<String> candidates = new HashSet<>();
+            
+            int size = q1.size();
+            for (String cur: q1) {
+                
+                // target is reached
+                if (q2.contains(cur)) {
+                    return step;
+                }
+                
+                if (deads.contains(cur)) {
+                    continue;
+                }
+                
+                visited.add(cur);
+                
+                for (int j = 0; j < start.length(); j++) {
+                    String up = moveUp(cur, j);
+                    String down = moveDown(cur, j);
+                    System.out.println(down);
+                    if (!visited.contains(up)) {
+                        candidates.add(up);
+                    }
+                    
+                    if (!visited.contains(down)) {
+                        candidates.add(down);
+                    }
+                }
+            }
+            step++;
+            q1 = q2;
+            q2 = candidates;
+        }
+        
+        return -1;
+    }
+}
+```
+
+#### [773. Sliding Puzzle](https://leetcode.com/problems/sliding-puzzle/) Hard
+BFS. Think carefully about how to represent a problem.
+```java
+class Solution {
+    
+    public int slidingPuzzle(int[][] board) {
+        String start = buildStartString(board);
+        String target = "123450";
+        return bfs(start, target);
+    }
+    
+    // represent the board as a string
+    // this will make things a lot more easier
+    // didn't think of this before
+    String buildStartString(int[][] board) {
+        StringBuilder start = new StringBuilder();
+        int m = 2, n = 3;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                start.append(board[i][j]);
+            }
+        }
+        return start.toString();
+    }
+    
+    int[][] getMoves() {
+        int[][] moves = new int[][]{
+            {1, 3}, // 0 is at 0 (board[0][0]), can only move right to 1 -> board[0][1], or move down to 3 -> board[1][0]
+            {0, 2, 4}, // 0 is at 1 (board[0][1], can move left to board[0][0], right to board[0][2] and down to board[1][1])
+            {1, 5}, // 0 is at 2 (board[0][2]), can move left to board[0][1] and down to board[1][2]
+            {0, 4}, // 0 is at 3 (board[1][0]), can move up to board[0][0] and right to board[1][1]
+            {1, 3, 5}, // 0 is at 4 (board[1][2]), can move up to board[0][1], left to board[1][0] and right to board[1][2]
+            {2, 4} // 0 is at 5 (board[1][2]), can move eith up to board[0][2] or left to board[1][1`]
+        };
+        return moves;
+    }
+    
+    int findZeroPosition(String s) {
+        int index = 0;
+        for (; s.charAt(index) != '0'; index++);
+        return index;
+    }
+    
+    // move zero to possible places
+    String swap(char[] chars, int i, int j) {
+        char temp = chars[i];
+        chars[i] = chars[j];
+        chars[j] = temp;
+        return new String(chars);
+    }
+    
+    int bfs(String start, String target) {
+        Queue<String> q = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        int[][] moves = getMoves();
+        int step = 0;
+        q.offer(start);
+        visited.add(start);
+
+        
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                String cur = q.poll();
+                if (target.equals(cur)) {
+                    return step;
+                }
+                
+                int zeroIndex = findZeroPosition(cur);
+                for (int moveTo: moves[zeroIndex]) {
+                    String newBoard = swap(cur.toCharArray(), moveTo, zeroIndex);
+                    if (!visited.contains(newBoard)) {
+                        q.offer(newBoard);
+                        visited.add(newBoard);
+                    }
+                }
+                
+            }
+            step++;
+        }   
+        return -1;
+    }   
+}
+```
+
+
 #### [126. Word Ladder II](https://leetcode-cn.com/problems/word-ladder-ii/) <span style="color:red">Hard</span>
 BFS
 ```java
