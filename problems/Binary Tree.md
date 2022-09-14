@@ -409,6 +409,93 @@ class Solution {
 }
 ```
 
+#### [687. Longest Univalue Path](https://leetcode.com/problems/longest-univalue-path/submissions/) Medium
+depth traversal
+```java
+class Solution {
+    int res = 0;
+    
+    public int longestUnivaluePath(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        
+        maxLen(root, root.val);
+        return res;
+    }
+    
+    // in the subtree, whose parent is root, 
+    private int maxLen(TreeNode root, int parentVal) {
+        if (root == null) {
+            return 0;
+        }
+        
+        int left = maxLen(root.left, root.val);
+        int right = maxLen(root.right, root.val);
+        
+        // still in the current subtree and children info is collected
+        // the longest path that passes the current node
+        res = Math.max(res, left + right);
+        
+        // unequal to parent value
+        if (root.val != parentVal) {
+            return 0;
+        }
+        
+        // equal to parent value
+        // leaving this subtree and return a value to its parent
+        // no turning back is allowed, so a better path must be returned
+        return Math.max(left, right) + 1;
+    }
+}
+```
+
+#### [1325. Delete Leaves With a Given Value](https://leetcode.com/problems/delete-leaves-with-a-given-value/) Medium
+postorder traversal
+```java
+class Solution {
+    public TreeNode removeLeafNodes(TreeNode root, int target) {
+        if (root == null) {
+            return null;
+        }
+        
+        root.left = removeLeafNodes(root.left, target);
+        root.right = removeLeafNodes(root.right, target);
+        
+        if (root.left == root.right && root.val == target) {
+            return null;
+        }
+        
+        return root;
+    }
+}
+```
+
+#### [814. Binary Tree Pruning](https://leetcode.com/problems/binary-tree-pruning/) Medium
+postorder traversal, pruning from bottom up
+```java
+class Solution {
+    public TreeNode pruneTree(TreeNode root) {
+        if (root == null) {
+            return null;
+        }
+    
+        // no need to declare a variable and attach it to root node
+        root.left = pruneTree(root.left);
+        root.right = pruneTree(root.right);
+        
+        // prune 0-value leaf node
+        if (root.left == root.right && root.val != 1) {
+            return null;
+        }
+        
+        return root;
+    }
+}
+```
+
+
+
 #### [606. Construct String from Binary Tree](https://leetcode.com/problems/construct-string-from-binary-tree/) Easy
 a tree string = root.val + ( + left sub-tree string + ) + ( + right sub-tree string +)
 rules:
@@ -518,6 +605,88 @@ class Solution {
                 }
             }
             results.add(1.0 * levelSum / size);
+        }
+    }
+}
+```
+
+#### [103. Binary Tree Zigzag Level Order Traversal](https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/) Medium
+level traversal
+I am still not familiar enough with level traversal. Instead of using queue, I use stack to do it, which is rather confusing. I also forgot how to loop through every loop.
+```java
+class Solution {
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> results = new ArrayList<>();
+        if (root == null) {
+            return results;
+        }
+        
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        boolean isLeftFirst = true;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            LinkedList<Integer> level = new LinkedList<>();
+            for (int i = 0; i < size; i++) {
+                TreeNode cur = q.poll();
+                // change direction when building the level result
+                if (isLeftFirst) {
+                    level.addLast(cur.val);
+                } else {
+                    level.addFirst(cur.val);
+                }
+                
+                add(q, cur.left);
+                add(q, cur.right);
+                
+            }
+            
+            // change direction
+            isLeftFirst = !isLeftFirst;
+            // append level results
+            results.add(level);
+        }
+        return results;
+    }
+    
+    private void add(Queue<TreeNode> q, TreeNode node) {
+        if (node != null) {
+            q.offer(node);
+        }
+    }
+}
+```
+
+#### [107. Binary Tree Level Order Traversal II](https://leetcode.com/problems/binary-tree-level-order-traversal-ii/) 
+Level traversal
+```java
+class Solution {
+    public List<List<Integer>> levelOrderBottom(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (root == null) {
+            return res;
+        }
+        
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            int size = q.size();
+            LinkedList<Integer> level = new LinkedList<>();
+            for (int i = 0; i < size; i++) {
+                TreeNode node = q.poll();
+                level.addLast(node.val);
+                add(q, node.left);
+                add(q, node.right);
+            }
+            res.add(0, level);
+        }
+        
+        return res;
+    }
+    
+    private void add (Queue<TreeNode> q, TreeNode root) {
+        if (root != null) {
+            q.offer(root);
         }
     }
 }
@@ -1170,6 +1339,39 @@ public class Codec {
         
         return root;
     }
+}
+```
+
+#### [331. Verify Preorder Serialization of a Binary Tree](https://leetcode.com/problems/verify-preorder-serialization-of-a-binary-tree/) Medium
+deserialization
+```java
+class Solution {
+    public boolean isValidSerialization(String preorder) {
+        LinkedList<String> nodes = new LinkedList<>();
+        for (String node: preorder.split(",")) {
+            nodes.addLast(node);
+        }
+        
+        // validated and nodes is exhausted, no nodes remain
+        return validate(nodes) && nodes.isEmpty();
+    }
+    
+    boolean validate(LinkedList<String> nodes) {
+        // nodes is exhausts but does not stop at null sign
+        // this is a problem
+        if (nodes.isEmpty()) {
+            return false;
+        }
+        
+        String root = nodes.removeFirst();
+        
+        // null sign, sub-tree ends here, it is valid
+        if (root.equals("#")) return true;
+        
+        // not #, this means it must have non-null children, go deeper
+        return validate(nodes) && validate(nodes);
+    }
+    
 }
 ```
 
@@ -2141,6 +2343,7 @@ Get max sum of sub binary search trees:
 
 Postorder, bst
 Here a result array is used to store multiple states when leaving a new tree. This is new to me. Never expect you can do this in a recursion. 
+Never wrap a recursion function with another one.
 ```java
 class Solution {
     int maxSum = 0;
@@ -2230,3 +2433,1071 @@ class Solution {
 
 BST finishes here
 ------------------
+
+[113. Path Sum II](https://leetcode.com/problems/path-sum-ii/submissions/) Medium
+Almost forgot one of the requirements: root to leaf sum
+```java
+class Solution {
+    int target;
+    List<List<Integer>> res;
+    
+    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+        target = targetSum;
+        res = new ArrayList<>();
+        if (root == null) {
+            return res;
+        }
+                
+        
+        traverse(root, 0, new ArrayList<Integer>());
+        return res;
+    }
+    
+    private void traverse(TreeNode root, int sum, List<Integer> path) {
+        if (root == null) {
+            return;
+        }
+        
+        sum += root.val;
+        path.add(root.val);
+        
+        // root to leaf path
+        // make sure it is leaf
+        if (root.left == root.right && sum == target) {
+            // path is a reference, will be modified later
+            // so make a copy and store the copy
+            res.add(new ArrayList<Integer>(path));
+        }
+        traverse(root.left, sum, path);
+        traverse(root.right, sum, path);
+        
+        sum -= root.val;
+        path.remove(path.size() - 1);
+    }
+}
+```
+
+#### (117. Populating Next Right Pointers in Each Node II)[https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/] Medium 
+level traversal
+```java
+class Solution {
+    public Node connect(Node root) {
+        if (root == null) {
+            return null;
+        }
+        
+        Queue<Node> q = new LinkedList<>();
+        q.offer(root);
+        
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                if (i < size - 1) {
+                    
+                } 
+                Node cur = q.poll();
+                
+                // don't link the last on one level to the first on the next level
+                // last item on a level needs no linking
+                if (i <= size - 2) {
+                    cur.next = q.peek();   
+                }
+                add(q, cur.left);
+                add(q, cur.right);
+            }
+        
+        }
+        
+        return root;
+    }
+    
+    void add(Queue<Node> q, Node node) {
+        if (node != null) {
+            q.offer(node);
+        }
+    }
+}
+```
+
+#### [124. Binary Tree Maximum Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/submissions/) Hard
+It took me an hour or so to fully grasp the solution. Seems it makes me understand recursion better. Below is a good explainer to this solution.
+https://leetcode.cn/problems/binary-tree-maximum-path-sum/solution/shou-hui-tu-jie-hen-you-ya-de-yi-dao-dfsti-by-hyj8/
+![123.png](https://s2.loli.net/2022/09/03/vPa6FEI4QHsmew1.png)
+```java
+class Solution {
+    int maxSum = Integer.MIN_VALUE;
+    
+    public int maxPathSum(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        
+        postorder(root);
+        return maxSum;
+    }
+    
+    int postorder (TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        
+        int left = postorder(root.left);
+        int right = postorder(root.right);
+        
+        int innerMaxSum = root.val + left + right;
+        maxSum = Math.max(maxSum, innerMaxSum);
+        
+        int outputSum = root.val + Math.max(left, right);
+            
+        return outputSum < 0 ? 0 : outputSum;   
+    }
+}
+```
+
+#### [LintCode 595 · Binary Tree Longest Consecutive Sequence](https://www.lintcode.com/problem/595/description) Easy
+Similar to leetcode 124
+```java
+public class Solution {
+    int maxLength = 0;
+    public int longestConsecutive(TreeNode root) {
+        postorder(root);
+        return maxLength;
+    }
+
+    int postorder(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+
+        int left = postorder(root.left);
+        int right = postorder(root.right);
+        
+        int leftLength = 1, rightLength = 1;
+        if (root.left != null && root.left.val - root.val == 1) {
+            leftLength = 1 + left;
+        }
+
+        if (root.right != null && root.right.val - root.val == 1) {
+            rightLength = 1 + right;
+        }
+
+        int currentLength = Math.max(leftLength, rightLength);
+        maxLength = Math.max(maxLength, currentLength);
+
+        return currentLength;
+    }
+}
+```
+
+#### [LintCode 614 · Binary Tree Longest Consecutive Sequence II](https://www.lintcode.com/problem/614/) Medium
+```java
+public class Solution {
+    int maxLength = 0;
+    public int longestConsecutive2(TreeNode root) {
+        postorder(root);
+        return maxLength;
+    }
+
+    int[] postorder (TreeNode root) {
+        int[] res = new int[2];
+        if (root == null) {
+            return res;
+        }
+
+        // res[0] stores the longest decreasing path from parent to child that passes through the root
+        // res[1] stores the longest increasing path from parent to child that passes through the root
+        res[0] = 1;
+        res[1] = 1;
+
+        int[] left = postorder(root.left);
+        int[] right = postorder(root.right);
+        
+        if (root.left != null) {
+            if (root.val - root.left.val == 1) {
+                res[0] = left[0] + 1;
+            } else if (root.left.val - root.val == 1) {
+                res[1] = left[1] + 1;
+            }
+        }
+
+        if (root.right != null) {
+            if (root.val - root.right.val == 1) {
+                // res[0] has been calculated above
+                // here we choose the larger one because a path goes up and then down, not the same direction at the same time
+                res[0] = Math.max(res[0], right[0] + 1);
+            } else if(root.right.val - root.val == 1) {
+                res[1] = Math.max(res[1], right[1] + 1);
+            }
+        }
+
+        maxLength = Math.max(maxLength, res[0] + res[1] - 1);
+        return res;
+    }
+}
+```
+
+#### [129. Sum Root to Leaf Numbers](https://leetcode.com/problems/sum-root-to-leaf-numbers/) Medium
+```java
+class Solution {
+    List<String> res = new ArrayList<>();
+        
+    public int sumNumbers(TreeNode root) {
+        traverse(root, "");
+        
+        int sum = 0;
+        for (String s: res) {
+            System.out.println(s);
+            sum += Integer.parseInt(s);
+        }
+        
+        return sum;
+    }
+    
+    void traverse(TreeNode root, String s) {
+        if (root == null) {
+            return;
+        }
+        
+        traverse(root.left, s + root.val);
+        traverse(root.right, s + root.val);
+        
+        if (root.left == root.right) {
+            res.add(s + root.val);
+            return;
+        }
+    }
+}
+```
+
+#### [199. Binary Tree Right Side View](https://leetcode.com/problems/binary-tree-right-side-view/) Medium
+level traversal
+```java
+class Solution {
+    List<Integer> res = new ArrayList<>();
+    
+    public List<Integer> rightSideView(TreeNode root) {
+        if (root == null) {
+            return res;
+        }
+        
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode cur = q.poll();
+                // System.out.println(cur.val);
+                if (i == 0) {
+                    res.add(cur.val);
+                }
+                // right subtree first
+                add(q, cur.right);
+                add(q, cur.left);
+            }
+        }
+        
+        return res;
+    }
+    
+    void add(Queue<TreeNode> q, TreeNode node) {
+        if (node != null) {
+            q.offer(node);
+        }
+    }
+}
+```
+Preorder traversal
+```java
+class Solution {
+    List<Integer> res = new ArrayList<>();
+    int depth = 0;
+    
+    public List<Integer> rightSideView(TreeNode root) {
+        if (root == null) {
+            return res;
+        }
+        traverse(root);
+        
+        return res;
+    }
+    
+    
+    void traverse(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        
+        // preorder position
+        // add 1 to depth when entering the tree
+        // because right subtree is visited first, only the first one to the right should be added
+        depth++;
+        if (res.size() < depth) {
+            res.add(root.val);
+        }
+
+        traverse(root.right);
+        traverse(root.left);
+        // reset depth when leaving the sub-tree
+        depth--;
+    }
+    
+}
+```
+
+#### [662. Maximum Width of Binary Tree](https://leetcode.com/problems/maximum-width-of-binary-tree/) Medium
+Level traversal, serialize nodes, binary heap, complete binary tree
+left = root.id * 2, right = root.id * 2 + 1
+![662[1].png](https://s2.loli.net/2022/09/05/bykzq3BdsJ2ApHx.png)
+```java
+class Solution {
+    
+    class SerialNode {
+        TreeNode node;
+        int id;
+        
+        public SerialNode (TreeNode node, int id) {
+            this.node = node;
+            this.id = id;
+        }
+    } 
+    
+    public int widthOfBinaryTree(TreeNode root) {
+        if (root == null) return 0;
+        
+        int max = 0;
+        Queue<SerialNode> q = new LinkedList<>();
+        q.offer(new SerialNode(root, 1));
+        
+        // variables used in the while loop
+        int size, start, end, curId;
+        TreeNode cur;
+        SerialNode sn;
+        
+        while (!q.isEmpty()) {
+            size = q.size();
+            start = 0;
+            end = 0;
+            for (int i = 0; i < size; i++) {
+                sn = q.poll();
+                cur = sn.node;
+                curId = sn.id;
+                if (i == 0) {
+                    start = curId;
+                }
+                if (i == size - 1) {
+                    end = curId;
+                }
+                add(q, cur.left, curId * 2);
+                add(q, cur.right, curId * 2 + 1);
+            }
+            
+            max = Math.max(max, end - start + 1);
+        }
+        return max;
+    }
+    
+    private void add (Queue<SerialNode> q, TreeNode node, int id) {
+        if (node != null) {
+            q.offer(new SerialNode(node, id));
+        }
+    }
+}
+```
+
+traversal
+```java
+class Solution {
+    public int widthOfBinaryTree(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }           
+        
+        traverse(root, 1, 1);
+        return max;
+    }
+    
+    List<Integer> levelFirsts = new ArrayList<>();
+    int max = 1;
+    
+    void traverse(TreeNode root, int id, int depth) {
+        if (root == null) {
+            return;
+        }
+        
+        if (levelFirsts.size() == depth - 1) {
+            levelFirsts.add(id);
+        } else {
+            max = Math.max(max, id - levelFirsts.get(depth - 1) + 1);
+        }
+        
+        traverse(root.left, id * 2, depth + 1);
+        traverse(root.right, id * 2 + 1, depth + 1);
+    }
+}
+```
+
+#### (1104. Path In Zigzag Labelled Binary Tree)[https://leetcode.com/problems/path-in-zigzag-labelled-binary-tree/] Medium
+math, complete binary tree
+from left to right count
+1          1   
+2   2^(2-1) 2^2 - 1  
+3 2^(3-1) ..+1 ..+2  2^3 - 1
+4 ......
+zigzag count: (min + max) - label of left-to-right count will substitue original count with right-to-left count
+This problem has more to do with math than with binary tree itself.
+```java
+class Solution {
+    public List<Integer> pathInZigZagTree(int label) {
+        int lastRow = getLastRow(label);
+        List<Integer> res = getPath(label, lastRow);
+        Collections.reverse(res);
+        return res;
+    }
+    
+    int getLastRow(int label) {
+        int row = 1, rowStart = 1;
+        // 1,2,4,8...
+        // maximum value for every row is 2^row - 1
+        while (rowStart * 2 <= label) {
+            row++;
+            rowStart *= 2;
+        }
+        return row;
+    }
+    
+    List<Integer> getPath (int label, int row) {
+        // if last row is even, it will be wrongly revered in the while loop
+        if (row % 2 == 0) {
+            label = reverseLabel(label, row);
+        }
+        List<Integer> path = new ArrayList<>();
+        
+        while (row > 0) {
+            // even row number
+            // from right to left, reversing is needed
+            if (row % 2 == 0) {
+                path.add(reverseLabel(label, row));
+            } else {
+                path.add(label);
+            }
+            // move to previous row
+            row--;
+            label >>= 1;
+        }
+        
+        return path;
+    }
+    
+    // change a left-to-right lable to a right-to-left one and vice versa
+    int reverseLabel(int label, int row) {
+        // 2^(row - 1) + 2^row - 1 - label
+        return (1 << row - 1) + (1 << row) - 1 - label;
+    }
+}
+```
+More math and more concise. Math always gets me confused. I am still not so sure that I can write the solution by myself.
+```java
+class Solution {
+    public List<Integer> pathInZigZagTree(int label) {
+        List<Integer> path = new ArrayList<>();
+        while (label >= 1) {
+            path.add(label);
+            label >>= 1;
+            int depth = log(label);
+            System.out.println(depth);
+            int[] range = getLevelRange(depth);
+            // zigzag, order changes every level, so reversing is always needed
+            label = range[1] + range[0] - label;
+        }
+        
+        Collections.reverse(path);
+        return path;
+    }
+    
+    int[] getLevelRange(int n) {
+        int p = (int) Math.pow(2, n);
+        return new int[]{p, p * 2 - 1};
+    }
+    
+    int log(int x) {
+        // 2^?  = x
+        return (int) (Math.log(x) / Math.log(2));
+    }
+}
+```
+
+#### [1261. Find Elements in a Contaminated Binary Tree](https://leetcode.com/problems/find-elements-in-a-contaminated-binary-tree/) Medium
+```java
+class FindElements {
+    TreeNode root;
+    public FindElements(TreeNode root) {
+        traverse(root, 0);
+        this.root = root;
+    }
+    
+    void traverse(TreeNode root, int val) {
+        if (root == null) {
+            return;
+        }
+        
+        root.val = val;
+        traverse(root.left, val * 2 + 1);
+        traverse(root.right, val * 2 + 2);
+        
+    }
+    
+    public boolean find(int target) {
+        return find(this.root, target);
+    }
+    
+    boolean find(TreeNode root, int target) {
+        if (root == null) {
+            return false;
+        }
+        
+        if (root.val == target) {
+            return true;
+        }
+        
+        return find(root.left, target) || find(root.right, target);
+    }
+}
+```
+
+
+#### [222. Count Complete Tree Nodes](https://leetcode.com/problems/count-complete-tree-nodes/) Medium
+https://labuladong.github.io/algo/2/21/48/
+complete binary tree
+This is a solution that has a time compleity of O(n). Fails to meet the requirement. 
+```java
+class Solution {
+    public int countNodes(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        
+        traverse(root, 1);
+        return max;
+    }
+    
+    int max = 1;
+    void traverse(TreeNode root, int id) {
+        if (root == null) {
+            return;
+        }
+        
+        if (id > max) {
+            max = id;
+        }
+        
+        traverse(root.left, id * 2);
+        traverse(root.right, id * 2 + 1);
+    }
+}
+```
+Complete binary tree, perfect binary tree
+Complete binary is somewhere between a normal binary tree and a perfect binary tree. At least there is one of its direct sub trees is a perfect tree.
+![trees[1].png](https://s2.loli.net/2022/09/06/vQDaWTlCbNRI8Xd.png)
+![1[1].jpg](https://s2.loli.net/2022/09/06/J95S1nHPE3lWw86.jpg)
+```java
+class Solution {
+    public int countNodes(TreeNode root) {
+        TreeNode left = root, right = root;
+        int leftHeight = 0, rightHeight = 0;
+        while (left != null) {
+            left = left.left;
+            leftHeight++;
+        }
+        while (right != null) {
+            right = right.right;
+            rightHeight++;
+        }
+        if (leftHeight == rightHeight) {
+            return (int) Math.pow(2, leftHeight) - 1;    
+        }
+        // this is how to calculate the nodes of a normal tree
+        return 1 + countNodes(root.left) + countNodes(root.right);
+    }
+}
+```
+
+#### [337. House Robber III](https://leetcode.com/problems/house-robber-iii/) Medium
+Focus on what a single node can do, instead of thinking about complicated cases. Focus.
+```java
+class Solution {
+    Map<TreeNode, Integer> memo = new HashMap<>();
+    public int rob(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        
+        if (memo.containsKey(root)) {
+            return memo.get(root);
+        }
+        
+        int robThis = root.val 
+            + (
+               root.left == null ? 0 : 
+               rob(root.left.left) + rob(root.left.right)
+              )
+            + (
+                root.right == null ? 0 :
+                rob(root.right.left) + rob(root.right.right)
+              );
+        int doNotRobThis = rob(root.left) + rob(root.right);
+        int res = Math.max(robThis, doNotRobThis);
+        memo.put(root, res);
+        return res;
+    }
+}
+```
+Make use of return values of recursion functions to improve efficiency.
+```java
+class Solution {
+    public int rob(TreeNode root) {
+        int[] res = traverse(root);
+        return Math.max(res[0], res[1]);
+    }
+    /*
+    return an two-element array to store the maximum values for a root tree
+    res[0] represents the max value when current house (node) is skipped
+    res[1] represents the max value when current house (node) is robbed
+    */
+    int[] traverse(TreeNode root) {
+        if (root == null) {
+            return new int[]{0, 0};
+        }
+        
+        int[] left = traverse(root.left);
+        int[] right = traverse(root.right);
+        // postorder position: maximum value after robbing or not robbing this house depends on its children house
+        int rob = root.val + left[0] + right[0]; // current house is robbed, then its children house must be skipped
+        int not_rob = Math.max(left[0], left[1]) + Math.max(right[0], right[1]); // current house is skipped, children houses now can be robbed or not, choose a better option
+        
+        return new int[]{not_rob, rob};
+    }
+}
+```
+
+#### (437. Path Sum III)[https://leetcode.com/problems/path-sum-iii/] Medium
+Traversal, prefix sum
+```java
+class Solution {
+    // according to constrains the sum could surpass integer range
+    long presum;
+    int target, res;
+    Map<Long, Integer> map;
+    public int pathSum(TreeNode root, int targetSum) {
+        if (root == null) {
+            return 0;
+        }
+        
+        this.presum = 0;
+        this.target = targetSum;
+        this.res = 0;
+        this.map = new HashMap<>();
+        map.put(0L, 1);
+        
+        traverse(root);
+        return res;
+    }
+    
+    void traverse(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        
+        // entering, set
+        presum += root.val;
+        res += map.getOrDefault(presum - target, 0);
+        map.put(presum, map.getOrDefault(presum, 0) + 1);
+        
+        traverse(root.left);
+        traverse(root.right);
+        
+        // leaving, reset
+        map.put(presum, map.get(presum) - 1);
+        presum -= root.val;
+    }
+}
+```
+Decomposition, two recursion functions
+```java
+
+class Solution {
+    public int pathSum(TreeNode root, long targetSum) {
+        if (root == null) {
+            return 0;
+        }
+        
+        int res = rootSum(root, targetSum);
+        //  here is the trciky part, pay attention to the function used here
+        //  the main funciton is also used as a recursive function
+        //  this will make sure that every node will be treated as a root node once
+        res += pathSum(root.left, targetSum);
+        res += pathSum(root.right, targetSum);
+        
+        return res;
+    }
+    
+    // this returns the desired path count when current node is a root
+    private int rootSum(TreeNode root, long target) {
+        int res = 0;
+        
+        if (root == null) {
+            return res;
+        }
+        
+        if (root.val == target) {
+            res++;
+        }
+        
+        res += rootSum(root.left, target - root.val);
+        res += rootSum(root.right, target - root.val);
+        
+        return res;
+        
+    }
+}
+```
+
+
+#### (508. Most Frequent Subtree Sum)[https://leetcode.com/problems/most-frequent-subtree-sum/submissions/] Medium
+decomposition
+```java
+class Solution {
+    
+    Map<Integer, Integer> map = new HashMap<>();
+    ArrayList<Integer> res = new ArrayList<>();
+    int mostFrequent = 0;
+    
+    public int[] findFrequentTreeSum(TreeNode root) {
+        if (root == null) {
+            return new int[2];
+        }
+        
+        sum(root);
+        
+        for (Map.Entry<Integer, Integer> entry: map.entrySet()) {
+            if (entry.getValue() == mostFrequent) {
+                res.add(entry.getKey());
+            }
+        }
+        
+        return convertListToArray(res);
+    }
+    
+    int sum(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        
+        int left = sum(root.left);
+        int right = sum(root.right);
+        
+        int sum = root.val + left + right;
+        map.put(sum, map.getOrDefault(sum, 0) + 1);
+        if (map.get(sum) > mostFrequent) {
+            mostFrequent = map.get(sum);
+        }
+        
+        return sum;
+    }
+    
+    int[] convertListToArray(List<Integer> list) {
+        return list.stream().mapToInt(i -> i).toArray();
+    }
+}
+```
+
+
+#### [513. Find Bottom Left Tree Value](https://leetcode.com/problems/find-bottom-left-tree-value/) Medium
+level traversal
+```java
+class Solution {
+    int depth = 0;
+    public int findBottomLeftValue(TreeNode root) {
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        List<Integer> res = new ArrayList<>();
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode cur = q.poll();
+                res.add(cur.val);
+                add(q, cur.left);
+                add(q, cur.right);
+            }
+            if (!q.isEmpty()) {
+                res.clear();
+            }
+        }
+        return res.get(0);
+    }
+    
+    private void add(Queue<TreeNode> q, TreeNode node) {
+        if (node != null) {
+            q.offer(node);
+        }
+    }
+}
+```
+
+I still don't fully understand preorder traversal. The first to reach the max depth will be the bottom left node.
+traversal. Depth can also be counted in a vertical traversal.
+```java
+class Solution {
+    int maxDepth = 0;
+    int depth = 0;
+    TreeNode res;
+    public int findBottomLeftValue(TreeNode root) {
+        traverse(root);
+        return res.val;
+    }
+    
+    void traverse(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        
+        // preorder position
+        depth++;
+        if (depth > maxDepth) {
+            maxDepth = depth;
+            res = root;
+        }
+        traverse(root.left);        
+        traverse(root.right);
+        depth--;
+    }
+}
+```
+
+#### [515. Find Largest Value in Each Tree Row](https://leetcode.com/problems/find-largest-value-in-each-tree-row/) Medium
+Level traversal, pretty intuitive solution
+```java
+class Solution {
+    public List<Integer> largestValues(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if (root == null){
+            return res;
+        }
+        
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        int rowMax;
+        while (!q.isEmpty()) {
+            rowMax = Integer.MIN_VALUE;
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode cur = q.poll();
+                if (cur.val > rowMax) {
+                    rowMax = cur.val;
+                }
+                add(q, cur.left);
+                add(q, cur.right);
+            }
+            res.add(rowMax);
+        }
+        
+        return res;
+    }
+    
+    private void add(Queue<TreeNode> q, TreeNode node) {
+        if (node != null) {
+            q.offer(node);
+        }
+    }
+}
+```
+preorder traversal. Still not famaliar with preorder traversal to get row info.
+```java
+class Solution {
+    ArrayList<Integer> res = new ArrayList<>();
+    
+    public List<Integer> largestValues(TreeNode root) {
+        if (root == null) {
+            return res;
+        }
+        
+        traverse(root,0);
+        return res;
+    }
+    
+    void traverse(TreeNode root, int depth) {
+        if (root == null) {
+            return;
+        }
+        
+        // when first entering a level
+        if (res.size() <= depth) {
+            res.add(root.val);
+        } else {
+            res.set(depth, Math.max(res.get(depth), root.val));
+        }
+        
+        traverse(root.left, depth + 1);
+        traverse(root.right, depth + 1);
+    }
+}
+```
+
+#### [623. Add One Row to Tree](https://leetcode.com/problems/add-one-row-to-tree/) Medium
+depth traversal
+```java
+class Solution {
+    int newVal;
+    int targetDepth;
+    
+    public TreeNode addOneRow(TreeNode root, int val, int depth) {
+        if (depth == 1) {
+            TreeNode newRoot = new TreeNode(val);
+            newRoot.left = root;
+            return newRoot;
+        }
+        
+        newVal = val;
+        targetDepth = depth;
+        
+        traverse(root, 1);
+        return root;
+    }
+    
+    void traverse(TreeNode root, int depth) {
+        if (root == null) {
+            return;
+        }
+        
+        traverse(root.left, depth + 1);
+        traverse(root.right, depth + 1);
+        if (depth == targetDepth - 1) {
+            addNewRow(root);
+            return;
+        }
+    }
+    
+    void addNewRow(TreeNode root) {
+        TreeNode newLeft = new TreeNode(newVal);
+        TreeNode newRight = new TreeNode(newVal);
+        TreeNode oldLeft = root.left;
+        TreeNode oldRight = root.right;
+        root.left = newLeft;
+        root.right = newRight;
+        newLeft.left = oldLeft;
+        newRight.right = oldRight;
+    }
+}
+```
+
+#### [655. Print Binary Tree](https://leetcode.com/problems/print-binary-tree/) Medium
+depth traversal
+```java
+class Solution {
+    List<List<String>> res = new ArrayList<>();
+    int depth;
+    public List<List<String>> printTree(TreeNode root) {
+        // depth = height + 1
+        depth = getDepth(root);
+        int row = depth;
+        int column = (1 << depth) - 1; // (int) Math.pow(2, depth) - 1
+        fillResWithEmptyStrings(res, row, column);
+        System.out.println(column / 2);
+        traverse(root, 0, (column - 1) / 2);
+        return res;
+    }
+    
+    int getDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        
+        int left = getDepth(root.left);
+        int right = getDepth(root.right);
+        
+        return Math.max(left, right) + 1;
+    }
+    
+    void fillResWithEmptyStrings(List<List<String>> res, int row, int column) {
+        for (int i = 0; i < row; i++) {
+            List<String> currentRow = new ArrayList<>();
+            for (int j = 0; j < column; j++) {
+                currentRow.add("");
+            }
+            res.add(currentRow);
+        }
+    }
+    
+    void traverse(TreeNode root, int x, int y) {
+        if (root == null) {
+            return;
+        }
+        
+        res.get(x).set(y, String.valueOf(root.val));
+        traverse(root.left, x + 1, y - (1 << (depth - x - 1 - 1)));
+        traverse(root.right, x + 1, y + (1 << (depth - x - 1 - 1)));
+    }
+}
+```
+
+#### [863. All Nodes Distance K in Binary Tree](https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/) Medium
+BFS, level traversal that also involves parent node
+```java
+class Solution {
+    Map<Integer, TreeNode> parent;
+    List<Integer> res;
+    
+    public List<Integer> distanceK(TreeNode root, TreeNode target, int k) {
+        parent = new HashMap<>();
+        res = new ArrayList<>();
+        traverse(root, null);
+        // start from target, instead of root. This is a key difference.
+        bfs(target, k);
+        return res;
+        
+    }
+    
+    void traverse(TreeNode root, TreeNode parentNode) {
+        if (root == null) {
+            return;
+        }
+        
+        parent.put(root.val, parentNode);
+        traverse(root.left, root);
+        traverse(root.right, root);
+    }
+    
+    void bfs(TreeNode start, int k) {
+        Queue<TreeNode> q = new LinkedList<>();
+        Set<Integer> visited = new HashSet<>();
+        q.offer(start);
+        visited.add(start.val);
+        int distance = 0;
+        
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode cur = q.poll();
+                
+                // desired distance is reached
+                if (distance == k) {
+                    res.add(cur.val);
+                }
+                
+                TreeNode parentNode = parent.get(cur.val);
+                add(q, visited, parentNode);
+                add(q, visited, cur.left);
+                add(q, visited, cur.right);
+            }
+            
+            distance++;
+        }
+    }
+    
+    void add(Queue<TreeNode> q, Set<Integer> visited, TreeNode node) {
+        if (node != null && !visited.contains(node.val)) {
+            visited.add(node.val);
+            q.offer(node);
+        }
+    }
+}
+```

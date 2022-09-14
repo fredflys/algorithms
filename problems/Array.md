@@ -483,103 +483,6 @@ class Solution:
         return False
 ```
 
-#### 1248 Count Number of Nice Subarrays <span style="color:orange">Medium</span>
-
-自己想的解法，自以为完备，真正执行时，先会遇到语法错误。语法问题解决后，再去执行，常常是连第一个测试用例也无法通过。再以第一个测试用例，调整思路，使其通过后，再执行多个测试用例，发现又有错误。多半是自己只盯着特殊的测试用例，问题没理解充分，忽略了限制条件。好不容易让多个测试用例也通过了，真正提交时又会遇到要么是一半的测试用例没通过，要么是超时了，瓶颈在哪里自己也搞不清楚。这道题还是看了讨论中的题解才依样画葫芦给做出来的。
-
-```java
-class Solution {
-    public int numberOfSubarrays(int[] nums, int k) {
-		int len = nums.length;
-		int left = 0;
-		int right;
-		// track how many odd numbers are found in the window
-		int windowOdds = 0;
-		int result = 0;
-		// track how many subarrays are found in the window
-		int tempResult = 0;
-		for(right = 0; right < len; right++){
-			if(nums[right] % 2 == 1){
-				windowOdds++;
-				if(windowOdds == k) tempResult = 0;
-				while(windowOdds == k){
-					// as long as the window remains
-					tempResult++;
-
-					// left stops at an odd number, which means we'll lose an odd number after moving left one step further, so the window should shrink
-					if(nums[left] % 2 == 1){
-						windowOdds--;
-					}
-					left++;
-				}
-				// the window no longer remains, so we add the temp result from this round to the final result
-				result += tempResult;
-			} else {
-				// current character is even after moving forward, which means it does not affect the result from last round, so we simply reuse it and add it to the result
-				// e.g. for nums = [2 2 1 2 1 2] and k = 2, when right pointer stops at the latter 1, there are 3 sub arrays for now. Then we move the right pointer forward and it stops at the last 2, since it is not odd, we have another 3 sub arrays, every one of which is simply the sub array from last round with the even number appended. (22121 -> 221212, 2121->21212, 121->1212)
-				result += tempResult;
-			}
-		}
-		return result;
-    }
-}
-```
-
-#### [930 Binary Subarrays With Sum](https://leetcode-cn.com/problems/binary-subarrays-with-sum/) <span style="color:orange">Medium</span>
-
-So we are trying to count continuous sub-arrays where the number of ones within is equal to a desired goal. So only ones count in this case. Consider the array [0,0,1,0,1,0,0,0] and the goal is 2 and [1,0,1] in the middle is the base case from which we can go left or right. Since two zeros are on the left and three on the right, we have 2 x 3 possibilities. Also, don't forget [1,0,1] in the middle, therefore we have (2+1) x (3+1) possibilities in total. Starting from this example, it's safe to say that the things we care about here are the number of ones and zeros in between. But we have to be careful when the goal is 0 because in this cases we can not get the result simply by summing the number of the zeros in between.
-
-```python
-class Solution:
-    def numSubarraysWithSum(self, nums: List[int], goal: int) -> int:
-        result = 0
-        # count zeros between ones in each iteration
-        count_zeros = 0
-        # use an array to save the number of zeros between ones
-        # example: [0,0,1,0,1,0,0,0] zeros_between_ones: [3, 2, 4]
-        zeros_between_ones = []
-
-        for num in nums:
-            if(num == 0):
-                count_zeros += 1
-            else:
-                zeros_between_ones.append(count_zeros + 1)
-                count_zeros = 0
-        zeros_between_ones.append(count_zeros + 1)
-
-        # when goal is 0, count the possibilities of zero combinations, ones excluded
-        # so only adding is involved here and no multiplication
-        # example: [0,0,0,1,0,0] zeros_between_ones: [4, 3]
-        if(goal == 0):
-            for count in zeros_between_ones:
-                for i in range(count):
-                    result += i
-            return result
-
-        # when goal is not zero, multiplication is needed
-        for i in range(len(zeros_between_ones)):
-            # ones are exhausted
-            if(i + goal == len(zeros_between_ones)):
-                break
-            result += zeros_between_ones[i] * zeros_between_ones[i + goal]
-        return result
-```
-
-前缀和加哈希表的解法，我始终无法理解，看了许多题解，还是不懂为什么要sum-goal，统计出来的map又有怎么样的实际意义。不想再在这道题上花时间了，挫败感太强了，之后再碰到前缀和的题目然后再看吧。
-
-#### [1. Two Sum](https://leetcode-cn.com/problems/two-sum/) <span style="color:green">Easy</span>
-
-```python
-class Solution:
-    def twoSum(self, nums: List[int], target: int) -> List[int]:
-        num_index = {}
-        for index, num in enumerate(nums):
-            if target - num in num_index:
-                return [num_index[target - num], i]
-            num_index[nums[index]] = index
-        return []
-```
-
 #### [170. Two Sum III - Data structure design](https://leetcode.com/problems/two-sum-iii-data-structure-design/) Easy
 User HashMap to save occurances (e.g. 2,4,4,5, 4 shows up two times, if the occurance is not noted down, a target 8 can never be reached)
 Typically a data structure problems involves trade-offs between different methods based upon how frequently each method is going to be used
@@ -2301,6 +2204,338 @@ class BlockArray {
         }
         
         return count;
+    }
+}
+```
+
+#### 1248 Count Number of Nice Subarrays <span style="color:orange">Medium</span>
+prefix sum
+自己想的解法，自以为完备，真正执行时，先会遇到语法错误。语法问题解决后，再去执行，常常是连第一个测试用例也无法通过。再以第一个测试用例，调整思路，使其通过后，再执行多个测试用例，发现又有错误。多半是自己只盯着特殊的测试用例，问题没理解充分，忽略了限制条件。好不容易让多个测试用例也通过了，真正提交时又会遇到要么是一半的测试用例没通过，要么是超时了，瓶颈在哪里自己也搞不清楚。这道题还是看了讨论中的题解才依样画葫芦给做出来的。
+
+```java
+class Solution {
+    public int numberOfSubarrays(int[] nums, int k) {
+		int len = nums.length;
+		int left = 0;
+		int right;
+		// track how many odd numbers are found in the window
+		int windowOdds = 0;
+		int result = 0;
+		// track how many subarrays are found in the window
+		int tempResult = 0;
+		for(right = 0; right < len; right++){
+			if(nums[right] % 2 == 1){
+				windowOdds++;
+				if(windowOdds == k) tempResult = 0;
+				while(windowOdds == k){
+					// as long as the window remains
+					tempResult++;
+
+					// left stops at an odd number, which means we'll lose an odd number after moving left one step further, so the window should shrink
+					if(nums[left] % 2 == 1){
+						windowOdds--;
+					}
+					left++;
+				}
+				// the window no longer remains, so we add the temp result from this round to the final result
+				result += tempResult;
+			} else {
+				// current character is even after moving forward, which means it does not affect the result from last round, so we simply reuse it and add it to the result
+				// e.g. for nums = [2 2 1 2 1 2] and k = 2, when right pointer stops at the latter 1, there are 3 sub arrays for now. Then we move the right pointer forward and it stops at the last 2, since it is not odd, we have another 3 sub arrays, every one of which is simply the sub array from last round with the even number appended. (22121 -> 221212, 2121->21212, 121->1212)
+				result += tempResult;
+			}
+		}
+		return result;
+    }
+}
+```
+
+#### [930 Binary Subarrays With Sum](https://leetcode-cn.com/problems/binary-subarrays-with-sum/) <span style="color:orange">Medium</span>
+prefix sum
+So we are trying to count continuous sub-arrays where the number of ones within is equal to a desired goal. So only ones count in this case. Consider the array [0,0,1,0,1,0,0,0] and the goal is 2 and [1,0,1] in the middle is the base case from which we can go left or right. Since two zeros are on the left and three on the right, we have 2 x 3 possibilities. Also, don't forget [1,0,1] in the middle, therefore we have (2+1) x (3+1) possibilities in total. Starting from this example, it's safe to say that the things we care about here are the number of ones and zeros in between. But we have to be careful when the goal is 0 because in this cases we can not get the result simply by summing the number of the zeros in between.
+
+```python
+class Solution:
+    def numSubarraysWithSum(self, nums: List[int], goal: int) -> int:
+        result = 0
+        # count zeros between ones in each iteration
+        count_zeros = 0
+        # use an array to save the number of zeros between ones
+        # example: [0,0,1,0,1,0,0,0] zeros_between_ones: [3, 2, 4]
+        zeros_between_ones = []
+
+        for num in nums:
+            if(num == 0):
+                count_zeros += 1
+            else:
+                zeros_between_ones.append(count_zeros + 1)
+                count_zeros = 0
+        zeros_between_ones.append(count_zeros + 1)
+
+        # when goal is 0, count the possibilities of zero combinations, ones excluded
+        # so only adding is involved here and no multiplication
+        # example: [0,0,0,1,0,0] zeros_between_ones: [4, 3]
+        if(goal == 0):
+            for count in zeros_between_ones:
+                for i in range(count):
+                    result += i
+            return result
+
+        # when goal is not zero, multiplication is needed
+        for i in range(len(zeros_between_ones)):
+            # ones are exhausted
+            if(i + goal == len(zeros_between_ones)):
+                break
+            result += zeros_between_ones[i] * zeros_between_ones[i + goal]
+        return result
+```
+
+前缀和加哈希表的解法，我始终无法理解，看了许多题解，还是不懂为什么要sum-goal，统计出来的map又有怎么样的实际意义。不想再在这道题上花时间了，挫败感太强了，之后再碰到前缀和的题目然后再看吧。
+
+```java
+class Solution {
+    public int numSubarraysWithSum(int[] nums, int goal) {
+        // [i...j]
+        int count = 0;
+        int presum = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);
+        /*
+        k: count sum[i, j] == k
+        previous presum: [0, i - 1]
+        current presum: [0, j]
+        
+               presum
+        .  .  .  .  .  .  .  .
+              .  .  .  .
+              i        j
+        0 i-1
+         previous presum + k = current presum
+      => current presum - k = previous presum
+        
+        */
+        for (int num: nums) {
+            presum += num;
+            if (map.containsKey(presum - goal)) {
+                count = count + map.get(presum - goal);    
+            }
+            
+            // store previous presum
+            map.put(presum, map.getOrDefault(presum, 0) + 1);
+        }
+        
+        
+        
+        return count;
+    }
+}
+```
+
+#### [1. Two Sum](https://leetcode-cn.com/problems/two-sum/) <span style="color:green">Easy</span>
+prefix sum
+```python
+class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        num_index = {}
+        for index, num in enumerate(nums):
+            if target - num in num_index:
+                return [num_index[target - num], i]
+            num_index[nums[index]] = index
+        return []
+```
+
+#### [724. Find Pivot Index](https://leetcode.com/problems/find-pivot-index/) Easy
+prefix sum
+```java
+class Solution {
+    public int pivotIndex(int[] nums) {
+        int preSum = 0;
+        for (int num: nums) {
+            preSum += num;
+        }
+        
+        int leftSum = 0;
+        int pivotNum;
+        for (int i = 0; i < nums.length; i++) {
+            pivotNum = nums[i];
+            int rightSum = preSum - pivotNum - leftSum;
+            if (leftSum == rightSum) {
+                return i;
+            }
+            
+            // get ready for next loop: extend left
+            leftSum += nums[i];
+        }
+        
+        return -1;
+    }
+}
+```
+Another solution: gradually narrow the right and extend the left and always leave the pivot in between
+```java
+class Solution {
+    public int pivotIndex(int[] nums) {
+        int leftSum = 0;
+        int rightSum = 0;
+        for (int num: nums) {
+            rightSum += num;
+        }
+        
+        // now it is the status when i == -1
+        /*
+          2 1 -1
+        |
+     l       r
+        */
+        for (int i = 0; i < nums.length; i++) {
+            // nums[i] is deducted from right sum and is not in left sum now
+            // so it is the pivot now
+            rightSum -= nums[i];
+            if (leftSum == rightSum) {
+                return i;
+            }
+            
+            // only now one number is added to the left for the next loop
+            leftSum += nums[i];
+        }
+        
+        return -1;
+    }
+}
+```
+
+#### [560. Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/) Medium
+prefix sum
+Same solution can be used to solve 930.
+```java
+class Solution {
+    public int subarraySum(int[] nums, int k) {
+        // [i...j]
+        int count = 0;
+        int presum = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);
+        /*
+        k: count sum[i, j] == k
+        previous presum: [0, i - 1]
+        current presum: [0, j]
+        
+               presum
+        .  .  .  .  .  .  .  .
+              .  .  .  .
+              i        j
+        0 i-1
+         previous presum + k = current presum
+      => current presum - k = previous presum
+        
+        */
+        for (int num: nums) {
+            presum += num;
+            if (map.containsKey(presum - k)) {
+                count = count + map.get(presum - k);    
+            }
+            
+            // store previous presum
+            map.put(presum, map.getOrDefault(presum, 0) + 1);
+        }
+        
+        
+        
+        return count;
+    }
+}
+```
+
+
+#### [974. Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k) Medium
+prefix sum
+
+Modular arithmetic: a % c == b % c <-> (a - b) % c = 0 
+```java
+class Solution {
+    public int subarraysDivByK(int[] nums, int k) {
+        // [i...j]
+        int count = 0;
+        int presum = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);
+        
+        for (int num: nums) {
+            presum += num;
+            int modulus  = (presum % k + k) % k;
+            if (map.containsKey(modulus )) {
+                count = count + map.get(modulus );    
+            }
+            
+            // store previous presum
+            map.put(modulus, map.getOrDefault(modulus, 0) + 1);
+        }
+        
+        return count;
+    }
+}
+```
+prefix sum, no corner cases need to be considered, though another loop is needed
+```java
+class Solution {
+    public boolean checkSubarraySum(int[] nums, int k) {
+        int n = nums.length;
+        int[] presum = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            presum[i] = presum[i - 1] + nums[i - 1];
+        }
+        Set<Integer> set = new HashSet<>();
+        // subarray length must be greater than 1
+        // for presum, it means starting from 2
+        for (int i = 2; i <= n; i++) {
+            set.add(presum[i - 2] % k);
+            // get modulus for presum from index 2 to index n
+            if (set.contains(presum[i] % k)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+}
+```
+
+
+#### [523. Continuous Subarray Sum](https://leetcode.com/problems/continuous-subarray-sum/) Medium
+```java
+class Solution {
+    public boolean checkSubarraySum(int[] nums, int k) {
+        if (nums.length == 1) {
+            return false;
+        }
+        
+        int n = nums.length;
+        Map<Integer, Integer> map = new HashMap<>();
+        int presum = 0;
+        // a desired subarray can be possibly found at index 1 (second element) 
+        // if -1 is inserted here, this case will be missed
+        // e.g. [2,4] k = 6
+        map.put(0, -1);
+        for (int i = 0; i < n; i++) {
+            presum += nums[i];
+            int modulus = (presum % k + k) % k;
+            // System.out.println(modulus);
+            if (map.containsKey(modulus)) {
+                if (i - map.get(modulus) > 1) {
+                    return true;   
+                }
+                /*
+                do not update agiain when the same modulus is repeated. only keep the smalleest 
+                e.g. [5, 0, 0, 0] k = 3
+                
+                */
+                continue;
+            }
+            
+            map.put(modulus, i);
+        }
+        
+        return false;
     }
 }
 ```
