@@ -913,17 +913,3 @@ class Solution:
     def get_distance(self, point):
         return point[0] ** 2 + point[1] ** 2
 ```
-#### [215. Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/) Medium
-max heap - reversed min heap
-```python
-class Solution:
-    def findKthLargest(self, nums: List[int], k: int) -> int:
-        heap = []
-        result = []
-        for num in nums:
-            heapq.heappush(heap, -num)
-        while k > 0:
-            result = -heapq.heappop(heap)
-            k -= 1
-        return result
-```

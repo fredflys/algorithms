@@ -2087,126 +2087,6 @@ class Solution:
             return self.findKth(A, a + k // 2, B, b, k - k // 2)
         return self.findKth(A, a, B, b + k // 2,  k - k // 2)
 ```
-#### [315. Count of Smaller Numbers After Self](https://leetcode.com/problems/count-of-smaller-numbers-after-self/) Hard
-block search, my solution not fast for this problem, will cause TLE sometimes, check out Java solution for reference
-
-```python
-class Block:
-    def __init__(self):
-        self.total = 0
-        self.counter = {}
-        
-class BlockArray:
-    def __init__(self, max_value):
-        self.blocks = [
-            Block()
-            for _ in range(10000)
-        ]
-        
-    def get_position(self, val):
-        return val // 100
-        
-    def insert(self, val):
-        position = self.get_position(val)
-        self.blocks[position].counter[val] = self.blocks[position].counter.get(val, 0) + 1
-        self.blocks[position].total += 1
-    
-    def count_smaller(self, val):
-        count = 0
-        position = self.get_position(val)
-        # count of total from all blocks that come before the block where the val lies
-        for i in range(position):
-            count += self.blocks[i].total
-        
-        # count of all smaller numbers in this block
-        block = self.blocks[position]
-        for number in block.counter:
-            if number < val:
-                count += block.counter[number]
-                
-        return count
-        
-class Solution:
-    def countSmaller(self, nums: List[int]) -> List[int]:
-        results = []
-        block_array = BlockArray(10000)
-        # offset is used to deal with negative numbers
-        offset = 10000
-        for i in range(len(nums) - 1, -1, -1):
-            count = block_array.count_smaller(nums[i] + offset)
-            results.insert(0, count)
-            block_array.insert(nums[i] + offset)
-        return results
-```
-```java
-class Solution {
-    // not sure why 20000 is chosen
-    // maybe the largest number from input is less than 20000?
-    private final int SIZE = 20000;
-    // offset deals with negative numbers
-    // though I'm not sure why 10000 is chosen
-    // maybe the least negative number is larger than -10000
-    private static final int OFFSET = 10000;
-    public List<Integer> countSmaller(int[] nums) {
-        LinkedList<Integer> res = new LinkedList<>();
-        if (nums == null || nums.length == 0) {
-            return res;
-        }
-        
-        BlockArray blockArray = new BlockArray(SIZE);
-        // iterate nums backward
-        for (int i = nums.length - 1; i >= 0; i--) {
-            res.addFirst(blockArray.countSmaller(nums[i] + OFFSET));
-            blockArray.insert(nums[i] + OFFSET);
-        }
-        
-        return res;
-    }
-}
-
-
-class Block {
-    public int total;
-    public int[] counter;
-    public Block(int size) {
-        this.total = 0;
-        this.counter = new int[size];
-    }
-}
-
-class BlockArray {
-    public Block[] blocks;
-    public int blockSize;
-    public BlockArray(int capacity) {
-        this.blockSize = (int) Math.sqrt(capacity);
-        int numberOfBlocks = capacity / this.blockSize + 1;
-        this.blocks = new Block[numberOfBlocks];
-        for (int i = 0; i < numberOfBlocks; i++) {
-            this.blocks[i] = new Block(this.blockSize);
-        }
-    }
-    
-    public void insert(int value) {
-        int indexOfBlock = value / blockSize;
-        this.blocks[indexOfBlock].total++;
-        this.blocks[indexOfBlock].counter[value - this.blockSize * indexOfBlock]++;
-    }
-    
-    public int countSmaller(int value) {
-        int indexOfBlock = value / blockSize;
-        int count = 0;
-        for (int i = 0; i < indexOfBlock; i++) {
-            count += this.blocks[i].total;
-        }
-        
-        for (int i = 0; i < value - this.blockSize * indexOfBlock; i++) {
-            count += this.blocks[indexOfBlock].counter[i];
-        }
-        
-        return count;
-    }
-}
-```
 
 #### 1248 Count Number of Nice Subarrays <span style="color:orange">Medium</span>
 prefix sum
@@ -2536,6 +2416,483 @@ class Solution {
         }
         
         return false;
+    }
+}
+```
+
+#### [912. Sort an Array](https://leetcode.com/problems/sort-an-array/) Medium
+merge sort
+```java
+class Solution {
+    int[] temp;
+    
+    public int[] sortArray(int[] nums) {
+        sort(nums, 0, nums.length - 1);
+        return nums;
+    }
+    
+    void sort(int[] nums, int lo, int hi) {
+        if (lo == hi) {
+            return;
+        }
+        int mid = lo + (hi - lo) / 2;
+        sort(nums, lo, mid);
+        sort(nums, mid + 1, hi);
+        merge(nums, lo, mid, hi);
+    }
+    
+    void merge(int[] nums, int lo, int mid, int hi) {
+        temp = new int[hi - lo + 1];
+        
+        int i = 0, l = lo, r = mid + 1;
+        while (l <= mid && r <= hi) {
+            if (nums[l] < nums[r]) {
+                temp[i++] = nums[l++];
+            } else {
+                temp[i++] = nums[r++];
+            }
+        }
+        
+        while (l <= mid) {
+            temp[i++] = nums[l++];
+        }
+        
+        while (r <= hi) {
+            temp[i++] = nums[r++];
+        }
+        
+        // copy 
+        for (int tempIndex = 0, numsIndex = lo; tempIndex < temp.length; tempIndex++, numsIndex++) {
+            nums[numsIndex] = temp[tempIndex];
+        }
+    }
+}
+```
+
+#### [315. Count of Smaller Numbers After Self](https://leetcode.com/problems/count-of-smaller-numbers-after-self/) Hard
+block search, my solution not fast for this problem, will cause TLE sometimes, check out Java solution for reference
+```python
+class Block:
+    def __init__(self):
+        self.total = 0
+        self.counter = {}
+        
+class BlockArray:
+    def __init__(self, max_value):
+        self.blocks = [
+            Block()
+            for _ in range(10000)
+        ]
+        
+    def get_position(self, val):
+        return val // 100
+        
+    def insert(self, val):
+        position = self.get_position(val)
+        self.blocks[position].counter[val] = self.blocks[position].counter.get(val, 0) + 1
+        self.blocks[position].total += 1
+    
+    def count_smaller(self, val):
+        count = 0
+        position = self.get_position(val)
+        # count of total from all blocks that come before the block where the val lies
+        for i in range(position):
+            count += self.blocks[i].total
+        
+        # count of all smaller numbers in this block
+        block = self.blocks[position]
+        for number in block.counter:
+            if number < val:
+                count += block.counter[number]
+                
+        return count
+        
+class Solution:
+    def countSmaller(self, nums: List[int]) -> List[int]:
+        results = []
+        block_array = BlockArray(10000)
+        # offset is used to deal with negative numbers
+        offset = 10000
+        for i in range(len(nums) - 1, -1, -1):
+            count = block_array.count_smaller(nums[i] + offset)
+            results.insert(0, count)
+            block_array.insert(nums[i] + offset)
+        return results
+```
+```java
+class Solution {
+    // not sure why 20000 is chosen
+    // maybe the largest number from input is less than 20000?
+    private final int SIZE = 20000;
+    // offset deals with negative numbers
+    // though I'm not sure why 10000 is chosen
+    // maybe the least negative number is larger than -10000
+    private static final int OFFSET = 10000;
+    public List<Integer> countSmaller(int[] nums) {
+        LinkedList<Integer> res = new LinkedList<>();
+        if (nums == null || nums.length == 0) {
+            return res;
+        }
+        
+        BlockArray blockArray = new BlockArray(SIZE);
+        // iterate nums backward
+        for (int i = nums.length - 1; i >= 0; i--) {
+            res.addFirst(blockArray.countSmaller(nums[i] + OFFSET));
+            blockArray.insert(nums[i] + OFFSET);
+        }
+        
+        return res;
+    }
+}
+
+
+class Block {
+    public int total;
+    public int[] counter;
+    public Block(int size) {
+        this.total = 0;
+        this.counter = new int[size];
+    }
+}
+
+class BlockArray {
+    public Block[] blocks;
+    public int blockSize;
+    public BlockArray(int capacity) {
+        this.blockSize = (int) Math.sqrt(capacity);
+        int numberOfBlocks = capacity / this.blockSize + 1;
+        this.blocks = new Block[numberOfBlocks];
+        for (int i = 0; i < numberOfBlocks; i++) {
+            this.blocks[i] = new Block(this.blockSize);
+        }
+    }
+    
+    public void insert(int value) {
+        int indexOfBlock = value / blockSize;
+        this.blocks[indexOfBlock].total++;
+        this.blocks[indexOfBlock].counter[value - this.blockSize * indexOfBlock]++;
+    }
+    
+    public int countSmaller(int value) {
+        int indexOfBlock = value / blockSize;
+        int count = 0;
+        for (int i = 0; i < indexOfBlock; i++) {
+            count += this.blocks[i].total;
+        }
+        
+        for (int i = 0; i < value - this.blockSize * indexOfBlock; i++) {
+            count += this.blocks[indexOfBlock].counter[i];
+        }
+        
+        return count;
+    }
+}
+```
+count[i] = COUNT(j) where j > i and nums[j] < nums[i]
+merge sort https://labuladong.github.io/algo/2/21/41/
+```java
+class Solution {
+    private class PosVal {
+        int val, index;
+        PosVal (int index, int val) {
+            this.val = val;
+            this.index = index;
+        }
+    }
+    
+    private PosVal[] temp;
+    private int[] count;
+    
+    public List<Integer> countSmaller(int[] nums) {
+        int n = nums.length;
+        count = new int[n];
+        temp = new PosVal[n];
+        PosVal[] pairs = convertNums(nums);
+        sort(pairs, 0, n - 1);
+        return convertAnswer(count);
+    }
+    
+    PosVal[] convertNums(int[] nums) {
+        PosVal[] res = new PosVal[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            res[i] = new PosVal(i, nums[i]);
+        }
+        return res;
+    }
+    
+    List<Integer> convertAnswer(int[] count) {
+        List<Integer> res = new LinkedList<>();
+        for (int c: count) {
+            res.add(c);
+        }
+        return res;
+    }
+    
+    void sort(PosVal[] pairs, int lo, int hi) {
+        if (lo == hi) {
+            return;
+        }
+        
+        int mid = lo + (hi - lo) / 2;
+        sort(pairs, lo, mid);
+        sort(pairs, mid + 1, hi);
+        merge(pairs, lo, mid, hi);
+    }
+    
+    void merge(PosVal[] pairs, int lo, int mid, int hi) {
+        for (int i = lo; i <= hi; i++) {
+            temp[i] = pairs[i];
+        }
+        
+        int l = lo, r = mid + 1;
+        for (int j = lo; j <= hi; j++) {
+            if (l == mid + 1) {
+                pairs[j] = temp[r++];
+            } else if (r == hi + 1) {
+                pairs[j] = temp[l++];
+                count[pairs[j].index] += r - mid - 1;
+            } else if (temp[l].val <= temp[r].val) {
+                pairs[j] = temp[l++];
+                count[pairs[j].index] += r - mid - 1;
+            } else {
+                pairs[j] = temp[r++];
+            }
+        }
+    }
+    
+    
+}
+```
+
+#### [493. Reverse Pairs](https://leetcode.com/problems/reverse-pairs/) Hard
+count[i] = COUNT(j) where j > i and nums[i] > 2 * nums[j] https://labuladong.github.io/algo/2/21/41/
+merge sort. Before every merging, nums[lo..mid] and nums[mid + 1...hi] are already sorted. Make use of this.
+```java
+class Solution {
+    
+    
+    public int reversePairs(int[] nums) {
+        sort(nums);
+        return count;
+    }
+    
+    private int[] temp;
+    int count = 0;
+    void sort(int[]  nums) {
+        temp = new int[nums.length];
+        sort(nums, 0, nums.length - 1);
+    }
+    
+    void sort(int[] nums, int lo, int hi) {
+        if (lo == hi) {
+            return;
+        }
+        
+        int mid = lo + (hi - lo) / 2;
+        sort(nums, lo, mid);
+        sort(nums, mid + 1, hi);
+        merge(nums, lo, mid, hi);
+    }
+    
+    
+    void merge(int[] nums, int lo, int mid, int hi) {
+        for (int i = lo; i <= hi; i++) {
+            temp[i] = nums[i];
+        }
+        
+        // now nums[lo..mid], nums[mid + 1, hi] are both sorted now
+        // make sure [mid + 1, end)
+        int end = mid + 1;
+        for (int i = lo; i <= mid; i++) {
+            while (end <= hi && (long) nums[i] > (long) nums[end] * 2) {
+                end++;
+            }
+            
+            count += end - (mid + 1);
+        }
+        
+        int l = lo, r = mid + 1;
+        for (int j = lo; j <= hi; j++) {
+            if (l == mid + 1) {
+                nums[j] = temp[r++];
+            } else if (r == hi + 1) {
+                nums[j] = temp[l++];
+            } else if (temp[l] > temp[r]) {
+                nums[j] = temp[r++];
+            } else {
+                nums[j] = temp[l++];
+            }
+        }
+    }
+}
+```
+
+#### [327. Count of Range Sum](https://leetcode.com/problems/count-of-range-sum/) Hard
+count[i] = COUNT(j) where lower <= preSum[j] - preSum[i] <= upper
+merge sort on a prefix sum set
+寻找满足条件的区间和实际上只需要找到任意两个满足差值为[lower, upper]的前缀和就可以，前缀和的顺序无关紧要
+reference: https://leetcode.cn/problems/count-of-range-sum/solution/327qu-jian-he-de-ge-shu-ti-jie-zong-he-by-xu-yuan-/
+```java
+class Solution {
+    int lower;
+    int upper;
+    int count;
+    public int countRangeSum(int[] nums, int lower, int upper) {
+        this.lower = lower;
+        this.upper = upper;
+        this.count = 0;
+        long[] presum = getPresum(nums);
+        sort(presum);
+        return count;
+    }
+    
+    long[] getPresum(int[] nums) {
+        long[] presum = new long[nums.length + 1];
+        for (int i = 0; i < nums.length; i++) {
+            presum[i + 1] = (long) nums[i] + presum[i];
+        }
+        return presum;
+    }
+    
+    long[] temp;
+    void sort(long[] nums) {
+        temp = new long[nums.length];
+        sort(nums, 0, nums.length - 1);
+    }
+    
+    void sort(long[] nums, int lo, int hi) {
+        if (lo == hi) return;
+        
+        int mid = lo + (hi - lo) / 2;
+        sort(nums, lo, mid);
+        sort(nums, mid + 1, hi);
+        merge(nums, lo, mid, hi);
+    }
+    
+    void merge(long[] nums, int lo, int mid, int hi) {
+        for (int i = lo; i <= hi; i++) {
+            temp[i] = nums[i];
+        }
+        
+        // nums[lo...mid] and num[mid + 1...hi] are both sorted now
+        int start = mid + 1, end = mid + 1;
+        for (int k = lo; k <= mid; k++) {
+            while (start <= hi && nums[start] - nums[k] < lower) {
+                start++;
+            }
+            // start now stands at a position where range sum is bigger than lower
+            while (end <= hi && nums[end] - nums[k] <= upper) {
+                end++;
+            }
+            // end now stands at a position where range sum is just bigger than upper
+            count += end - start; // end is not included
+        }
+        
+        int l = lo, r = mid + 1;
+        for (int p = lo; p <= hi; p++) {
+            if (l == mid + 1) {
+                nums[p] = temp[r++];   
+            } else if (r == hi + 1) {
+                nums[p] = temp[l++];
+            } else if (temp[l] > temp[r]) {
+                nums[p] = temp[r++];
+            } else {
+                nums[p] = temp[l++];
+            }
+        }
+    }
+}
+```
+
+#### (215. Kth Largest Element in an Array)[https://leetcode.com/problems/kth-largest-element-in-an-array/] Medium
+quick sort, quick select
+top k-th -> k-th in descending order -> n - k in ascending order
+```java
+class Solution {
+    public int findKthLargest(int[] nums, int k) {
+        int lo = 0, hi = nums.length - 1;
+        // convert k to ascending order rank
+        int _k = nums.length - k;
+        while (lo <= hi) {
+            int pivot = partition(nums, lo, hi);
+            if (pivot > _k) {
+                hi = pivot - 1;
+            } else if (pivot < _k) {
+                lo = pivot + 1;
+            } else {
+                return nums[pivot];
+            }
+        }
+        
+        return -1;
+    }
+    
+    int partition(int[] nums, int lo, int hi) {
+        int pivotVal = nums[hi];
+
+        // nums[lo..i) lower than pivot val
+        // nums[i..j) greater than pivot val
+        int i = lo, j = lo;
+        // compare until the second to the last item
+        while (j < hi) {
+            // i moves only when a smaller value is found
+            if (nums[j] < pivotVal) {
+                swap(nums, i, j);
+                i++;
+            }
+            // no matter what j moves forward
+            j++;
+        }
+        swap(nums, i, hi);
+        return i;
+    }
+
+    void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+}
+```
+max heap - reversed min heap
+```python
+class Solution:
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        heap = []
+        result = []
+        for num in nums:
+            heapq.heappush(heap, -num)
+        while k > 0:
+            result = -heapq.heappop(heap)
+            k -= 1
+        return result
+```
+
+#### [703. Kth Largest Element in a Stream](https://leetcode.com/problems/kth-largest-element-in-a-stream/) Easy
+min heap
+remove n - k items in a min heap and you will have the k-th larget on the top
+```java
+class KthLargest {
+    private int k;
+    private PriorityQueue<Integer> pq = new PriorityQueue<>();
+    
+    public KthLargest(int k, int[] nums) {
+        for (int num: nums) {
+            pq.offer(num);
+            if (pq.size() > k) {
+                pq.poll();
+            }
+        }
+        this.k = k;
+    }
+    
+    public int add(int val) {
+        pq.offer(val);
+        if (pq.size() > k) {
+            pq.poll();
+        }
+        
+        return pq.peek();
     }
 }
 ```
