@@ -913,3 +913,52 @@ class Solution:
     def get_distance(self, point):
         return point[0] ** 2 + point[1] ** 2
 ```
+
+#### [2196. Create Binary Tree From Descriptions](https://leetcode.com/problems/create-binary-tree-from-descriptions/submissions/) Medium
+```java
+class Solution {
+    public TreeNode createBinaryTree(int[][] descriptions) {
+        Map<Integer, TreeNode> map = new HashMap<>();
+        Set<Integer> children = new HashSet<>();
+        buildTree(descriptions, map, children);
+        int rootVal = getRootVal(descriptions, children);
+        return map.getOrDefault(rootVal, null);
+    }
+    
+    void appendChild(TreeNode parent, TreeNode child, int isLeft) {
+        if (isLeft == 1) {
+            parent.left = child;
+        } else {
+            parent.right = child;
+        }
+    }
+    
+    TreeNode buildNode(int val, Map<Integer, TreeNode> map) {
+        TreeNode node = map.getOrDefault(val, new TreeNode(val));
+        map.put(val, node);
+        return node;
+    }
+
+    void buildTree(int[][] descriptions, Map<Integer, TreeNode> map, Set<Integer> children) {
+        for (int[] desc: descriptions) {
+            TreeNode parent = buildNode(desc[0], map);
+            TreeNode child = buildNode(desc[1], map);
+            appendChild(parent, child, desc[2]);
+            // collect children values
+            children.add(desc[1]);
+        }
+    }
+
+    int getRootVal(int[][] descriptions, Set<Integer> children) {
+        int rootVal = -1;
+        for (int[] desc: descriptions) {
+            // if the desc value is never found in children, this means it is the root
+            if (!children.contains(desc[0])) {
+                rootVal = desc[0];
+                return rootVal;
+            }
+        }
+        return -1;
+    }
+}
+```

@@ -4475,3 +4475,280 @@ class Solution {
     }
 }
 ```
+
+#### [1372. Longest ZigZag Path in a Binary Tree](https://leetcode.com/problems/longest-zigzag-path-in-a-binary-tree/) Medium
+Decomposition
+```java
+class Solution {
+    public int longestZigZag(TreeNode root) {
+        getPathLength(root);
+        return res;
+    }
+    
+    int res = 0;
+    int[] getPathLength(TreeNode root) {
+        if (root == null) {
+            return new int[]{-1, -1};
+        }
+        
+        int[] left = getPathLength(root.left);
+        int[] right = getPathLength(root.right);
+        /*
+        left to right or  right to left
+          o                  o
+        o                      o
+          o                  o
+          
+        recive info from children and return new info to its parent
+        If root recives info from its left child,  
+        */
+        /*
+          $ 
+        o 
+          o
+        */
+        int leftRight = left[1] + 1;
+        /*
+        $
+          o
+        o
+        */
+        int rightLeft = right[0] + 1;
+        
+        res = Math.max(res, Math.max(leftRight, rightLeft));
+        
+        return new int[]{leftRight, rightLeft};
+    }
+}
+```
+I also wrote a traversal solution. It can pass some example test cases, but the problem is that it runs too slow because there is recursion inside another recursion. The time complexity is too high and it will cause TLE. I'll paste the solution here just for reference.
+```java
+class Solution {
+    public int longestZigZag(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        
+        iterate(root);
+        return max;
+    }
+    
+    int max = 0;
+    void traverse(TreeNode root, int direction, int count) {
+        if (count > max) {
+            max = count;
+        }
+        
+        if (direction == 0 && root.right != null) {
+            traverse(root.right, 1, count + 1);
+        }
+        
+        if (direction == 1 && root.left != null) {
+            traverse(root.left, 0, count + 1);
+        }
+    }
+    
+    void iterate(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        
+        traverse(root, 0, 0);
+        traverse(root, 1, 0);
+        iterate(root.left);
+        iterate(root.right);
+    }
+}
+```
+
+#### [1448. Count Good Nodes in Binary Tree](https://leetcode.com/problems/count-good-nodes-in-binary-tree/) Medium
+Traversal
+There is a for loop in every recursion so this solution runs very slowly.
+```java
+class Solution {
+    public int goodNodes(TreeNode root) {
+        traverse(root);
+        return count;
+    }
+    
+    int count = 0;
+    int base;
+    boolean flag;
+    List<Integer> path = new ArrayList<>();
+    void traverse(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        
+        path.add(root.val);
+        base = root.val;
+        boolean flag = true;
+        for (int i = 0; i < path.size() - 1; i++) {
+            if (path.get(i) > base) {
+                flag = false;
+                break;
+            }
+        }
+        if (flag) {
+            count++;
+        }
+        traverse(root.left);
+        traverse(root.right);
+        path.remove(path.size() - 1);
+    }
+}
+```
+Actually, there is no need to compare every element in the current path. Simply compare the max value in the path with root val and you will know right away if it is a good node because as long as the max value is not greater than current node it is safe to say that no nodes in the path is greater.
+```java
+class Solution {
+    public int goodNodes(TreeNode root) {
+        traverse(root, root.val);
+        return count;
+    }
+
+    int count = 0;
+
+    void traverse(TreeNode root, int pathMax) {
+        if (root == null) {
+            return;
+        }
+        if (pathMax <= root.val) {
+            count++;
+        }
+        
+        pathMax = Math.max(pathMax, root.val);
+
+        traverse(root.left, pathMax);
+        traverse(root.right, pathMax);
+    }
+}
+```
+
+#### [1530. Number of Good Leaf Nodes Pairs](https://leetcode.com/problems/number-of-good-leaf-nodes-pairs/) Medium
+ref: https://leetcode.cn/problems/number-of-good-leaf-nodes-pairs/solution/1530-hao-xie-zi-jie-dian-dui-de-shu-lian-wltu/
+ref: https://leetcode.cn/problems/number-of-good-leaf-nodes-pairs/solution/di-gui-shu-zu-by-libins-82ab/
+
+The main problem is how to calculate leaf to leaf distance.
+leaf to leaf distance -> going from bottom up (child info returned to its parent, which collects such info from its children -> this leads to the post-order traversal) and through a common parent node -> calculate distance from leaf to other non-leaf nodes for both left and right sub-trees and summing these two distances will get a leaf-to-leaf distance
+```java
+class Solution {
+    public int countPairs(TreeNode root, int distance) {
+        desiredDistance = distance;
+        getLeafDistances(root);
+        return res;
+    }
+    
+    int res;
+    int desiredDistance;
+    List<Integer> getLeafDistances(TreeNode root) {
+        List<Integer> distances = new ArrayList<Integer>();
+        // base cases
+        if (root == null) {
+            return distances;
+        }
+        
+        if (root.left == root.right) {
+            distances.add(0);
+            return distances;
+        }
+        
+        List<Integer> leftChildDistances = getLeafDistances(root.left);
+        List<Integer> rightChildDistances = getLeafDistances(root.right);
+        // post-order position
+        calculateFromChildDistances(leftChildDistances, distances);
+        calculateFromChildDistances(rightChildDistances, distances);
+        
+        // update good leaf nodes pairs count
+        countPairs(leftChildDistances, rightChildDistances);
+        
+        return distances;
+    }
+    
+    void calculateFromChildDistances(List<Integer> childDistances, List<Integer> currentDistances) {
+        int size = childDistances.size();
+        for (int i = 0; i < size; i++) {
+            // plus child to current node, which is 1
+            int currentDistance = childDistances.get(i) + 1;
+            // pruning
+            if (currentDistance <= desiredDistance) {
+                currentDistances.add(currentDistance);
+            }
+        }
+    }
+    
+    void countPairs(List<Integer> leftChildDistances, List<Integer> rightChildDistances) {
+        for (int l: leftChildDistances) {
+            for (int r: rightChildDistances) {
+                // left child distance + right child distance + 2 (left to parent and right to parent)
+                if (l + r + 2 <= desiredDistance) {
+                    res++;
+                }
+            }
+        }
+    }
+}
+```
+
+#### [1609. Even Odd Tree](https://leetcode.com/problems/even-odd-tree/) Medium
+level traversal
+```java
+class Solution {
+    public boolean isEvenOddTree(TreeNode root) {
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        int level = -1;
+        int size = 0;
+        boolean even = true;
+        TreeNode cur = null;
+        while (!q.isEmpty()) {
+            level++;
+            size = q.size();
+            even = level % 2 == 0;
+            TreeNode pre = null;
+            for (int i = 0; i < size; i++) {
+                cur = q.poll();
+                if (!checkEvenOdd(even, cur)) {
+                    return false;
+                }
+
+                if (!checkOrder(even, pre, cur)) {
+                    return false;
+                }
+                add(q, cur.left);
+                add(q, cur.right);
+                pre = cur;
+            }
+        }
+        return true;
+    }
+    
+    void add(Queue<TreeNode> q, TreeNode node) {
+        if (node != null) {
+            q.offer(node);
+        }
+    }
+    
+    boolean checkEvenOdd(boolean levelEven, TreeNode node) {
+       if (levelEven && node.val % 2 == 0) {
+           return false;
+       }
+       if (!levelEven && node.val % 2 == 1) {
+           return false;
+       }
+       return true;
+    }
+    
+    boolean checkOrder(boolean levelEven, TreeNode pre, TreeNode cur) {
+       if (pre == null) {
+           return true;
+       }
+       if (levelEven && cur.val <= pre.val) {
+           return false;
+       }
+       if (!levelEven && cur.val >= pre.val) {
+           return false;
+       }
+       return true;
+    }
+}
+```
