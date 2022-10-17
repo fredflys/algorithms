@@ -288,4 +288,34 @@ class Solution {
 }
 ```
 
-[21. Merge Two Sorted Lists](https://leetcode.com/problems/merge-two-sorted-lists/) Easy
+#### [341. Flatten Nested List Iterator](https://leetcode.com/problems/flatten-nested-list-iterator/) Medium
+```java
+public class NestedIterator implements Iterator<Integer> {
+    private LinkedList<NestedInteger> list = new LinkedList<>();
+    
+    public NestedIterator(List<NestedInteger> nestedList) {
+        list = new LinkedList<>(nestedList);
+    }
+
+    // this function will always be called only after hasNext is called
+    @Override
+    public Integer next() {
+        return list.remove(0).getInteger();
+    }
+    
+    @Override
+    public boolean hasNext() {
+        while(!list.isEmpty() && !list.get(0).isInteger()) {
+            List<NestedInteger> first = list.remove(0).getList();
+            // as new elements are added at the start position 
+            // retrieval should be done from backwards
+            for (int i = first.size() - 1; i >= 0; i--) {
+                // adding at first
+                list.addFirst(first.get(i));
+            }
+        }
+        
+        return !list.isEmpty();
+    }
+}
+```

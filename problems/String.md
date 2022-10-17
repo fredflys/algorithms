@@ -246,3 +246,183 @@ class Solution {
     }
 }
 ```
+
+#### [344. Reverse String](https://leetcode.com/problems/reverse-string/) Easy
+two pointers
+```java
+class Solution {
+    public void reverseString(char[] s) {
+        int l = 0;
+        int r = s.length - 1;
+        while (l < r) {
+            char temp = s[l];
+            s[l] = s[r];
+            s[r] = temp;
+            l++;
+            r--;
+        }
+    }
+}
+```
+
+#### [541. Reverse String II](https://leetcode.com/problems/reverse-string-ii/) Easy
+two pointers
+```java
+class Solution {
+    public String reverseStr(String s, int k) {
+        int start = 0;
+        int end = 2 * k;
+        char[] chars = s.toCharArray();
+        int n = chars.length;
+        while (end <= n) {
+            reverse(chars, start, start + k - 1);
+            
+            end += 2 * k;
+            start += 2 * k;
+        }
+        
+        // remaining chars less than k
+        // reverse them all
+        if (n - start > 0 && n - start < k) {
+            reverse(chars, start, n - 1);
+            return new String(chars);
+        }
+        
+        // remaining chars less than 2k
+        // reverse first k from start
+        if (n - start > 0 && n - start < 2 * k) {
+            reverse(chars, start, start + k - 1);
+            return new String(chars);
+        }
+        
+        return new String(chars);
+    }
+
+    public void reverse(char[] s, int l, int r) {
+        while (l < r) {
+            char temp = s[l];
+            s[l] = s[r];
+            s[r] = temp;
+            l++;
+            r--;
+        }
+    }
+}
+```
+
+#### [557. Reverse Words in a String III](https://leetcode.com/problems/reverse-words-in-a-string-iii/) Easy
+```java
+class Solution {
+    public String reverseWords(String s) {
+        char[] chars = s.toCharArray();
+        int l = 0;
+        int r = 0;
+        int n = chars.length;
+        while (r < n) {
+            while (r < n && chars[r] != ' ') {
+                r++;
+            }
+            while (l < n && chars[l] == ' ') {
+                l++;
+            }
+            reverse(chars, l, r - 1);
+            l = r;
+            r++;
+        }
+        
+        return new String(chars);
+    }
+    
+    public void reverse(char[] s, int l, int r) {
+        if (r >= s.length) {
+            return;
+        }
+         while (l < r) {
+            swap(s, l, r);
+            l++;
+            r--;
+        }
+    }
+    
+    void swap(char[] s, int i, int j) {
+        char temp = s[i];
+        s[i] = s[j];
+        s[j] = temp;
+    }
+}
+```
+
+#### [917. Reverse Only Letters](https://leetcode.com/problems/reverse-only-letters/) Easy
+when using incrementing index, never forget to check whether it is out boundary.
+```java
+class Solution {
+    public String reverseOnlyLetters(String s) {
+        char[] chars = s.toCharArray();
+        int l = 0;
+        int r = chars.length - 1;
+        while (l < r) {
+            // be careful not to cross the upper bound
+            while (l < chars.length && !isLetter(chars[l])) {
+                l++;
+            }
+            
+            // be careful not to cross the lower bound
+            while (r > -1 && !isLetter(chars[r])) {
+                r--;
+            }
+            
+            if (l < r) {
+                swap(chars, l, r);
+                l++;
+                r--;
+            }
+        }
+        
+        return new String(chars);
+    }
+    
+    boolean isLetter(char c) {
+        return (c >= 97 && c <= 122) || (c >= 65 && c <= 90);
+    }
+    
+    void swap(char[] s, int i, int j) {
+        char temp = s[i];
+        s[i] = s[j];
+        s[j] = temp;
+    }
+}
+```
+
+#### [2000. Reverse Prefix of Word](https://leetcode.com/problems/reverse-prefix-of-word/) Easy
+two pointers
+```java
+class Solution {
+    public String reversePrefix(String word, char ch) {
+        if (word.indexOf(ch) < 0) {
+            return word;
+        }
+        
+        char[] chars = word.toCharArray();
+        int l = 0;
+        while (chars[l] != ch) {
+            l++;
+        }
+        reverse(chars, 0, l);
+        return new String(chars);
+    }
+    
+    public void reverse(char[] s, int l, int r) {
+        while (l < r) {
+            swap(s, l, r);
+            l++;
+            r--;
+        }
+    }
+    
+    void swap(char[] s, int i, int j) {
+        char temp = s[i];
+        s[i] = s[j];
+        s[j] = temp;
+    }
+}
+```

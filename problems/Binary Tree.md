@@ -4752,3 +4752,142 @@ class Solution {
     }
 }
 ```
+
+#### [2265. Count Nodes Equal to Average of Subtree](https://leetcode.com/problems/count-nodes-equal-to-average-of-subtree/) Medium
+post-order traversal
+This one is not hard. Collect tree sum and node count from children nodes and return the result to its parent. 
+```java
+class Solution {
+    public int averageOfSubtree(TreeNode root) {
+        getSumAndNodeCount(root);
+        return res;
+    }
+    
+    int res = 0;
+    // [sum, sub-tree node count]
+    int[] getSumAndNodeCount(TreeNode root) {
+        if (root == null) {
+            return new int[2];
+        }
+        
+        if (root.left == root.right) {
+            res++;
+            return new int[]{root.val, 1};
+        }
+        
+        int[] left = getSumAndNodeCount(root.left);
+        int[] right = getSumAndNodeCount(root.right);
+        
+        int treeSum = left[0] + right[0] + root.val;
+        int nodeCount = left[1] + right[1] + 1;
+        
+        // update result if average is equal to root value
+        if (root.val == treeSum / nodeCount) {
+            res++;
+        }
+        
+        return new int[]{treeSum, nodeCount};
+    }
+}
+```
+
+#### [2415. Reverse Odd Levels of Binary Tree](https://leetcode.com/problems/reverse-odd-levels-of-binary-tree/) Medium
+This is a wrong solution. Inversion should be done in terms of the whole tree, instead of the sub-tree. This means that the root should be the symmetry axis.
+```java
+class Solution {
+    public TreeNode reverseOddLevels(TreeNode root) {
+        traverse(root);
+        return root;
+    }
+    
+    int depth = -1;
+    void traverse(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        
+        depth++;
+        if (depth % 2 == 0 && root.left != root.right) {
+            TreeNode newLeft = new TreeNode(root.left.val);
+            TreeNode newRight = new TreeNode(root.right.val);
+            
+            newLeft.left = root.right.left;
+            newLeft.right = root.right.right;
+            newRight.left = root.left.left;
+            newRight.right = root.left.right;
+            root.right = newLeft;
+            root.left = newRight;
+        }
+        // System.out.println(depth);
+        traverse(root.left);
+        traverse(root.right);
+        depth--;
+    }
+}
+```
+preorder traversal
+Left and right children are used as parameters, instead of root node. This is different.
+```java
+class Solution {
+    public TreeNode reverseOddLevels(TreeNode root) {
+        traverse(root.left, root.right, true);
+        return root;
+    }
+    
+    void traverse(TreeNode left, TreeNode right, boolean isOdd) {
+        if (left == right) {
+            return;
+        }
+        
+        // this is where the swap happens
+        if (isOdd) {
+            int temp = left.val;
+            left.val = right.val;
+            right.val = temp;
+        }
+        
+        traverse(left.left, right.right, !isOdd);
+        traverse(left.right, right.left, !isOdd);
+    }
+}
+```
+level traversal
+```java
+class Solution {
+    public TreeNode reverseOddLevels(TreeNode root) {
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        boolean isOdd = true;
+        while (!q.isEmpty()) {
+            int sz = q.size();
+            while (sz-- > 0) {
+                TreeNode cur = q.poll();
+                add(q, cur.left);
+                add(q, cur.right);
+            }
+            
+            // starting from the second level (index 1)
+            // so it is an odd level
+            if (isOdd && !q.isEmpty()) {
+                int[] levelVals = new int[q.size()];
+                int i = 0;
+                for (TreeNode node: q) {
+                    levelVals[i++] = node.val; 
+                }
+                int j = levelVals.length - 1;
+                for (TreeNode node: q) {
+                    node.val = levelVals[j--];
+                }
+            }
+            isOdd = !isOdd;
+        }
+        return root;
+    }
+    
+    void add(Queue<TreeNode> q, TreeNode node) {
+        if (node != null) {
+            q.offer(node);
+        }
+    }
+}
+```
