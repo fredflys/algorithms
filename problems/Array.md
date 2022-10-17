@@ -1614,7 +1614,7 @@ class Solution {
 
 Combinatorial Search Probelm --> DFS while removing duplicates along the way
 
-Keep in mind that getting all possibilites and then remoing duplicates is too high in time complexity. (Consider the test case: [1, 1, 1, 1, 1])
+Keep in mind that getting all possibilites and then removing duplicates is too high in time complexity. (Consider the test case: [1, 1, 1, 1, 1]). Prune while traversing.
 
 ```java
 class Solution {
@@ -1642,7 +1642,6 @@ class Solution {
     }
 }
 ```
-
 #### [46. Permutations](https://leetcode.com/problems/permutations/) <span style="color:orange">Medium</span>
 
 [<img src="https://s4.ax1x.com/2022/01/13/7lSavT.png" alt="7lSavT.png" style="zoom:50%;" />](https://imgtu.com/i/7lSavT)
@@ -1687,6 +1686,40 @@ class Solution {
     }
 }
 ```
+
+#### [40. Combination Sum II](https://leetcode.cn/problems/combination-sum-ii/) Medium
+```java
+class Solution {
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> results = new ArrayList<>();
+        Arrays.sort(candidates);
+        dfs(target, 0, candidates, new ArrayList<Integer>(), results);
+        return results;
+    }
+
+    void dfs(int target, int startIndex, int[] candidates, List<Integer> subset, List<List<Integer>> results) {
+        // preorder position
+        if (target == 0) {
+            results.add(new ArrayList<Integer>(subset));
+        }
+
+        for (int i = startIndex; i < candidates.length; i++) {
+            if (candidates[i] > target) {
+                continue;
+            }
+
+            if (i > startIndex && candidates[i] == candidates[i - 1]) {
+                continue;
+            }
+
+            subset.add(candi  dates[i]);
+            dfs(target - candidates[i], i + 1, candidates, subset, results);
+            subset.remove(subset.size() - 1);
+        }
+    }
+}
+```
+
 #### [LintCode 90 · k Sum II](https://www.lintcode.com/problem/90/)
 Combination, DFS
 ```java
