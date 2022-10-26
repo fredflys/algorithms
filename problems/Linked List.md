@@ -1630,3 +1630,61 @@ class Solution {
 }
 ```
 
+#### [25. Reverse Nodes in k-Group](https://leetcode.com/problems/reverse-nodes-in-k-group/) Hard
+```java
+class Solution {
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if (head == null) {
+            return null;
+        }
+        
+        ListNode start = head, end = head;
+        
+        for (int i = 0; i < k; i++) {
+            // less than k nodes in the current list
+            // no reversal is needed
+            if (end == null) {
+                return head;
+            }
+            end = end.next;
+        }
+        
+        // now there are k nodes between start and end
+        ListNode reversedHead = reverse(start, end);
+        // now start is the end of the reversed linked list
+        // link it to reversed remaining nodes
+        start.next = reverseKGroup(end, k);
+        
+        return reversedHead;
+    }
+    
+    // revese the whole linked list
+    // it is equal to reversing head to null (null not included)
+    ListNode reverse(ListNode head) {
+        ListNode prev = null, current = head, next = head.next;
+        
+        while (current != null) {
+            next = current.next;
+            current.next = prev;
+            prev = current;
+            current = next;
+        }
+        
+        return prev;
+    }
+    
+    // reverse from head to end (end not included) [head, end)
+    ListNode reverse(ListNode head, ListNode tail) {
+        ListNode prev = null, current = head, next = head.next;
+        
+        while (current != tail) {
+            next = current.next;
+            current.next = prev;
+            prev = current;
+            current = next;
+        }
+        
+        return prev;
+    }
+}
+```

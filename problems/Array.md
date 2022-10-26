@@ -2015,6 +2015,70 @@ class Solution:
         return True
 ```
 
+#### [1239. Maximum Length of a Concatenated String with Unique Characters](https://leetcode.com/problems/maximum-length-of-a-concatenated-string-with-unique-characters/) Medium
+Ugly solution. Still it works at an acceptable speed.
+The problem is that I tend to make too many false and premature assumptions from example test cases, which means a lot of unnecessary trials. For this problem, it is obvious that some strings contain overlapping characters, which mean that they should not be used. But from here I wrongly assume that strings themselves do not contain same characters, which is totally wrong. When I ran into a test case like this, e.g. ["aa", "bb"], I made another false assumption that the characters in a string are ordered, which is still wrong. After two attempts, I finally came to the coclution that I had to filter the input array first before other things.  
+```java
+class Solution {
+    int maxLength = 0;
+    
+    public int maxLength(List<String> arr) {
+        List<Integer> removed = filterCandidates(arr);
+        dfs(arr, 0, new StringBuilder(), removed);
+        return maxLength;
+    }
+    
+    void dfs(List<String> arr, int start, StringBuilder sb, List<Integer> removed) {
+        if (sb.length() > maxLength) {
+            maxLength = sb.length();
+        }
+        
+            
+        for (int i = start; i < arr.size(); i++) {
+            if (removed.contains(i)) {
+                continue;
+            }
+            
+            String candidate = arr.get(i);
+            boolean flag = true;
+            for (int j = 0; j < candidate.length(); j++) {
+                // indexOf only accepts string as an input 
+                if (sb.indexOf(String.valueOf(candidate.charAt(j))) > -1) {
+                    flag = false;
+                    break;
+                }
+            }
+
+            
+            if (!flag) {
+                continue;
+            }
+            sb.append(candidate);
+            dfs(arr, i + 1, sb, removed);
+            sb.delete(sb.length() - candidate.length() ,sb.length());
+        }
+    }
+    
+    List<Integer> filterCandidates(List<String> arr) {
+        int[] counter;
+        int n = arr.size();
+        List<Integer> removed = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            String candidate = arr.get(i);
+            counter = new int[26];
+            
+            for (int j = 0; j < candidate.length(); j++) {                    
+                counter[candidate.charAt(j) - 97]++;
+                if (counter[candidate.charAt(j) - 97] > 1) {
+                    removed.add(i);
+                    continue;
+                }
+            }   
+        }
+        return removed;
+    }
+}
+```
 
 ### Other
 
@@ -2926,6 +2990,223 @@ class KthLargest {
         }
         
         return pq.peek();
+    }
+}
+```
+
+#### [118. Pascal's Triangle](https://leetcode.com/problems/pascals-triangle/) Easy
+```java
+class Solution {
+    public List<List<Integer>> generate(int numRows) {
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> firstRow = new ArrayList<>();
+        firstRow.add(1);
+        
+        res.add(firstRow);
+        
+        List<Integer> row;
+        List<Integer> previousRow = firstRow;
+        for (int i = 2; i < numRows + 1; i++) {
+            row = new ArrayList<>();
+            row.add(1);
+            int j = 0;
+            while (j + 1 < previousRow.size()) {
+                int num = previousRow.get(j) + previousRow.get(j + 1);
+                row.add(num);
+                j++;
+            }
+            
+            row.add(1);
+            
+            previousRow = row;
+            res.add(row);
+        }
+        
+        return res;
+    }
+}
+```
+
+#### [219. Contains Duplicate II](https://leetcode.com/problems/contains-duplicate-ii/) Easy
+two pointers
+```java
+class Solution {
+    public boolean containsNearbyDuplicate(int[] nums, int k) {
+        int j = nums.length - 1;
+        while (j >= 0) {
+            int i = j - k;
+            // i could be less than 0
+            if (i < 0) {
+                i = 0;
+            }
+            // exit when i == j
+            while (i < j) {
+                // whenever using a index, make sure it is not out of boundary
+                // no need to worry about j because j is always bigger than zero
+                if (nums[i] == nums[j]) {
+                    return true;
+                }
+                i++;
+            } 
+            j--;
+        }
+        
+        return false;
+    }
+}
+```
+
+#### [303. Range Sum Query - Immutable](https://leetcode.com/problems/range-sum-query-immutable/) Easy
+prefix sum
+```java
+class NumArray {
+    int[] prefix;
+    
+    public NumArray(int[] nums) {
+        int n = nums.length;
+        int[] prefix = new int[n + 1];
+        for (int i = 1; i < n + 1; i++) {
+            prefix[i] = nums[i - 1] + prefix[i - 1];
+        }
+        
+        this.prefix = prefix;
+    }
+    
+    public int sumRange(int left, int right) {
+        return prefix[right + 1] - prefix[left];
+    }
+}
+```
+
+#### [304. Range Sum Query 2D - Immutable](https://leetcode.cn/problems/range-sum-query-2d-immutable/) Medium
+```java
+class NumMatrix {
+    // prefix[i][j] means the sum from [0,0] to [i-1, j-1]
+    int[][] prefix;
+
+    public NumMatrix(int[][] matrix) {
+        int m = matrix.length;
+        int n = matrix[0].length;
+        prefix = new int[m + 1][n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                /*
+                . . .
+                . * .
+                . . .
+
+                * + . + . . - .
+                    .
+                */
+                prefix[i][j] = matrix[i - 1][j - 1] + prefix[i - 1][j] + prefix[i][j - 1] - prefix[i -1][j - 1];
+            }
+        }
+    }
+    
+    public int sumRegion(int x1, int y1, int x2, int y2) {
+        return prefix[x2 + 1][y2 + 1] - prefix[x1][y2 + 1] - prefix[x2 + 1][y1] + prefix[x1][y1];
+    }
+}  
+```
+
+#### [1109. Corporate Flight Bookings](https://leetcode.com/problems/corporate-flight-bookings/) Medium
+difference array, range update in O(1)
+```java
+class Solution {
+    public int[] corpFlightBookings(int[][] bookings, int n) {
+        int[] diff = new int[n];
+        int[] res = new int[n];
+        
+        for (int i = 0; i < bookings.length; i++) {
+            diff[bookings[i][0] - 1] += bookings[i][2];
+            if (bookings[i][1] < n) {
+                diff[bookings[i][1]] -= bookings[i][2];
+            }
+        }
+        
+        res[0] = diff[0];
+        for (int i = 1; i < n; i++) {
+            res[i] = res[i - 1] + diff[i];
+        }
+        
+        
+        return res;
+    }
+}
+```
+
+#### [1094. Car Pooling](https://leetcode.com/problems/car-pooling/) Medium
+```java
+class Solution {
+    public boolean carPooling(int[][] trips, int capacity) {
+        int n = 0;
+        for (int[] trip: trips) {
+            if (trip[2] > n) {
+                n = trip[2];
+            }
+        }
+        
+        int[] diff = new int[n + 1];
+        int[] res = new int[n + 1];
+        for (int[] trip: trips) {
+            diff[trip[1]] += trip[0];
+            
+            // wrong condition and end should not be incremented in index
+            // if (end < n - 1) {
+            //     diff[end + 1] -= passengers;    
+            // }
+            
+            diff[trip[2]] -= trip[0];
+            
+        }
+        
+        res[0] = diff[0];
+        if (res[0] > capacity)  {
+            return false;
+        }
+        
+        for (int i = 1; i < n + 1; i++) {
+            res[i] = res[i - 1] + diff[i];
+            if (res[i] > capacity) {
+                return false;
+            }
+        }
+
+        
+        return true;        
+    }
+}
+```
+
+#### [48. Rotate Image](https://leetcode.com/problems/rotate-image/) Medium
+multi-dimension array
+```java
+class Solution {
+    public void rotate(int[][] matrix) {
+        int n = matrix.length;
+        int temp;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+        
+        for (int[] row : matrix) {
+            reverseRow(row);
+        }
+    }
+    
+    void reverseRow(int[] nums) {
+        int i = 0, j = nums.length - 1, temp;
+        while (i < j) {
+            temp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = temp;
+            i++;
+            j--;
+        }
     }
 }
 ```

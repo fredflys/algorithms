@@ -426,3 +426,53 @@ class Solution {
     }
 }
 ```
+
+#### [1662. Check If Two String Arrays are Equivalent](https://leetcode.com/problems/check-if-two-string-arrays-are-equivalent/) Easy
+```java
+class Solution {
+    public boolean arrayStringsAreEqual(String[] word1, String[] word2) {
+        StringBuilder sb = new StringBuilder();
+        
+        
+        for (String s: word1) {
+            sb.append(s);
+        }
+        
+        for (String s: word2) {
+            if (sb.length() == 0) {
+                return false;
+            }
+            
+            if (sb.indexOf(s) == 0) {
+                sb.delete(0, s.length());
+            }
+        }
+        
+        return sb.length() == 0;
+    }
+}
+```
+
+#### [151. Reverse Words in a String](https://leetcode.com/problems/reverse-words-in-a-string/) Medium
+```java
+class Solution {
+    public String reverseWords(String s) {
+        StringBuilder sb = new StringBuilder();
+        
+        for (String item: reverse(s).split(" ")) {
+            if (item.trim() == "") {
+                continue;
+            }
+
+            sb.append(reverse(item).trim());
+            sb.append(" ");
+        }
+        
+        return sb.delete(sb.length() - 1, sb.length()).toString();
+    }
+    
+    String reverse(String s) {
+        return new StringBuilder(s).reverse().toString();
+    }
+}
+```

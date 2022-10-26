@@ -1770,3 +1770,209 @@ class Solution {
     }
 }
 ```
+
+#### [121. Best Time to Buy and Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/) Easy
+Only one trasaction is allwed.
+two pointers
+If a price on a certain day is higher than a price on a later day, this day cannot be the day for buying in the stock.
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        int max = 0;
+        int buyDay = 0;
+        for (int sellDay = 1; sellDay < prices.length; sellDay++) {
+            if (prices[sellDay] > prices[buyDay]) {
+                max = Math.max(max, prices[sellDay] - prices[buyDay]);
+            } else {
+                // sellDay price is already less or euqal to buyDay price
+                // then why not buy on the sellDay and sell on another day?
+                buyDay = sellDay;
+            }
+        }
+        
+        return max;
+    }
+}
+```
+DP
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        int n = prices.length;
+        int[][] dp = new int[n][2];
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                dp[i][0] = 0;
+                dp[i][1] = -prices[i];
+                continue;
+            }
+            
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
+            dp[i][1] = Math.max(dp[i - 1][1], -prices[i]);
+        }
+        
+        return dp[n - 1][0];
+    }
+}
+
+```
+
+#### [122. Best Time to Buy and Sell Stock II](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/) Medium
+Umlimited transactions.
+DP
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        int n = prices.length;
+        int[][] dp = new int[n][2];
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                dp[i][0] = 0;
+                dp[i][1] = -prices[i];
+                continue;
+            }
+            
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
+            dp[i][1] = Math.max(dp[i - 1][1], dp[i - 1][0] - prices[i]);
+        }
+        
+        return dp[n - 1][0];
+    }
+}
+```
+
+#### [309. Best Time to Buy and Sell Stock with Cooldown](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/) Medium
+Unlimited transactions with cooldown. (cool down before new buy)
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        int n = prices.length;
+        int[][] dp = new int[n][2];
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                // rest
+                dp[i][0] = 0;
+                // buy
+                dp[i][1] = -prices[i];
+                continue;
+            }
+            
+            if (i == 1) {
+                // still rest / buy on day 0 and sell on day 1
+                dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
+                // buy on day 0 and rest today / buy today
+                dp[i][1] = Math.max(dp[i - 1][1], dp[i - 1][0] - prices[i]);
+                continue;
+            }
+            
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
+            dp[i][1] = Math.max(dp[i - 1][1], dp[i - 2][0] - prices[i]);
+        }
+        
+        return dp[n - 1][0];
+    }
+}
+```
+
+#### [714. Best Time to Buy and Sell Stock with Transaction Fee](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/) Medium
+unlimited trasactions with a fee.
+```java
+class Solution {
+    public int maxProfit(int[] prices, int fee) {
+        int n = prices.length;
+        int[][] dp = new int[n][2];
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                dp[i][0] = 0;
+                dp[i][1] = -prices[i] - fee;
+                continue;
+            }
+            
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
+            dp[i][1] = Math.max(dp[i - 1][1], dp[i - 1][0] - prices[i] - fee);
+        }
+        
+        return dp[n - 1][0];
+    }
+}
+```
+
+#### [122. Best Time to Buy and Sell Stock III](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/) Hard
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        int n = prices.length;
+        int maxK = 2;
+        int[][][] dp = new int[n][maxK + 1][2];
+        
+        for (int i = 0; i < n; i++) {
+            for (int k = maxK; k >= 1; k--) {
+                if (i == 0) {
+                    dp[i][k][0] = 0;
+                    dp[i][k][1] = -prices[i];
+                    continue;
+                }
+                
+                dp[i][k][0] = Math.max(dp[i - 1][k][0], dp[i - 1][k][1] + prices[i]);
+                dp[i][k][1] = Math.max(dp[i - 1][k][1], dp[i - 1][k - 1][0] - prices[i]);    
+            }
+        }
+        
+        return dp[n - 1][maxK][0];
+    }
+}
+```
+
+#### [188. Best Time to Buy and Sell Stock IV](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/) Hard
+```java
+class Solution {
+    public int maxProfit(int k, int[] prices) {
+        int n = prices.length;
+        int maxK = k;
+        int[][][] dp = new int[n][maxK + 1][2];
+        
+        for (int i = 0; i < n; i++) {
+            for (k = maxK; k >= 1; k--) {
+                if (i == 0) {
+                    dp[i][k][0] = 0;
+                    dp[i][k][1] = -prices[i];
+                    continue;
+                }
+                
+                dp[i][k][0] = Math.max(dp[i - 1][k][0], dp[i - 1][k][1] + prices[i]);
+                dp[i][k][1] = Math.max(dp[i - 1][k][1], dp[i - 1][k - 1][0] - prices[i]);    
+            }
+        }
+        
+        return dp[n - 1][maxK][0];
+    }
+}
+```
+
+
+#### [70. Climbing Stairs](https://leetcode.com/problems/climbing-stairs/) Easy
+DP
+```java
+class Solution {
+    public int climbStairs(int n) {
+        /*
+        state:  ways to reach k-th step
+        choice: 1 step or 2 steps
+        */
+        
+        int[] dp = new int[n + 1];
+        for (int i = 1; i < n + 1; i++) {
+            if (i == 1) {
+                dp[0] = 1;
+                dp[1] = 1;
+                continue;
+            }
+            
+            
+            dp[i] = dp[i -2] + dp[i - 1];
+        }
+        
+        return dp[n];
+    }
+}
+```

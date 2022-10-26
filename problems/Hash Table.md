@@ -883,3 +883,147 @@ class Solution {
     }
 }
 ```
+
+#### [13. Roman to Integer](https://leetcode.com/problems/roman-to-integer/) Easy
+```java
+class Solution {
+    public int romanToInt(String s) {
+        Map<Character, Integer> map = new HashMap<>();
+        map.put('I', 1);
+        map.put('V', 5);
+        map.put('X', 10);
+        map.put('L', 50);
+        map.put('C', 100);
+        map.put('D', 500);
+        map.put('M', 1000);
+        
+        int i = s.length() - 1;
+        int current = 0;
+        int prev = 0;
+        int sum = 0;
+        while (i >= 0) {
+            current = map.get(s.charAt(i));
+            if (current < prev) {
+                sum -= current;
+            } else {
+                sum += current;
+            }
+            prev = current;
+            i--;
+        }
+
+        return sum;
+    }
+}
+```
+
+#### [12. Integer to Roman](https://leetcode.com/problems/integer-to-roman/) Medium
+Very intuitive solution. Depsite its ugly look, it runs pretty fast.
+```java
+class Solution {
+    public String intToRoman(int num) {
+        StringBuilder res = new StringBuilder();
+        while (num != 0) {
+            if (num >= 1000) {
+                res.append("M");
+                num -= 1000;
+                continue;
+            }
+            
+            if (num >= 900) {
+                res.append("CM");
+                num -= 900;
+                continue;
+            }
+            
+            if (num >= 500) {
+                res.append("D");
+                num -= 500;
+                continue;
+            }
+            
+            
+            if (num >= 400) {
+                res.append("CD");
+                num -= 400;
+                continue;
+            }
+            
+            if (num >= 100) {
+                res.append("C");
+                num -= 100;
+                continue;
+            }
+            
+            if (num >= 90) {
+                res.append("XC");
+                num -= 90;
+                continue;
+            }
+            
+            if (num >= 50) {
+                res.append("L");
+                num -= 50;
+                continue;
+            }
+            
+            if (num >= 40) {
+                res.append("XL");
+                num -= 40;
+                continue;
+            }
+            
+            if (num >= 10) {
+                res.append("X");
+                num -= 10;
+                continue;
+            }
+            
+            if (num >= 9) {
+                res.append("IX");
+                num -= 9;
+                continue;
+            }
+            
+            if (num >= 5) {
+                res.append("V");
+                num -= 5;
+                continue;
+            }
+            
+            if (num >= 4) {
+                res.append("IV");
+                num -= 4;
+                continue;
+            }
+            
+            if (num >= 1) {
+                res.append("I");
+                num -= 1;
+                continue;
+            }
+        }
+        
+        return res.toString();
+    }
+}
+```
+Tweaked a little lit and it now looks mmuch condense.
+```java
+class Solution {
+    public String intToRoman(int num) {
+        // use two arrays instead of a hashmap here
+        int[] nums = new int[]{1000,900,500,400,100,90,50,40,10,9,5,4,1};
+        String[] romans = new String[]{"M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"};
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < nums.length; i++) {
+            while (num >= nums[i]) {
+                res.append(romans[i]);
+                num -= nums[i];
+            }
+        }
+        return res.toString();
+    }
+}
+```
+
