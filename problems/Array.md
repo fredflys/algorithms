@@ -377,7 +377,7 @@ class Solution {
 
 #### 76 Minimum Window Substring <span style="color:red">Hard</span>
 
-sliding window
+sliding window, two pointers
 第一次用自己的思路写，只能通过一半的测试用例，错误在于我没有考虑到 t 中可以有重复字符，错将 t 中字符与该字符在 s 中出现的位置当成了 HashMap 的 key 与 value，应该记录出现的次数。在看了力扣的视频题解后，才对滑动窗口有了更深的认识，并改写了自己的版本。
 
 ```java
@@ -456,6 +456,46 @@ class Solution {
 }
 ```
 
+#### [438. Find All Anagrams in a String](https://leetcode.com/problems/find-all-anagrams-in-a-string/) Medium
+sliding window
+```java
+class Solution {
+    public List<Integer> findAnagrams(String s, String p) {
+        List<Integer> res = new LinkedList<>();
+        
+        int[] target = new int[26];
+        int[] window = new int[26];
+        for (char c : p.toCharArray()) {
+            target[c - 'a']++;
+        }
+        
+        int l = 0, r = 0;
+        while (r < s.length()) {
+            window[s.charAt(r) - 'a']++;
+            r++;
+            
+            if (r - l > p.length()) {
+                window[s.charAt(l) - 'a']--;
+                l++;
+            }
+            
+            if (r - l == p.length() && check(window, target)) res.add(l);
+        }
+
+        
+        return res;
+    }
+    
+    // compare two arrays
+    boolean check(int[] window, int[] target) {
+        for (int i = 0; i < 26; i++) {
+            if (window[i] != target[i]) return false;
+        }
+        return true;
+    }
+}
+```
+
 #### [567. Permutation in String](https://leetcode-cn.com/problems/permutation-in-string/) <span style="color:orange">Medium</span>
 fixed-size sliding window / two pointers
 When it comes to permutaion, only chars' count matters and how they are arranged doesn't matter. Also, a sub-string is required, thus comes the sliding window.
@@ -483,44 +523,201 @@ class Solution:
         return False
 ```
 
-#### [170. Two Sum III - Data structure design](https://leetcode.com/problems/two-sum-iii-data-structure-design/) Easy
-User HashMap to save occurances (e.g. 2,4,4,5, 4 shows up two times, if the occurance is not noted down, a target 8 can never be reached)
-Typically a data structure problems involves trade-offs between different methods based upon how frequently each method is going to be used
+#### [3. Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) Medium
+sliding window
+Consider:
+1. when to move right poninter and what needs to be updated
+2. when to move left pointer and what needs to be updated
+3. when to update the result
 ```java
-public class TwoSum {
-    // number : counter
-    private HashMap<Integer, Integer> counter;
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        if (s.length() == 0) {
+            return 0;
+        }
 
-    public TwoSum() {
-        counter = new HashMap<Integer, Integer>();
-    }
+        int res = 0;
+        int[] window = new int[128];
+        int l = 0, r = 0;
+        while (r < s.length()) {
+            char rc = s.charAt(r);
+            window[rc]++;
+            r++;
 
-    /**
-     * @param number: An integer
-     * @return: nothing
-     * @time: O(1)
-     */
-    public void add(int number) {
-        counter.put(number, counter.getOrDefault(number, 0) + 1);
-    }
+            while (window[rc] > 1) {
+                char lc = s.charAt(l);
+                l++;
+                window[lc]--;
+            }
 
-    /**
-     * @param value: An integer
-     * @return: Find if there exists any pair of numbers which sum is equal to the value.
-     * @time: O(n)
-     */
-    public boolean find(int target) {
-         for (Integer num: counter.keySet()) {
-             int other = target - num;
-             int desiredCount = other == num ? 2 : 1;
-             if (counter.getOrDefault(other, 0) >= desiredCount) {
-                 return true;
-             }
-         }
-         return false;
+            res = Math.max(res, r - l);
+        }
+
+        return res;
     }
 }
 ```
+
+#### [187. Repeated DNA Sequences](https://leetcode.com/problems/repeated-dna-sequences/) Medium
+brute force
+```java
+class Solution {
+    public List<String> findRepeatedDnaSequences(String s) {
+        int n = s.length();
+        int L = 10;
+        HashSet<String> seen = new HashSet<>();
+        List<String> res  = new ArrayList<>();
+        for (int i = 0; i + L <= n; i++) {
+            // [i, i + 10)
+            String sub = s.substring(i, i + L);
+            if (seen.contains(sub)) {
+                if (!res.contains(sub)) res.add(sub);
+            } else {
+                seen.add(sub);
+            }
+        }
+
+        return res;
+    }
+}
+```
+sliding window
+```java
+class Solution {
+    public List<String> findRepeatedDnaSequences(String s) {
+        int n = s.length();
+        int L = 10;
+        HashSet<String> seen = new HashSet<>();
+        List<String> res  = new ArrayList<>();
+        int l = 0, r = 0;
+        StringBuilder window = new StringBuilder();
+        String windowStr;
+        while (r < s.length()) {
+            window.append(s.charAt(r));
+            r++;
+            
+            if (r - l == L) {
+                windowStr = window.toString();
+                if (seen.contains(windowStr)) {
+                    if (!res.contains(windowStr)) res.add(windowStr);
+                } else {
+                    seen.add(windowStr);
+                }
+                window.deleteCharAt(0);
+                l++;
+            }
+        }
+
+        return res;
+    }
+}
+```
+sliding window hash - variation of Rabin-Karp text pattern algorithm
+Convert text information to numbers, which only can perform digit removal and adding in O(1), instead of O(L).  
+```java
+class Solution {
+    public List<String> findRepeatedDnaSequences(String s) {
+        int[] nums = convertToQuaternay(s);
+        int L = 10;
+        int R = 4;
+        int RL = (int) Math.pow(R, L - 1);
+        
+        HashSet<Integer> seen = new HashSet<>();
+        List<String> res = new LinkedList<>();
+        
+        int windowHash = 0;
+        int l = 0, r = 0;
+        while (r < nums.length) {
+            // append a digit to the right
+            /*
+            8324
+            res = 0
+            8   -> res = res * 10 + nums[0] 0 + 8
+            83  -> res = res * 10 + nums[1] 80 + 3
+            ...
+             */
+            windowHash = R * windowHash + nums[r];
+            r++;
+
+            if (r - l == L) {
+                if (seen.contains(windowHash)) {
+                    String sub = s.substring(l, r);
+                    if (!res.contains(sub)) res.add(sub);
+                } else {
+                    seen.add(windowHash);
+                }
+
+                // remove the leftmost digit
+                /*
+                8324
+                res = 8324
+                324 -> res - nums[i] * 10^(4 - 1)
+                 */
+                windowHash = windowHash - nums[l] * RL;
+                l++;
+            }
+        }
+
+        return res;
+    }
+    
+    // conver s to a number in base 4
+    int[] convertToQuaternay(String s) {
+        int[] nums = new int[s.length()];
+        for (int i = 0; i < nums.length; i++) {
+            switch (s.charAt(i)) {
+                case 'A' : nums[i] = 0; break;
+                case 'C' : nums[i] = 1; break;
+                case 'G' : nums[i] = 2; break;
+                case 'T' : nums[i] = 3; break;
+            }
+        }
+
+        return nums;
+    }
+}
+```
+
+#### [870. Advantage Shuffle](https://leetcode.com/problems/advantage-shuffle/) Medium
+two pointers
+```java
+class Solution {
+    public int[] advantageCount(int[] nums1, int[] nums2) {
+        int n = nums1.length;
+        // max heap: used to produce currently largest element in nums2
+        PriorityQueue<int[]> candidates = new PriorityQueue<>(
+            (int[] a, int[] b) -> {
+                return b[1] - a[1]; 
+            }
+        );
+        for (int i = 0; i < n; i++) {
+            candidates.offer(new int[]{i, nums2[i]});
+        }
+
+        Arrays.sort(nums1);
+        
+        int[] res = new int[n];
+        int l = 0, r = n - 1;
+        int[] candidate;
+        int index, currentMax;
+        while (!candidates.isEmpty()) {
+            candidate = candidates.poll();
+            index = candidate[0]; 
+            currentMax = candidate[1];
+            if (nums1[r] > currentMax) {
+                res[index] = nums1[r];
+                r--;
+            } else {
+                res[index] = nums1[l];
+                l++;
+            }
+        }
+        
+        return res;
+    }
+}
+```
+
 #### [15. 3Sum](https://leetcode.com/problems/3sum/) Medium
 Two pointers, dimension reduction
 This problem is turned into a two sum one with an outer loop.
@@ -611,7 +808,7 @@ class Solution:
                 right -= 1
 ```
 
-[LintCode 143 · Sort Colors II](https://www.lintcode.com/problem/143/) Medium
+#### [LintCode 143 · Sort Colors II](https://www.lintcode.com/problem/143/) Medium
 partition, merge sort, quick sort, two pointers
 nlogk
 ```python
@@ -717,9 +914,77 @@ class Solution:
         return result if result < len(nums) + 1 else -1
 ```
 
-#### [54. Spiral Matrix](https://leetcode-cn.com/problems/spiral-matrix/) <span style="color:orange">Medium</span>
-
-
+#### [54. Spiral Matrix](https://leetcode.com/problems/spiral-matrix/) Medium
+matrix, multi-dimension array
+```java
+class Solution {
+    public List<Integer> spiralOrder(int[][] matrix) {
+        int m = .length, n = matrix[0].length;
+        int upperbound = 0, rightbound = n - 1, leftbound = 0, lowerbound = m - 1;
+        List<Integer> res = new LinkedList<>();
+        
+        while (res.size() < m * n) {
+            // from left to right
+            // a row on the top is traversed
+            if (res.size() < m * n && upperbound <= lowerbound) {
+                traverseRow(matrix, res, upperbound, leftbound, rightbound);
+                upperbound++;
+            }
+            
+            
+            // from top to bottom
+            // a column on the rightest is traversed
+            if (res.size() < m * n && rightbound >= leftbound) {
+                traverseCol(matrix, res, rightbound, upperbound, lowerbound);
+                rightbound--;
+            }
+            
+            // from right to left
+            // a bottom row is traversed
+            if (res.size() < m * n && lowerbound >= upperbound) {
+                traverseRow(matrix, res, lowerbound, rightbound, leftbound);
+                lowerbound--;
+            }
+            
+            // from bottom to top
+            // a column on the leftest is traversed
+            if (res.size() < m * n && leftbound <= rightbound) {
+                traverseCol(matrix, res, leftbound, lowerbound, upperbound);
+                leftbound++;
+            }
+        }
+        
+        return res;
+    }
+    
+    void traverseRow(int[][] matrix, List<Integer> res, int row, int start, int end) {
+        if (start < end) {
+            for (int i = start; i <= end; i++) {
+                res.add(matrix[row][i]);
+            }
+            return;
+        }
+        
+        for (int i = start; i >= end; i--) {
+            res.add(matrix[row][i]);
+        }
+    }
+    
+    void traverseCol(int[][] matrix, List<Integer> res, int col, int start, int end) {
+        if (start < end) {
+            for (int i = start; i <= end; i++) {
+                res.add(matrix[i][col]);
+            }
+            return;
+        }
+        
+        
+        for (int i = start; i >= end; i--) {
+            res.add(matrix[i][col]);
+        }
+    }
+}
+```
 
 #### [59. Spiral Matrix II](https://leetcode-cn.com/problems/spiral-matrix-ii/) <span style="color:orange">Medium</span>
 
@@ -751,6 +1016,59 @@ class Solution {
     }
 }
 ```
+
+#### [766. Toeplitz Matrix](https://leetcode.com/problems/toeplitz-matrix/) Easy
+```java
+class Solution {
+    public boolean isToeplitzMatrix(int[][] matrix) {
+        int base;
+        int m = matrix.length;
+        int n = matrix[0].length;
+        for (int i = 1 ; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                if (matrix[i][j] != matrix[i - 1][j - 1]) return false; 
+            }
+        }
+        return true;
+    }
+}
+```
+
+#### [1504. Count Submatrices With All Ones](https://leetcode.com/problems/count-submatrices-with-all-ones/) Medium
+Kind of know how it works but still not fully understand.
+```java
+class Solution {
+    public int numSubmat(int[][] mat) {
+        int m = mat.length;
+        int n = mat[0].length;
+        int rowConsectiveOne;
+        int[][] leftOnes = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            rowConsectiveOne = 0;
+            for (int j = 0; j < n; j++) {
+                if (mat[i][j] == 1) rowConsectiveOne++;
+                else rowConsectiveOne = 0;
+                leftOnes[i][j] = rowConsectiveOne; 
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int rowMin = leftOnes[i][j];
+                for (int k = i; k >= 0; k--) {
+                    rowMin = Math.min(rowMin, leftOnes[k][j]);
+                    res += rowMin;
+                }
+            }
+        }
+        return res;
+    }
+}
+```
+
+
+
+
 
 #### [912. Sort an Array](https://leetcode-cn.com/problems/sort-an-array/) <span style="color:orange">Medium</span>
 
@@ -2479,6 +2797,7 @@ class Solution {
 
 
 #### [523. Continuous Subarray Sum](https://leetcode.com/problems/continuous-subarray-sum/) Medium
+Modular arithmetic, prefix sum, hash table
 ```java
 class Solution {
     public boolean checkSubarraySum(int[] nums, int k) {
@@ -2490,8 +2809,9 @@ class Solution {
         Map<Integer, Integer> map = new HashMap<>();
         int presum = 0;
         // a desired subarray can be possibly found at index 1 (second element) 
-        // if -1 is inserted here, this case will be missed
-        // e.g. [2,4] k = 6
+        // if -1 is not inserted here, this case will be missed
+        // e.g. [2,4] k = 6 
+        // also, the first element of prefix sum is actually 0, which should be included.
         map.put(0, -1);
         for (int i = 0; i < n; i++) {
             presum += nums[i];
@@ -2901,7 +3221,7 @@ class Solution {
 }
 ```
 
-#### (215. Kth Largest Element in an Array)[https://leetcode.com/problems/kth-largest-element-in-an-array/] Medium
+#### [215. Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/) Medium
 quick sort, quick select
 top k-th -> k-th in descending order -> n - k in ascending order
 ```java
@@ -3027,6 +3347,66 @@ class Solution {
 }
 ```
 
+#### [594. Longest Harmonious Subsequence](https://leetcode.com/problems/longest-harmonious-subsequence/) Easy
+two pointers using while loop
+```java
+class Solution {
+    public int findLHS(int[] nums) {
+        int res = 0;
+        Arrays.sort(nums);
+        // System.out.println(Arrays.toString(nums));
+        int l = 0, r = 0;
+        while (r < nums.length) {
+            if (nums[r] - nums[l] == 1) {
+                res = Math.max(res, r - l + 1);
+            }
+            // r is fixed and move forawrd l until the desired condition is met
+            // if only a if is used here, instead of a while loop,  
+            while (l < r && nums[r] - nums[l] > 1) {
+                l++;
+            }
+            r++;
+        }
+        
+        return res;
+    }
+}
+```
+two pointers using for loop
+```java
+class Solution {
+    public int findLHS(int[] nums) {
+        int res = 0;
+        Arrays.sort(nums);
+        // System.out.println(Arrays.toString(nums));
+        for (int l = 0, r = 0; r < nums.length; r++) {
+            while (l < r && nums[r] - nums[l] > 1) l++;
+            if (nums[r] - nums[l] == 1) res = Math.max(res, r - l + 1);
+        }
+        
+        return res;
+    }
+}
+```
+Hash table 
+```java
+class Solution {
+    public int findLHS(int[] nums) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int num: nums) {
+            map.put(num,  map.getOrDefault(num, 0) + 1);
+        }
+        int res = 0;
+        for (int num: nums) {
+            if (map.containsKey(num - 1)) {
+                res = Math.max(res, map.get(num) + map.get(num - 1));
+            }
+        }
+        return res;
+    }
+}
+```
+
 #### [219. Contains Duplicate II](https://leetcode.com/problems/contains-duplicate-ii/) Easy
 two pointers
 ```java
@@ -3052,6 +3432,100 @@ class Solution {
         }
         
         return false;
+    }
+}
+```
+#### [220. Contains Duplicate III](https://leetcode.com/problems/contains-duplicate-iii/) Hard
+brute force
+```java
+class Solution {
+    public boolean containsNearbyAlmostDuplicate(int[] nums, int indexDiff, int valueDiff) {
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = i + 1; j <= i + indexDiff && j < nums.length; j++) {
+                if (Math.abs(nums[j] - nums[i]) > valueDiff) continue;
+                return true;
+            }
+        }
+        
+        return false;
+    }
+}
+```
+reference: https://leetcode.cn/problems/contains-duplicate-iii/solution/c-li-yong-tong-fen-zu-xiang-xi-jie-shi-b-ofj6/
+bucket sort
+```java
+class Solution {
+    public boolean containsNearbyAlmostDuplicate(int[] nums, int indexDiff, int valueDiff) {
+        int n = nums.length;
+        Map<Integer, Integer> buckets = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            int value = nums[i];
+            int id = getBucketId(value, valueDiff);
+
+            // already in the same bucket
+            if (buckets.containsKey(id)) return true;
+            // check previous and next bucket
+            if (buckets.containsKey(id - 1) && Math.abs(buckets.get(id - 1) - value) <= valueDiff) 
+                return true;
+            if (buckets.containsKey(id + 1) && Math.abs(buckets.get(id + 1) - value) <= valueDiff)
+                return true;
+            buckets.put(id, value);
+            // make sure 
+            if (i >= indexDiff) 
+                buckets.remove(getBucketId(nums[i - indexDiff], valueDiff));
+        }
+        return false;
+    }
+    
+    int getBucketId(int value, int valueDiff) {
+        if (value >= 0) {
+            return value / (valueDiff + 1);
+        }
+        
+        return (value + 1) / (valueDiff + 1) - 1;
+    }
+}
+```
+
+#### [643. Maximum Average Subarray I](https://leetcode.com/problems/maximum-average-subarray-i/) Easy
+two pointers
+```java
+class Solution {
+    public double findMaxAverage(int[] nums, int k) {
+        int n = nums.length;
+        double average = 0;
+        double sum = 0;
+        for (int i = 0; i < k; i++) {
+            sum += nums[i];
+        }
+        average = sum / k;
+        // System.out.println(sum);
+        for (int l = 1, r = k; r < nums.length; r++,l++) { 
+            sum = sum + nums[r] - nums[l - 1];
+            average = Math.max(average, sum / k);
+        }
+
+        return average;
+    }
+}
+```
+
+#### [1984. Minimum Difference Between Highest and Lowest of K Scores](https://leetcode.com/problems/minimum-difference-between-highest-and-lowest-of-k-scores/) Easy
+two pointers
+```java
+class Solution {
+    public int minimumDifference(int[] nums, int k) {
+        if (k == 1) {
+            return 0;
+        }
+        Arrays.sort(nums);
+        int diff = Integer.MAX_VALUE;
+        for (int l = 0, r = k -1; r < nums.length; l++, r++) {
+            if (nums[r] - nums[l] < diff) {
+                diff = nums[r] - nums[l];
+            }
+        }
+        return diff;
     }
 }
 ```
@@ -3135,6 +3609,20 @@ class Solution {
 }
 ```
 
+#### [1526. Minimum Number of Increments on Subarrays to Form a Target Array](https://leetcode.com/problems/minimum-number-of-increments-on-subarrays-to-form-a-target-array/) Hard
+range update, difference array
+```java
+class Solution {
+    public int minNumberOperations(int[] target) {
+        int res = 0, pre = 0;
+        for (int cur: target) {
+            res += Math.max(cur - pre, 0);
+            pre = cur;
+        }
+        return res;
+    }
+}
+
 #### [1094. Car Pooling](https://leetcode.com/problems/car-pooling/) Medium
 ```java
 class Solution {
@@ -3179,12 +3667,13 @@ class Solution {
 ```
 
 #### [48. Rotate Image](https://leetcode.com/problems/rotate-image/) Medium
-multi-dimension array
+matrix, multi-dimension array
 ```java
 class Solution {
     public void rotate(int[][] matrix) {
         int n = matrix.length;
         int temp;
+        // diagnoal swap from left top to right bottom
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
                 temp = matrix[i][j];
@@ -3193,6 +3682,7 @@ class Solution {
             }
         }
         
+        // row reversal line by line
         for (int[] row : matrix) {
             reverseRow(row);
         }
@@ -3207,6 +3697,86 @@ class Solution {
             i++;
             j--;
         }
+    }
+}
+```
+
+#### [1524. Number of Sub-arrays With Odd Sum](https://leetcode.com/problems/number-of-sub-arrays-with-odd-sum/) Medium
+
+```java
+/**
+for presum[j], count i's where i < j and presum[i] and presum[j] have different parities -> sum of i to j = presum[j] - presum[i]
+e.g.'
+         1 2 3 4  5 
+presum 0 1 3 6 10 15
+parity e o o e e  o
+count of even and odd presums count[0] even count[1] odd
+i   (e,o)   odd subarrays
+0   (1,0)   0
+1   (1,1)   1
+3   (1,2)   3 is odd, find even presums before it, 1 + previous count[0] = 2
+6   (2,2)   6 is even, find odd presums before it, 2 + previous count[1] = 4     
+    - [1] sum is odd, exlucding it from subarrays that end with arr[2] and subarray sum will be odd, [2, 3]
+    - [1,2] sum is odd, excluded and the desired subarray will be [3] 
+10  (3,2)   ...
+15  (3,3)   ...            
+ */
+class Solution {
+    public int numOfSubarrays(int[] arr) {
+        final int MODULO = 1000000007;
+
+        // count of odd and even presums
+        int odd = 0, even = 1;
+        int presum = 0;
+        int res = 0;
+        for (int i = 0; i < arr.length; i++) {
+            presum += arr[i];
+            if (presum % 2 == 0) {
+                res = (res + odd) % MODULO;
+                even++;
+            } else {
+                res = (res + even) % MODULO;
+                odd++;
+            }
+        }
+        return res;
+    }
+}
+```
+use bitwise operation
+```java
+/**
+0 even
+1 odd
+for sum[j], count sum[i] where i < j and sum[i] have different parities  
+
+odd + even = odd
+even + odd = odd
+odd + odd = even
+even + even = even
+ */
+class Solution {
+    public int numOfSubarrays(int[] arr) {
+        // presumParity[0] count of even presums
+        // presumParity[1] count of odd presums
+        int[] presumParity = new int[] {1, 0};
+        long res = 0;
+        int parity;
+        for (int i = 0, sum = 0; i < arr.length; i++) {
+            /**
+            bitwise AND
+            if arr[i] is even, 0 
+            if arr[i] is odd, 1 
+            */
+            parity = arr[i] & 1;
+            /**
+            bitwise XOR
+            only when 
+             */
+            ++presumParity[sum ^= parity];
+            res += presumParity[sum ^ 1];
+        }
+        return (int) (res % 1000000007);
     }
 }
 ```

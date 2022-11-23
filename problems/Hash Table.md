@@ -107,29 +107,6 @@ class Solution{
 }
 ```
 
-#### [438. Find All Anagrams in a String](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/) <span style="color:orange">Medium</span>
-
-```java
-// A, but running is slow
-class Solution {
-    public List<Integer> findAnagrams(String s, String p) {
-        int sLen = s.length();
-        int pLen = p.length();
-        char[] chars = p.toCharArray();
-        Arrays.sort(chars);
-        ArrayList result = new ArrayList();
-        for(int i = 0;i <= sLen - pLen; i++){
-            char[] subs = s.substring(i, i + pLen).toCharArray();
-            Arrays.sort(subs);
-            if(Arrays.equals(chars, subs)){
-                result.add(i);
-            }
-        }
-        return result;
-    }
-}
-```
-
 #### [349. Intersection of Two Arrays](https://leetcode-cn.com/problems/intersection-of-two-arrays/) <span style="color:green">Easy</span>
 
 ```python
@@ -1027,3 +1004,41 @@ class Solution {
 }
 ```
 
+#### [170. Two Sum III - Data structure design](https://leetcode.com/problems/two-sum-iii-data-structure-design/) Easy
+User HashMap to save occurances (e.g. 2,4,4,5, 4 shows up two times, if the occurance is not noted down, a target 8 can never be reached)
+Typically a data structure problems involves trade-offs between different methods based upon how frequently each method is going to be used
+```java
+public class TwoSum {
+    // number : counter
+    private HashMap<Integer, Integer> counter;
+
+    public TwoSum() {
+        counter = new HashMap<Integer, Integer>();
+    }
+
+    /**
+     * @param number: An integer
+     * @return: nothing
+     * @time: O(1)
+     */
+    public void add(int number) {
+        counter.put(number, counter.getOrDefault(number, 0) + 1);
+    }
+
+    /**
+     * @param value: An integer
+     * @return: Find if there exists any pair of numbers which sum is equal to the value.
+     * @time: O(n)
+     */
+    public boolean find(int target) {
+         for (Integer num: counter.keySet()) {
+             int other = target - num;
+             int desiredCount = other == num ? 2 : 1;
+             if (counter.getOrDefault(other, 0) >= desiredCount) {
+                 return true;
+             }
+         }
+         return false;
+    }
+}
+```

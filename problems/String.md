@@ -476,3 +476,61 @@ class Solution {
     }
 }
 ```
+
+#### [14. Longest Common Prefix](https://leetcode.com/problems/longest-common-prefix/) Easy
+```java
+class Solution {
+    public String longestCommonPrefix(String[] strs) {
+        if (strs.length == 0) return "";
+        String baseStr = strs[0];
+        
+        StringBuilder res = new StringBuilder();
+        char baseChar;
+        for (int i = 0; i < baseStr.length(); i++) {
+            baseChar = baseStr.charAt(i);
+            for (int j = 1; j < strs.length; j++) {
+                if (i >= strs[j].length() || strs[j].charAt(i) != baseChar) 
+                    return res.toString();
+            }
+            res.append(baseChar);
+        }
+        
+        return res.toString();
+    }
+}
+```
+
+#### [1047. Remove All Adjacent Duplicates In String](https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/) Easy
+two pointers
+What if the input string has one char repeated? Corner cases should always be considered, otherwise I will never arrive at a right solution.
+```java
+class Solution {
+    public String removeDuplicates(String s) {
+        return remove(s);   
+    }
+    
+    String remove(String s) {
+        if (s.length() == 1) return s;
+        StringBuilder sb = new StringBuilder(s);
+        int slow = 0;
+        int fast = slow + 1;
+        // be careful: length should be greater than 1 for the while loop to continue
+        while (sb.length() > 1 && fast != sb.length()) {
+            if (sb.charAt(fast) == sb.charAt(slow)) {
+                sb.delete(slow, fast + 1);
+                if (slow > 0) {
+                    fast--;
+                    slow--;
+                }
+
+            } else {
+                fast++;
+                slow++;
+            }
+        }
+        
+        return sb.toString();
+    }
+}
+```
+

@@ -1976,3 +1976,116 @@ class Solution {
     }
 }
 ```
+
+#### [1706. Where Will the Ball Fall](https://leetcode.com/problems/where-will-the-ball-fall/) Medium
+reference: https://leetcode.cn/problems/where-will-the-ball-fall/solution/java-shuang-bai-di-gui-by-ethan-jx-yvx6/
+DP
+```java
+class Solution {
+    int row;
+    int col;
+    public int[] findBall(int[][] grid) {
+        row = grid.length;
+        col = grid[0].length;
+        int[] res = new int[col];
+        for (int i = 0; i < col; i++) {
+            res[i] = move(grid, 0, i);
+        }
+        return res;
+    }
+    
+    int move(int[][] grid, int x, int y) {
+        if (x == row) {
+            return y;
+        }
+        
+        // stuck on left
+        if (y == 0 && grid[x][y] == -1) {
+            return -1;
+        }
+        // stuck on right
+        if (y == col - 1 && grid[x][y] == 1) {
+            return -1;
+        }
+        
+        // stuck in the middle
+        if (grid[x][y] == 1 && grid[x][y + 1] == -1) {
+            return -1;
+        }
+        if (grid[x][y] == -1 && grid[x][y - 1] == 1) {
+            return -1;
+        }
+        
+        // move to next row
+        return move(grid, x + 1, y + grid[x][y]);
+    }
+}
+```
+
+#### [221. Maximal Square](https://leetcode.com/problems/maximal-square/) Medium
+Intuition:
+![](https://s2.loli.net/2022/11/10/xd1rnEGeZjfpoY3.png)
+
+dp[i][j] : the longest side length of the rectangle that has matrix[i][j] as its bottom right corner and matrix[0][o] as its left top corner 
+```java
+class Solution {
+    public int maximalSquare(char[][] matrix) {
+        int maxSideLength = 0;
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        int[][] dp = new int[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (matrix[i][j] == '1') {
+                    if (i == 0 || j == 0) {
+                        dp[i][j] = 1;
+                    } else {
+                        dp[i][j] = getLeast(dp[i - 1][j - 1], dp[i - 1][j], dp[i][j - 1]) + 1;         
+                    }
+                    maxSideLength = Math.max(dp[i][j], maxSideLength);
+                }
+            }
+        }
+        
+        return maxSideLength * maxSideLength;
+    }
+    
+    int getLeast(int x, int y, int z) {
+        return Math.min(Math.min(x, y), z);
+    }
+}
+```
+
+#### [1277. Count Square Submatrices with All Ones](https://leetcode.com/problems/count-square-submatrices-with-all-ones/) Medium
+Similar to 221. 
+Once the max square edge length is known at every position, the amount of all sub sqaures can be counted by summing up these 
+```java
+class Solution {
+    public int countSquares(int[][] matrix) {
+        int res = 0;
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        int[][] dp = new int[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (matrix[i][j] == 1) {
+                    if (i == 0 || j == 0) {
+                        dp[i][j] = 1;
+                    } else {
+                        dp[i][j] = getLeast(dp[i - 1][j - 1], dp[i - 1][j], dp[i][j - 1]) + 1;
+                                 
+                    }
+                    
+                    res += dp[i][j];
+                }
+            }
+        }
+        
+        return res;
+    }
+    
+    int getLeast(int x, int y, int z) {
+        return Math.min(Math.min(x, y), z);
+    }
+}
+```

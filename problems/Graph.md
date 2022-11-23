@@ -1306,3 +1306,101 @@ class Solution:
                 return True
         return False
 ```
+
+#### [433. Minimum Genetic Mutation](https://leetcode.com/problems/minimum-genetic-mutation/) Medium
+```java
+class Solution {
+    private static String GENES = "ACGT";
+    
+    public int minMutation(String start, String end, String[] bank) {
+        int steps = 0;
+        
+        Queue<String> q = new LinkedList<>();
+        HashSet<String> visited = new HashSet<>();
+        List<String> repo = Arrays.asList(bank);
+        q.add(start);
+        visited.add(start);
+        
+        while (!q.isEmpty()) {
+            // candidates queue will grow later
+            // so q.size() is actually dynamic
+            // if i is initialized as 0 and condition is set to i < q.size()
+            // this will turn out not as expected beacuse size will get bigger
+            // but initialization statement will only be executed once
+            // so i can be initialized as q.size()
+            for (int i = q.size(); i > 0 ; i--) {
+                String s = q.poll();
+                if (s.equals(end)) return steps;
+                mutate(s, q, repo, visited);
+            }
+            steps++;
+        }
+        
+        return -1;
+    }
+    
+    void mutate(String source, Queue<String> candidates, List<String> repo, HashSet<String> visited) {
+        char[] chars = source.toCharArray();
+        String candidate;
+        for (int i = 0; i < chars.length; i++) {
+            char original = chars[i];
+            
+            for (int j = 0; j < GENES.length(); j++) {
+                if (original == GENES.charAt(j)) continue;
+                chars[i] = GENES.charAt(j);
+                candidate = new String(chars);
+                if (!visited.contains(candidate) && repo.contains(candidate)) {
+                    candidates.add(candidate);
+                    visited.add(candidate);
+                }
+            }
+            
+            // revert it back
+            chars[i] = original;
+        }
+    }
+}
+```
+
+#### [947. Most Stones Removed with Same Row or Column](https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/) Medium
+DFS
+```java
+class Solution {
+    public int removeStones(int[][] stones) {
+        HashSet<Pair<Integer, Integer>> visited = new HashSet<>();
+        int res = stones.length;
+        for (int i = 0; i < stones.length; i++) {
+            if (!beenVisited(visited, stones[i][0], stones[i][1])) {
+                dfs(stones, visited, stones[i][0], stones[i][1]);
+                // the best possible shot is that still 1 stone is left
+                // beczuse you always need one stone to remove another stone
+                // note that the result is decremented in the main loop, not in the recursive dfs loop
+                // if one point leads to the rest of points, that's the best shot
+                res--;
+            }
+        }
+        return res;
+    }
+
+    void dfs(int[][] stones, HashSet<Pair<Integer, Integer>> visited, int x, int y) {
+        visited.add(getCoordinate(x, y));
+        for (int i = 0; i < stones.length; i++) {
+            if (!beenVisited(visited, stones[i][0], stones[i][1])) {
+                if (x == stones[i][0] || y == stones[i][1]) 
+                    dfs(stones, visited, stones[i][0], stones[i][1]);
+            }
+        }
+    }
+
+    boolean beenVisited(HashSet<Pair<Integer, Integer>> visited, int x, int y) {
+        return visited.contains(getCoordinate(x, y));
+    }
+
+    Pair<Integer, Integer> getCoordinate(int x, int y) {
+        return new Pair<Integer, Integer>(x, y);
+    }
+}
+```
+Union Find
+```java
+```
