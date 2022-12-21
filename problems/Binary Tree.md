@@ -39,6 +39,43 @@ class Solution {
     }
 }
 ```
+stack
+```java
+class Solution {
+    public List<Integer> inorderTraversal(TreeNode root) {
+        Stack<Pair<TreeNode, Integer>> stack = new Stack<>();
+        Pair<TreeNode, Integer> stackTop = null;
+        List<Integer> res = new LinkedList<>();
+        for (stack.push(new Pair<>(root, 0)); !stack.isEmpty();) {
+            stackTop = stack.pop();
+            root = stackTop.getKey();
+            if (root == null) continue;
+
+            // left sub tree is already visited
+            if (leftSubTreeVisisted(stackTop)) {
+                // visit root
+                res.add(root.val);
+                // prepare to visit its right sub-tree
+                stack.push(new Pair<>(root.right, 0));
+                continue;
+            }
+
+            // left sub tree is not visited
+            // then mark it as visited and prepare to visit its left sub-tree
+            stack.push(new Pair<>(root, 1));
+            stack.push(new Pair<>(root.left, 0));
+        }
+
+        return res;        
+    }
+
+    private boolean leftSubTreeVisisted(Pair<TreeNode, Integer> pair) {
+        return pair.getValue() > 0;
+    }
+
+}
+```
+
 #### [144. Binary Tree Preorder Traversal](https://leetcode.com/problems/binary-tree-preorder-traversal/) Easy
 Traversal
 ```java
@@ -76,6 +113,30 @@ class Solution {
         result.addAll(preorderTraversal(root.left));
         result.addAll(preorderTraversal(root.right));
         return result;
+    }
+}
+```
+Non-recursive
+```java
+class Solution {
+    private void preorder(TreeNode root, List<Integer> res) {
+        if (root == null) {
+            return;
+        }
+
+        Stack<TreeNode> stack = new Stack<>();
+        for (stack.push(root); !stack.isEmpty();) {
+            root = stack.pop();
+            if (root != null) {
+                res.add(root.val);
+                stack.push(root.right);
+                stack.push(root.left);
+            }
+        }
+    }
+
+    public List<Integer> preorderTraversal(TreeNode root) {
+   
     }
 }
 ```
@@ -122,7 +183,41 @@ class Solution {
     }
 }
 ```
+stack
+```java
+class Solution {
+    public List<Integer> postorderTraversal(TreeNode root) {
+        Stack<Pair<TreeNode, Integer>> s = new Stack<>();
+        List<Integer> res = new LinkedList<>();
+        Pair<TreeNode, Integer> stackTop = null;
+        for (s.push(new Pair<>(root, 0)); !s.isEmpty();) {
+            stackTop = s.pop();
+            root = stackTop.getKey();
+            if (root == null) continue;
 
+            int subTreeVisited = stackTop.getValue();
+            
+            // both sub trees are not visited
+            // visit left sub tree
+            if (subTreeVisited == 0) {
+                s.push(new Pair<>(root, 1));
+                s.push(new Pair<>(root.left, 0));
+                continue;
+            }
+
+            // left sub-tree is visited
+            // visit right subtree
+            if (subTreeVisited == 1) {
+                s.push(new Pair<>(root, 2));
+                s.push(new Pair<>(root.right, 0));
+                continue;
+            }
+            res.add(root.val);
+        }
+        return res;  
+    }
+}
+```
 
 #### [100. Same Tree](https://leetcode.com/problems/same-tree/) Easy
 ```java
@@ -723,6 +818,40 @@ class Solution {
     }
     
     void add(Queue<TreeNode> q, TreeNode node) {
+        if (node != null) {
+            q.offer(node);
+        }
+    }
+}
+```
+
+#### [429. N-ary Tree Level Order Traversal](https://leetcode.com/problems/n-ary-tree-level-order-traversal/submissions/) Medium
+```java
+class Solution {
+    public List<List<Integer>> levelOrder(Node root) {
+        Queue<Node> q = new LinkedList<>();
+        List<List<Integer>> res = new ArrayList<>();
+        if (root == null) {
+            return res;
+        }
+        
+        q.offer(root);
+        while (!q.isEmpty()) {
+            int size = q.size();
+            List<Integer> level = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                Node node = q.poll();
+                level.add(node.val);
+                for (Node child: node.children) {
+                    add(q, child);
+                }
+            }
+            res.add(level);
+        }
+        return res;
+    }
+    
+    void add(Queue<Node> q, Node node) {
         if (node != null) {
             q.offer(node);
         }

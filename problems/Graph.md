@@ -1,4 +1,53 @@
 ## Graph
+cosists of
+- vertx, edge
+
+category
+- whether directed | weighted
+
+Tricky
+- loop, parallel edges
+- simple graph - no loop nor parallel edges
+
+connected or not connected
+= any connected sub-graph is a connected component
+- a tree is a acylic connected graph and every node can be its root
+- a spanning tree from a connected graph, with all the vertices and its edges being a subset of the graph (minimus edges to keep the graph still connected [V - 1]).
+- only a connected graph has a spanning tree
+- a graph, whether connected or not, has a spanning forest 
+- degree (for unweighted undirect graph) is the amount of a vertex's adjacent edges
+
+sparse and dense graph
+- focus in mainly on sparse graph
+
+representation
+- adjacency matrix
+    - A[i][j] = 1 means i is connected to j
+    - use 2 or more to represent parallel edges
+    - diagnoal elements are zeros for simple graph
+    - diagonal symmetry for undirected graph
+    - high space complexity (O(V^2)) 
+- adjacency list
+  - build graph : O(E * V), whenever inserting an edge, the node's edges have to be iterated through to check whether it already exists
+  - improvement: use tree set (logV) or hash set(1) instead of linked list to reduce time
+  - tree set can be used to retain order and save more space
+  - 1 < logN < N, logN is more like O(1) than O(N)
+![](https://s2.loli.net/2022/12/02/Up7iY9v2DlCVRxA.png)
+
+Traversal
+DFS
+  - compared with tree traversal, a node might be visited multiple times 
+  - applications
+    - count connected components
+    - single source path
+    - cycle detection
+    - bipartite graph
+
+Other topics
+- graph isomorphism - NP problem 
+  ![](https://s2.loli.net/2022/12/04/JcByI3ar1OfZqg2.png)
+- Planar graph
+  ![](https://s2.loli.net/2022/12/04/gk4Ofj89Hawhy6n.png)
 
 #### [133. Clone Graph ](https://leetcode-cn.com/problems/clone-graph/)<span style="color:orange">Medium</span>
 

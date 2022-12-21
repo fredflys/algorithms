@@ -519,3 +519,191 @@ class Solution {
 }
 ```
 DP
+
+#### [20. Valid Parentheses](https://leetcode.com/problems/valid-parentheses/description/) Easy
+```java
+class Solution {
+    public boolean isValid(String s) {
+        Stack<Character> stack = new Stack<>();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '(' || c == '[' || c == '{' ) {
+                stack.push(c);
+                continue;
+            }
+            if (stack.isEmpty()) return false;
+            char popped = stack.pop();
+            if ((c == ')' && popped != '(') || (c == ']' && popped != '[') || (c == '}' && popped != '{'))
+            return false;
+        }
+
+        return stack.isEmpty();
+    }
+}
+```
+
+#### [84. Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/description/) Hard
+```java
+class Solution {
+    public int largestRectangleArea(int[] heights) {
+        Stack<Integer> s = new Stack<>();
+        final int n = heights.length;
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            while (!s.isEmpty() && heights[i] <= heights[s.peek()]) {
+                int height = heights[s.pop()];
+                int left = s.isEmpty() ? -1 : s.peek();
+                res = Math.max(res, (i - left - 1) * height);
+                System.out.printf("height: %d area: %d\n", height, (i - left - 1) * height);
+            }
+            s.push(i);
+        }
+
+        while (!s.isEmpty()) {
+            int height = heights[s.pop()];
+            int left = s.isEmpty() ? -1 : s.peek();
+            res = Math.max(res, (n - left - 1) * height);
+            System.out.printf("height: %d area: %d\n", height, (n - left - 1) * height);
+        }
+
+        return res;
+    }
+}
+```
+
+#### [1441. Build an Array With Stack Operations](https://leetcode.com/problems/build-an-array-with-stack-operations/description/) Medium
+```java
+class Solution {
+    public List<String> buildArray(int[] target, int n) {
+        List<String> res = new ArrayList<>();
+        for (int i = 0, j = 1; i < target.length; j++) {
+            res.add("Push");
+            if (j < target[i]) {
+                res.add("Pop");
+            } else {
+                i++;
+            }
+        }
+
+        return res;
+    }
+}
+```
+
+#### [682. Baseball Game](https://leetcode.com/problems/baseball-game/description/) Easy
+```java
+class Solution {
+    public int calPoints(String[] operations) {
+        Stack<Integer> stack = new Stack<>();
+        int sum = 0;
+        for (String op: operations) {
+            System.out.println(op);
+            if (op.equals("+")) {
+                int temp = stack.pop();
+                int combined = stack.peek() + temp;
+                sum += combined;
+                stack.push(temp);
+                stack.push(combined);
+                continue;
+            }
+
+            if (op.equals("C")) {
+ 
+                sum -= stack.pop();
+                continue;
+            }
+
+            if (op.equals("D")) {
+                sum += stack.peek() * 2;
+                stack.push(stack.peek() * 2);
+                continue;
+            }
+
+            sum += Integer.valueOf(op);
+            stack.push(Integer.valueOf(op));
+        }
+
+        return sum;
+    }
+}
+```
+
+#### [225. Implement Stack using Queues](https://leetcode.com/problems/implement-stack-using-queues/description/) Easy
+```java
+class MyStack {
+    private Queue<Integer> q;
+
+    public MyStack() {
+        q = new LinkedList<>();
+    }
+    
+    public void push(int x) {
+        Queue<Integer> temp = new LinkedList<>();
+        temp.offer(x);
+        for (; !q.isEmpty(); temp.offer(q.poll()));
+        q = temp;        
+    }
+    
+    public int pop() {
+        return q.poll();
+    }
+    
+    public int top() {
+        return q.peek();
+    }
+    
+    public boolean empty() {
+        return q.isEmpty();
+    }
+}
+```
+
+#### [239. Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/description/) Hard
+deque
+```java
+class Solution {
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        Deque<Integer> dq = new LinkedList<>();
+        int[] res = new int[nums.length - k + 1];
+        for (int i = 0; i < nums.length; i++) {
+            // remove outdated indices
+            if (!dq.isEmpty() && dq.peek() < i - k + 1) {
+                dq.pop();
+            }
+            // remove smaller values inside the window
+            while (!dq.isEmpty() && nums[i] >= nums[dq.peekLast()]) {
+                dq.removeLast();
+            }
+            dq.add(i);
+            if (i + 1 >= k) {
+                res[i - k + 1] = nums[dq.peek()];
+            }
+        }
+        return res;
+    }
+}
+```
+
+#### [1696. Jump Game VI](https://leetcode.com/problems/jump-game-vi/description/) Medium
+```java
+class Solution {
+    public int maxResult(int[] nums, int k) {
+        Deque<Integer> dq = new LinkedList<>();
+        // int[] res = new int[nums.length];
+        // jump to the starting point first
+        dq.add(0);
+        for (int i = 1; i < nums.length; i++) {
+            if (!dq.isEmpty() && dq.peek() < i - k) {
+                dq.pop();
+            }
+            nums[i] += nums[dq.peek()];
+            while (!dq.isEmpty() && nums[dq.peekLast()] <= nums[i]) {
+                dq.removeLast();
+            }
+            dq.add(i);
+        }
+
+        return nums[nums.length - 1];
+    }
+}
+```

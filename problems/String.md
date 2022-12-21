@@ -534,3 +534,23 @@ class Solution {
 }
 ```
 
+#### [1704. Determine if String Halves Are Alike](https://leetcode.com/problems/determine-if-string-halves-are-alike/) Easy
+```java
+class Solution {
+    public boolean halvesAreAlike(String s) {
+        List<Character> vowels = new ArrayList<>(Arrays.asList('a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'));
+        char[] chars = s.toCharArray();
+        int balance = 0;
+        for (int i = 0, j = chars.length - 1; i < j; i++, j--) {
+            if (vowels.contains(chars[i])) {
+                ++balance;
+            }
+            if (vowels.contains(chars[j])) {
+                --balance;
+            }
+        }
+        
+        return balance == 0;
+    }
+}
+```

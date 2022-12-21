@@ -678,6 +678,53 @@ class Solution {
 }
 ```
 
+#### [992. Subarrays with K Different Integers](https://leetcode.com/problems/subarrays-with-k-different-integers/) Hard
+sliding window
+if there are exactly k distinct integers between [i, j], there are at least k distinct integers between [i, j + 1]
+if there are exactly k distinct integers between [i, j], there are at most k distinct integers between [i + 1, j]
+For every possible position for i, a total amount of subarrays with at least k distinct integers can be counted and and summed up, which includes k subarrays, k + 1 subarrays and so forth. By the same logic, a total amount of subarrays with at least k + 1 distinct integers can also be calculated, which includes k + 1 subarrays, k + 2 subarrays and so forth. Subtract latter from former will yield the desired result.
+e.g.
+    
+a b a c b d  k = 3
+i       j
+for i, there are 6 - 4 + 1 subarrays where at least k distinct integers exist, i.e. [i, j - 1], [i, j], [i, j + 1] 
+
+```java
+class Solution {
+    public int subarraysWithKDistinct(int[] nums, int k) {
+        return countSubWithLeastKInt(nums, k) - countSubWithLeastKInt(nums, k + 1);
+    }
+    
+    int countSubWithLeastKInt(int[] nums, int k) {
+        int[] window = new int[nums.length + 1];
+        int res = 0;
+        for (int i = 0, j = 0, distinctInts = 0; i < nums.length; i++) {
+            // stretch the window by incrementing j
+            // a new interger is found
+            for (; distinctInts < k && j < nums.length; j++) {
+                if (++window[nums[j]] == 1) {
+                    ++distinctInts;
+                }
+            }
+            
+            if (distinctInts < k) break;
+            
+            // now outside the inner loop, j already is incremented to a position where [i, j] has **at least** k distinct integers  
+            res += nums.length - j + 1;
+            
+            // shrink the window by decrementing i
+            // prepare for the next iteration as i will be incremented
+            if (--window[nums[i]] == 0) {
+                --distinctInts;
+            }
+        }
+        
+        return res;
+    }
+}
+```
+
+
 #### [870. Advantage Shuffle](https://leetcode.com/problems/advantage-shuffle/) Medium
 two pointers
 ```java
@@ -779,7 +826,7 @@ class Solution:
         return answer
 ```
 
-[75. Sort Colors](https://leetcode.com/problems/sort-colors/submissions/) Medium
+#### [75. Sort Colors](https://leetcode.com/problems/sort-colors/submissions/) Medium
 partition, two pointers
 ```python
 class Solution:
@@ -792,20 +839,52 @@ class Solution:
         # loop invariant
         # - all in [0, left) == 0
         # - all in [left, index) == 1
-        # - all in (right, n - 1] == 2
+        # - all in [index, right] unknown
         # starting from empty partitions, gradually enlarge each partition by moving pointers left or right 
+        # - all in (right, n - 1] == 2
         while index <= right:
+            # find 1
             if nums[index] == 1:
                 index += 1
+            # find 0
             elif nums[index] < 1:
                 nums[index], nums[left] = nums[left], nums[index]
-                left += 1
+                left += 1 
                 index += 1
+            # find 2
             else:
                 nums[index], nums[right] = nums[right], nums[index]
                 # after the swap, nums[index] is not known, so index will not be incremented 
                 # so that in the next loop nums[index] will be dealt with 
                 right -= 1
+```
+for loop
+```java
+class Solution {
+    public void sortColors(int[] nums) {
+        /*
+        0s : [0, i)
+        1: [i, j)
+        unknown: [j, k]
+        2: (k, nums.length - 1]
+        */
+        
+        for (int i = 0, j = 0, k = nums.length - 1; j <= k; j++) {
+            if (nums[j] == 0) {
+                // swap nums[j] and nums[i]
+                // 0 zone is larger now
+                nums[j] = nums[i];
+                nums[i++] = 0;
+            } else if (nums[j] == 2) {
+                // nums[k] is moved to position j
+                // nums[k] is still unknown so j needs to be moved backward
+                // so that it will be visited in the next iteration
+                nums[j--] = nums[k];
+                nums[k--] = 2;
+            }
+        }
+    }
+}
 ```
 
 #### [LintCode 143 · Sort Colors II](https://www.lintcode.com/problem/143/) Medium
@@ -1783,6 +1862,295 @@ class Solution:
         return dp[n][k]
 ```
 
+#### [69. Sqrt(x)](https://leetcode.com/problems/sqrtx/description/) Easy
+binary search on an answer set
+```java
+class Solution {
+    public int mySqrt(int x) {
+        long left = 0, right = x;
+        while (left + 1 < right) {
+            long mid = left + (right - left) / 2;
+            if (mid * mid <= x) {
+                left = mid;
+            } else {
+                right = mid;
+            }
+        }
+        return (int) (left - 1);
+    }
+}
+```
+
+#### [1482. Minimum Number of Days to Make m Bouquets](https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/description/) Medium
+binary search on an answer set, guess until a right answer is reached
+```java
+class Solution {
+    public int minDays(int[] bloomDay, int m, int k) {
+        int flowers = bloomDay.length;
+        // not enough flowers to make m bouquets
+        if (flowers / k < m) {
+            return -1;
+        }
+
+        int l = -1, r = 1000000000 + 1; 
+        while (l + 1 < r) {
+            int mid = l + (r - l) / 2, remainingBouquets = m;
+            for (int i = 0, flowersInBouquet = 0; remainingBouquets > 0 && i < flowers; i++) {
+                // flowers that take less than mid hours to bloom
+                // can be in a bouquet
+                if (bloomDay[i] <= mid) {
+                    if (++flowersInBouquet == k) {
+                        flowersInBouquet = 0;
+                        --remainingBouquets;
+                    }
+                } else {
+                    // only adjacent flowers can be in a bouquet
+                    flowersInBouquet = 0;
+                }
+            }
+
+            if (remainingBouquets == 0) {
+                r = mid;
+            } else {
+                l = mid;
+            }
+        }
+        return r;
+    }
+}
+```
+
+#### [1552. Magnetic Force Between Two Balls](https://leetcode.com/problems/magnetic-force-between-two-balls/description/) Medium
+binary search on an answer set
+l                                r
+           l   r
+  1 2 3 4..k | k + 1 k + 2 ... n
+```java
+class Solution {
+    public int maxDistance(int[] position, int m) {
+        Arrays.sort(position);
+        // the minimum answer is 1, which means two balls are placed right next to each other
+        // the maximum answer is end - 1, which means one is placed at the start and one is placed at the end
+        int l = 0, r = position[position.length - 1];
+        while (l + 1 < r) {
+            // the first ball is placed at the 1st position already
+            int mid = l + (r - l) / 2, remainingBalls = m - 1;
+            for (int i = 1, lastBall = position[0]; remainingBalls > 0 && i < position.length; i++) {
+                if (position[i] - lastBall >= mid) {
+                    --remainingBalls;
+                    lastBall = position[i];
+                }
+            }
+
+            if (remainingBalls == 0) {
+                l = mid;
+            } else {
+                r = mid;
+            }
+        }
+        return l;
+    }
+}
+```
+
+#### [878. Nth Magical Number](https://leetcode.com/problems/nth-magical-number/description/) Hard
+binary search on an answer set, numeric theory
+```java
+class Solution {
+    public int nthMagicalNumber(int n, int a, int b) {
+        int m = lcm(a, b);
+
+        long l = Math.min(a, b) - 1;
+        long r = (long) Math.min(a, b) * n + 1;
+        while (l + 1 < r) {
+            long mid = l + (r - l) / 2;
+            if (mid / a + mid / b - mid / m >= n) {
+                r = mid;
+            } else {
+                l = mid;
+            }
+        }
+        return (int) (r % 1000000007);
+    }
+
+    private int lcm(int a, int b) {
+        return a / gcd(a, b) * b;
+    }
+
+    private int gcd(int a, int b) {
+        return b == 0 ? a : gcd(b, a % b);
+    }
+}
+```
+
+#### [719. Find K-th Smallest Pair Distance](https://leetcode.com/problems/find-k-th-smallest-pair-distance/description/) Hard
+binary search on an answer set, sliding window
+```java
+class Solution {
+    public int smallestDistancePair(int[] nums, int k) {
+        Arrays.sort(nums);
+        // distance between any two pairs
+        // could be 0 at minimum, longest - shortest at maximum
+        int l = 0 - 1, r = nums[nums.length - 1] - nums[0] + 1;
+        // given a distance x, count how many pairs that are no more than x from each other
+        while (l + 1 < r) {
+            int mid = l + (r - l) / 2;
+            int pairsCount = 0;
+            for (int i = 0, j = 0; pairsCount < k && j < nums.length; j++) {
+                for (; nums[j] - nums[i] > mid; i++);
+                pairsCount += j - i;
+            }
+
+            // too many pairs
+            if (pairsCount >= k) {
+                r = mid;
+            } else {
+            // not enough pairs
+                l = mid;
+            }
+        }
+
+        return r;
+    }
+}
+```
+
+#### [1011. Capacity To Ship Packages Within D Days](https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/description/) Medium
+binary search on an answer set
+```java
+class Solution {
+    public int shipWithinDays(int[] weights, int days) {
+        // min capacity is 1
+        // max capacity is package max weight multiplied by packages
+        int l = 1 - 1, r = 500 * 5 * 10000 + 1;
+        while (l + 1  < r) {
+            int mid = l + (r - l) / 2;
+
+            // finished within desired days
+            // try to reduce the capacity
+            if (isShipped(weights, mid, days)) {
+                r = mid;
+            } else {
+                l = mid;
+            }
+        }
+        return r;
+    }
+
+    private boolean isShipped(int[] weights, int capacity, int limitDays) {
+        int spent = 0;
+        int loaded = 0;
+        
+        for (int i = 0; i < weights.length; i++) {
+            if (weights[i] > capacity) return false;
+
+            loaded += weights[i];
+
+            if (loaded > capacity) {
+                ++spent;
+                loaded = weights[i];
+            }
+        }
+
+        // still needs one more day to ship the last packages
+        // after exiting the loop, there is still some loaded weight 
+        return spent + 1 <= limitDays;
+    }
+}
+```
+
+#### [793. Preimage Size of Factorial Zeroes Function](https://leetcode.com/problems/preimage-size-of-factorial-zeroes-function/description/) Hard
+```java
+class Solution {
+    public int preimageSizeFZF(int k) {
+        return (int) (binarySearch(k + 1) - binarySearch(k));
+    }
+
+    private long binarySearch(int k) {
+        long l = 0 - 1, r = 5L * k + 1;
+        while (l + 1 < r) {
+            long mid = l + (r - l) / 2;
+            if (trailingZeroes(mid) < k) {
+                l = mid;
+            } else {
+                r = mid;
+            }    
+        }
+        return l;
+    }
+
+    private long trailingZeroes(long n) {
+        long res = 0;
+        for (long d = n; d / 5 > 0; d /= 5) {
+            res += d / 5;
+        }
+        return res;
+    }
+}
+```
+
+#### [1095. Find in Mountain Array](https://leetcode.com/problems/find-in-mountain-array/description/) Hard
+```java
+class Solution {
+    public int findInMountainArray(int target, MountainArray mountainArr) {
+        int peakIndex = findPeak(mountainArr);
+        
+        int beforePeakFound = binarySeach(mountainArr, peakIndex, target);
+        if (beforePeakFound != -1) return beforePeakFound;
+        
+        int afterPeakFound = binarySeachDescending(mountainArr, peakIndex, target);
+        if (afterPeakFound != -1) return afterPeakFound;
+        
+        return -1;
+    }
+
+    int findPeak(MountainArray ma) {
+        int l = 0, r = ma.length() - 1;
+        while (l + 1 < r) {
+            int mid = l + (r - l) / 2;
+            // next element > current element
+            // still before peak
+            if (ma.get(mid) > ma.get(mid - 1)) {
+                l = mid;
+            } else {
+                r = mid;
+            }
+        }
+        return l;
+    }
+
+    int binarySeach(MountainArray ma, int peakIndex, int target) {
+        int l = 0 - 1, r = peakIndex + 1;
+        while (l + 1 < r) {
+            int mid = l + (r - l) / 2;
+            if (target > ma.get(mid)) {
+                l = mid;
+            } else if (target < ma.get(mid)) {
+                r = mid;
+            } else {
+                return mid;
+            }
+        }
+        return -1;
+    }
+
+    int binarySeachDescending(MountainArray ma, int peakIndex, int target) {
+        int l = peakIndex - 1, r = ma.length();
+        while (l + 1 < r) {
+            int mid = l + (r - l) / 2;
+            if (target < ma.get(mid)) {
+                l = mid;
+            } else if (target > ma.get(mid)) {
+                r = mid;
+            } else {
+                return mid;
+            }
+        }
+        return -1;
+    }
+}
+```
+
 ### DFS
 
 #### [78. Subsets](https://leetcode.com/problems/subsets/) <span style="color:orange">Medium</span>
@@ -2394,6 +2762,54 @@ class Solution {
             }   
         }
         return removed;
+    }
+}
+```
+
+#### [1655. Distribute Repeating Integers](https://leetcode.com/problems/distribute-repeating-integers/description/) Hard
+```java
+class Solution {
+    public boolean canDistribute(int[] nums, int[] quantity) {
+        int[] freq = getFrequency(nums);
+        Arrays.sort(quantity);
+        // processing orders from largest to smallest
+        return dfs(quantity, freq, quantity.length - 1);
+    }
+    
+    // only frequency matters, number doesn't count'
+    int[] getFrequency(int[] nums) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int num: nums) {
+            map.put(num, map.getOrDefault(num, 0) + 1);
+        }
+
+        int[] freq = new int[map.size()];
+        int index = 0;
+        for (Map.Entry<Integer, Integer> entry: map.entrySet()) {
+            freq[index++] = entry.getValue();
+        }
+        Arrays.sort(freq);
+        return freq;
+    }
+
+    boolean dfs(int[] orders, int[] stock, int processingOrder) {
+        // even 1st(0-index) is processed now
+        // which means all orders are finished 
+        if (processingOrder == -1) {
+            return true;
+        }
+
+        for (int i = stock.length - 1; i >= 0; i--) {
+            if (stock[i] >= orders[processingOrder]) {
+                stock[i] -= orders[processingOrder];
+                if (dfs(orders, stock, processingOrder - 1)) {
+                    return true;
+                }
+                stock[i] += orders[processingOrder];
+            }
+        }
+        
+        return false;
     }
 }
 ```
@@ -3452,7 +3868,7 @@ class Solution {
 }
 ```
 reference: https://leetcode.cn/problems/contains-duplicate-iii/solution/c-li-yong-tong-fen-zu-xiang-xi-jie-shi-b-ofj6/
-bucket sort
+bucket division
 ```java
 class Solution {
     public boolean containsNearbyAlmostDuplicate(int[] nums, int indexDiff, int valueDiff) {
@@ -3483,6 +3899,58 @@ class Solution {
         }
         
         return (value + 1) / (valueDiff + 1) - 1;
+    }
+}
+```
+
+#### [1637. Widest Vertical Area Between Two Points Containing No Points](https://leetcode.com/problems/widest-vertical-area-between-two-points-containing-no-points/) Medium
+The intuitive solution would be sorting the input and calcuate the gap between all non-equal candidates. Sorting means nlogn time complexity. with bucket division, the time complexity can be reduced to (3)n.
+bucket division, pigeonhole principle
+```java
+class Solution {
+    public int maxWidthOfVerticalArea(int[][] points) {
+		int n = points.length;
+ 
+        // find the leftmost and rightmost point 
+        int min = points[0][0];
+        int max = points[0][0];
+        // only horizontal ordinate is relevant here
+        for (int[] point: points) {
+            min = Math.min(min, point[0]);
+            max = Math.max(max, point[0]);
+        }
+
+        // all points are on the same vertical line, no rectangle is possible
+        if (min == max) {
+            return 0;
+        }
+
+        // prepare buckets, with the first point in the first bucket and the last point in the last point
+        // a bucket will hold two values, the min value in the bucket and the max vlue in the bucket
+        int[][] buckets = new int[n + 1][];
+        final int partition = max - min;
+        for (int[] point: points) {
+            // since there is multiplication here, result could exceed the int limit
+            int bucketNumber = (int) ((point[0] - min) * (long) n / partition);
+            // bucket is still empty, initialize
+            if (buckets[bucketNumber] == null) {
+                buckets[bucketNumber] = new int[] {point[0], point[0]};
+            } else {
+                // update the values in the bucket
+                buckets[bucketNumber][0] = Math.min(buckets[bucketNumber][0], point[0]);
+                buckets[bucketNumber][1] = Math.max(buckets[bucketNumber][1], point[0]);
+            }
+        }
+
+        int res = 0;
+        for (int lastMax = buckets[0][1], i = 1; i <= n; i++) {
+            if (buckets[i] != null) {
+                res = Math.max(res, buckets[i][0] - lastMax);
+                lastMax = buckets[i][1];
+            }  
+        }
+
+        return res;
     }
 }
 ```
@@ -3777,6 +4245,208 @@ class Solution {
             res += presumParity[sum ^ 1];
         }
         return (int) (res % 1000000007);
+    }
+}
+```
+
+#### [1491. Average Salary Excluding the Minimum and Maximum Salary](https://leetcode.com/problems/average-salary-excluding-the-minimum-and-maximum-salary/) Easy
+```java
+class Solution {
+    public double average(int[] salary) {
+        int min = 1000001;
+        int max = 999;
+        double sum = 0;
+        for (int s: salary) {
+            if (s < min) min = s;
+            if (s > max) max = s;
+            sum += s;
+        }
+        
+        return (sum - max - min) / (salary.length - 2);
+    }
+}
+```
+#### [1512. Number of Good Pairs](https://leetcode.com/problems/number-of-good-pairs/) Easy
+```java
+class Solution {
+    public int numIdenticalPairs(int[] nums) {
+        Arrays.sort(nums);
+        int count = 1;
+        int total = 0;
+        for (int i = 0, j = 1; j < nums.length; j++) {
+            if (nums[j] == nums[i]) {
+                count++;
+                continue;
+            } 
+            
+            for (int k = 1; k < count; k++) {
+                total += k;
+            }
+            i = j;
+            count = 1;
+        }
+        
+        for (int k = 1; k < count; k++) {
+            total += k;
+        }
+
+        return total;
+    }
+}
+```
+
+#### [268. Missing Number](https://leetcode.com/problems/missing-number/) Easy
+array as map
+```java
+class Solution {
+    public int missingNumber(int[] nums) {
+        int[] count = new int[nums.length + 1];
+        for (int num: nums) {
+            count[num]++;
+        }
+        
+        int res = 0;
+        for (int i = 0; i < count.length; i++) {
+            if (count[i] == 0) res = i;
+        }
+        return res;
+    }
+}
+```
+
+#### [448. Find All Numbers Disappeared in an Array](https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/) Easy
+array as map
+```java
+class Solution {
+    public List<Integer> findDisappearedNumbers(int[] nums) {
+        List<Integer> res = new ArrayList<>();
+        int[] count = new int[nums.length];
+        for (int num: nums) {
+            count[num - 1]++;
+        }
+        
+        for (int i = 0; i < nums.length; i++) {
+            if (count[i] == 0) res.add(i + 1);
+        }
+        
+        return res;
+    }
+}
+```
+
+#### [442. Find All Duplicates in an Array](https://leetcode.com/problems/find-all-duplicates-in-an-array/) Medium
+array as map
+I figured out a way to store frequency in the input array provided.
+```java
+class Solution {
+    public List<Integer> findDuplicates(int[] nums) {
+        List<Integer> res = new ArrayList<>();
+        
+        for (int i = 0; i < nums.length; i++) {
+            int correctIndex = Math.abs(nums[i]) - 1;
+            // the position is now visted twice, indicating a duplicate
+            if (nums[correctIndex] < 0) {
+                res.add(correctIndex + 1);
+            } else {
+                nums[correctIndex] = -nums[correctIndex]; 
+            }
+        }
+        
+        return res;
+    }
+}
+```
+
+#### [41. First Missing Positive](https://leetcode.com/problems/first-missing-positive/) Hard
+array as map
+```java
+class Solution {
+    public int firstMissingPositive(int[] nums) {
+        int n = nums.length;
+    
+        for (int i = 0; i < n; i++) {
+            // keep moving nums[i] to the position where it belongs
+            while (nums[i] >= 1 && nums[i] <= n && nums[i] != nums[nums[i] - 1]) {
+                swap(nums, i, nums[i] - 1);
+            }
+        }
+
+        // now all eleements should be in the right positions
+        for (int i = 0; i < n; i++) {
+            if (nums[i] != i + 1) return i + 1; 
+        }
+
+        return n + 1;
+    }
+
+    void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+}
+```
+
+#### [287. Find the Duplicate Number](https://leetcode.com/problems/find-the-duplicate-number/) Medium
+array as a linked list with cycle, turtoise and hare algorithms for detecting a cycle in a linked list
+Pay close attention to the constraints, which make this algorithms not only possible but also desired.
+```java
+class Solution {
+    public int findDuplicate(int[] nums) {
+        // same as dummy nodes
+        int slow = 0;
+        int fast = 0;
+        do {
+            slow = nums[slow]; // slow = slow.next
+            fast = nums[nums[fast]]; // fast = fast.next.next
+        } while (slow != fast);
+
+        slow = 0;
+        while (slow != fast) {
+            slow = nums[slow];
+            fast = nums[fast];
+        }
+        return slow;
+    }
+}
+```
+
+#### [1657. Determine if Two Strings Are Close](https://leetcode.com/problems/determine-if-two-strings-are-close/) Medium
+use array as map, reverse thinking
+```java
+class Solution {
+    public boolean closeStrings(String word1, String word2) {
+        int[] count1 = count(word1);
+        int[] count2 = count(word2);
+        return haveSameChars(count1, count2) && haveSameFrequency(count1, count2);
+    }
+    
+    int[] count(String word) {
+        int[] count = new int[26];
+        for (int i = 0; i < word.length(); i++) {
+            ++count[word.charAt(i) - 'a'];
+        }
+        return count;
+    }
+    
+    boolean haveSameChars(int[] count1, int[] count2) {
+        for (int i = 0; i < 26; i++) {
+            if ((count1[i] == 0 && count2[i] != 0)
+                || (count1[i] != 00 && count2[i] == 0))
+                return false;
+        }
+        
+        return true;
+    }
+    
+    boolean haveSameFrequency(int[] count1, int[] count2) {
+        Arrays.sort(count1);
+        Arrays.sort(count2);
+        for (int i = 0; i < 26; i++) {
+            if (count1[i] != count2[i]) 
+                return false;
+        }
+        return true;
     }
 }
 ```

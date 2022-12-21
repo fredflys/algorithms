@@ -366,6 +366,28 @@ class Solution{
 }
 ```
 
+
+
+#### [141. Linked List Cycle](https://leetcode-cn.com/problems/linked-list-cycle/) <span style="color:green">Easy</span>
+
+```java
+// tow pointers: if two pointers meet, then there must be a cycle
+public class Solution {
+    public boolean hasCycle(ListNode head) {
+        ListNode fast = head;
+        ListNode slow = head;
+        while(fast != null && fast.next != null){
+            fast = fast.next.next;
+            slow = slow.next;
+            if(fast == slow){
+                return true;
+            }
+        }
+        return false;
+    }
+}
+```
+
 #### [142. Linked List Cycle II](https://leetcode-cn.com/problems/linked-list-cycle-ii/) <span style="color:orange">Medium</span>
 
 The node where the cycle begins, if there do exists a cycle, must be the node that re-appears first.
@@ -390,7 +412,6 @@ public class Solution {
 ```
 two-pointers
 **从头结点出发一个指针，从相遇节点也出发一个指针，这两个指针每次只走一个节点， 那么当这两个指针相遇的时候就是环形入口的节点。**
-
 ```java
 // two pointers
 public class Solution{
@@ -415,25 +436,7 @@ public class Solution{
 }
 ```
 
-#### [141. Linked List Cycle](https://leetcode-cn.com/problems/linked-list-cycle/) <span style="color:green">Easy</span>
 
-```java
-// tow pointers: if two pointers meet, then there must be a cycle
-public class Solution {
-    public boolean hasCycle(ListNode head) {
-        ListNode fast = head;
-        ListNode slow = head;
-        while(fast != null && fast.next != null){
-            fast = fast.next.next;
-            slow = slow.next;
-            if(fast == slow){
-                return true;
-            }
-        }
-        return false;
-    }
-}
-```
 
 #### [21. Merge Two Sorted Lists](https://leetcode.com/problems/merge-two-sorted-lists/) Easy
 without a dummy node, you have to be very careful with boundary cases
@@ -1348,9 +1351,18 @@ private ListNode reverse(ListNode head, ListNode prev){
     head.next = prev;
     return reverse(next, head);
 }
-
 ```
 recursive: pay close attention to the definition of the recursive algorithms
+1 -> 2 -> 3 -> 4 -> 5 -> 6 -> null
+1 -> reverse (2 -> 3 -> 4 -> 5 -> 6 -> null)
+h                        l
+1 -> 2 <- 3 <- 4 <- 5 <- 6 
+     |
+    null
+1 <=> 2
+head.next = head.next.next
+1 <-  2
+head.next = null
 ```java
 class Solution {
     // reverse the linked list that starts from head and returns the last (new first) node
@@ -1367,6 +1379,28 @@ class Solution {
         head.next.next = head;
         head.next = null;
         return last;
+    }
+}
+```
+recursive: store list nodes in the returned values
+```java
+// recursive 2
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        return reverse(head).getKey();
+    }
+    
+    
+    // reverse the linked list and return the first node and last node after reversal
+    Pair<ListNode, ListNode> reverse(ListNode head) {
+        if (head == null || head.next == null) {
+            return new Pair(head, head);
+        }
+        
+        Pair<ListNode, ListNode> nodes = reverse(head.next);
+        nodes.getValue().next = head;
+        head.next = null;
+        return new Pair<>(nodes.getKey(), head);
     }
 }
 ```
@@ -1685,6 +1719,285 @@ class Solution {
         }
         
         return prev;
+    }
+}
+```
+
+#### [1290. Convert Binary Number in a Linked List to Integer](https://leetcode.com/problems/convert-binary-number-in-a-linked-list-to-integer/) Easy
+bit operation
+```java
+class Solution {
+    public int getDecimalValue(ListNode head) {
+        int num = 0;
+        for (; head != null; head = head.next) {
+            num = num << 1 | head.val;    
+        }
+        return num;
+    }
+}
+```
+
+#### [1171. Remove Zero Sum Consecutive Nodes from Linked List](https://leetcode.com/problems/remove-zero-sum-consecutive-nodes-from-linked-list/) Medium
+```java
+class Solution {
+    public ListNode removeZeroSumSublists(ListNode head) {
+        ListNode dummy = new ListNode(0, head);
+        Map<Integer, ListNode> presumNode = new HashMap<>();
+        presumNode.put(0, dummy);
+        for(int sum = 0; head != null; head = head.next) {
+            sum += head.val;
+            
+            if (presumNode.containsKey(sum)) {
+                ListNode node = presumNode.get(sum);
+                /*
+            sum 0 1 2  0 4    
+                0 1 2 -3 4
+                       h
+                n
+                sum 0 is found in the map, have to remove three nodes: 1 2 -3
+                node = map.get(sum) -> dummy (starting point: this should not be removed)
+        remove  0 2 -3 4
+                0 -3 4
+                node.next == head is true, stop here
+                still, -3 needs to be removed so one more removal should be done 
+                */
+                for (int currentSum = sum; // initialization
+                     node.next != head; // condition
+                     presumNode.remove(currentSum += node.next.val),
+                     node.next = node.next.next) // action: remove 
+                    ;
+                node.next = node.next.next;
+            } else {
+                presumNode.put(sum, head);
+            }
+        }
+        
+        return dummy.next;
+    }
+}
+```
+
+#### [237. Delete Node in a Linked List](https://leetcode.com/problems/delete-node-in-a-linked-list/) Medium
+lazy deletion
+```java
+class Solution {
+    public void deleteNode(ListNode node) {
+        node.val = node.next.val;
+        node.next = node.next.next;       
+    }
+}
+```
+
+#### [1669. Merge In Between Linked Lists](https://leetcode.com/problems/merge-in-between-linked-lists/description/) Medium
+```java
+class Solution {
+    public ListNode mergeInBetween(ListNode list1, int a, int b, ListNode list2) {
+        int distance = b - a;
+        
+        ListNode start = list1;
+        // start will stop one node before the to-be-removed list
+        while (--a >= 1) {
+            start = start.next;
+        }
+
+        ListNode end = start;
+        // from one node before the to-be-removed list to one node after the to-be-removed list
+        while (--distance >= -2) {
+            end = end.next;
+        }
+
+        // connect the start node
+        start.next = list2;
+        
+        while (list2.next != null) {
+            list2 = list2.next;
+        }
+
+        // connect the end node
+        list2.next = end;
+
+        return list1;
+    }
+}
+```
+
+#### [950. Reveal Cards In Increasing Order](https://leetcode.com/problems/reveal-cards-in-increasing-order/description/) Medium
+```java
+class Solution {
+    public int[] deckRevealedIncreasing(int[] deck) {
+        Arrays.sort(deck);
+        final int n = deck.length;
+        Deque<Integer> deq = new LinkedList<>();
+        deq.push(deck[n - 1]);
+        // reverse the revealing order
+        // revealing order: reveal the first element and move the second to the bottom
+        // reversed: put the bottom card on the top and put the second to last card on the top
+        for (int i = n - 2; i >= 0; i--) {
+            deq.addFirst(deq.removeLast());
+            deq.addFirst(deck[i]);
+        }
+
+        int[] res = new int[n];
+        for (int i = 0; i < n; i++) {
+            res[i] = deq.poll();
+        }
+        return res;
+    }
+}
+```
+Follow the instructinos to build result array from a sorted deck
+res: [2, 0, 0, 0, 0, 0, 0]
+Queue: [2, 3, 4, 5, 6, 1] 
+res: [2, 0, 3, 0, 0, 0, 0]
+Queue: [4, 5, 6, 1, 3] 
+res: [2, 0, 3, 0, 5, 0, 0]
+Queue: [6, 1, 3, 5] 
+res: [2, 0, 3, 0, 5, 0, 7]
+Queue: [3, 5, 1] 
+res: [2, 0, 3, 11, 5, 0, 7]
+Queue: [1, 5] 
+res: [2, 13, 3, 11, 5, 0, 7]
+Queue: [5] 
+```java
+class Solution {
+    public int[] deckRevealedIncreasing(int[] deck) {
+        Arrays.sort(deck);
+        final int n = deck.length;
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            q.offer(i);
+        }
+
+        int[] res = new int[n];
+        for (int i = 0, j = 0; i < n ; i++) {
+            res[q.poll()] = deck[i];
+            if (!q.isEmpty()) {
+                q.add(q.poll());
+                // System.out.printf("res: %s\n", Arrays.toString(res));
+                // System.out.printf("Queue: %s \n", q);
+            }    
+        } 
+
+        return res;
+    }
+}
+```
+
+#### [622. Design Circular Queue](https://leetcode.com/problems/design-circular-queue/description/) Medium
+```java
+class MyCircularQueue {
+    private int[] q;
+    private int rear, size;
+
+    public MyCircularQueue(int k) {
+        q = new int[k];
+        size = 0;
+        // when the first element is inserted, rear becomes 0, which is exactly what it should be
+        rear = k - 1;
+    }
+    
+    public boolean enQueue(int value) {
+        if (isFull()) return false;
+
+        size++;
+        rear = (rear + 1) % q.length;
+        q[rear] = value;
+        return true;
+    }
+    
+    public boolean deQueue() {
+        if (isEmpty()) return false;
+        
+        size--;
+        return true;
+    }
+    
+    public int Front() {
+        if (isEmpty()) return -1;
+
+        int front = (rear + 1 - size + q.length) % q.length;
+        return q[front];
+    }
+    
+    public int Rear() {
+        if (isEmpty()) return -1;
+
+        return q[rear];
+    }
+    
+    public boolean isEmpty() {
+        return size == 0;
+    }
+    
+    public boolean isFull() {
+        return size == q.length;
+    }
+}
+```
+
+#### [641. Design Circular Deque](https://leetcode.com/problems/design-circular-deque/description/) Medium
+```java
+class MyCircularDeque {
+    private int front, rear;
+    private int size;
+    private int[] dq;
+
+    public MyCircularDeque(int k) {
+        size = k + 1;
+        dq = new int[size];
+        front = 0;
+        rear = 0;
+    }
+
+    public boolean insertFront(int value) {
+        if (isFull()) return false;
+
+        front = (front - 1 + size) % size;
+        dq[front] = value;
+        return true;
+    }
+    
+    public boolean insertLast(int value) {
+        if (isFull()) return false;
+
+        dq[rear] = value;
+        rear = (rear + 1) % size;
+        return true;
+    }
+    
+    public boolean deleteFront() {
+        if (isEmpty()) return false;
+
+        front = (front + 1) % size;
+        return true;
+    }
+    
+    public boolean deleteLast() {
+        if (isEmpty()) return false;
+
+        // soft deletion: moving rear pointer instead of actively deleting anything 
+        rear = (rear - 1 + size) % size;
+        return true;
+    }
+    
+    public int getFront() {
+        if (isEmpty()) return -1;
+
+        return dq[front];
+    }
+    
+    public int getRear() {
+        if (isEmpty()) return -1;
+
+        return dq[(rear - 1 + size) % size];
+    }
+    
+    public boolean isEmpty() {
+        return front == rear;
+    }
+    
+    public boolean isFull() {
+        return (rear + 1) % size == front;
     }
 }
 ```

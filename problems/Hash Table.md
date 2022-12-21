@@ -1042,3 +1042,100 @@ public class TwoSum {
     }
 }
 ```
+
+#### [2225. Find Players With Zero or One Losses](https://leetcode.com/problems/find-players-with-zero-or-one-losses/) Medium
+Since players can be more than 10^5, using array as hashmap is not practical. Use hash map and then sort or use tree map.
+```java
+class Solution {
+    public List<List<Integer>> findWinners(int[][] matches) {
+        List<List<Integer>> res = new ArrayList<>();
+            
+        HashMap<Integer, Integer> wins = new HashMap<>();
+        HashMap<Integer, Integer> losses = new HashMap<>();
+        
+        for (int[] match: matches) {
+            wins.put(match[0], wins.getOrDefault(match[0], 0) + 1);
+            losses.put(match[1], losses.getOrDefault(match[1], 0) + 1);
+        }
+        
+        List<Integer> allWinners = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry: wins.entrySet()) {
+            if (!losses.containsKey(entry.getKey())) {
+                allWinners.add(entry.getKey());
+            }
+            
+        }
+        
+        List<Integer> oneLosers = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry: losses.entrySet()) {
+            if (entry.getValue() == 1) {
+                oneLosers.add(entry.getKey());
+            }
+        }
+        
+        Collections.sort(allWinners);
+        Collections.sort(oneLosers);
+
+        res.add(allWinners);
+        res.add(oneLosers);
+        return res;
+    }
+}
+```
+
+#### [1207. Unique Number of Occurrences](https://leetcode.com/problems/unique-number-of-occurrences/) Easy
+```java
+class Solution {
+    public boolean uniqueOccurrences(int[] arr) {
+        // count occurences
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int num: arr) {
+            map.put(num, map.getOrDefault(num, 0) + 1);   
+        }
+        
+        // count occurences of occurences
+        int[] count = new int[1000];
+        for (Map.Entry<Integer, Integer> entry: map.entrySet()) {
+            count[entry.getValue()]++;
+        }
+        
+        for (int c: count) {
+            if (c > 1) return false;
+        }
+        
+        return true;
+    }
+}
+```
+
+#### [451. Sort Characters By Frequency](https://leetcode.com/problems/sort-characters-by-frequency/) Medium
+```java
+class Solution {
+    public String frequencySort(String s) {
+        List<int[]> count = new ArrayList<>();
+        Map<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            map.put(s.charAt(i), map.getOrDefault(s.charAt(i), 0) + 1);
+        }
+        
+        for (Map.Entry<Character, Integer> entry: map.entrySet()) {
+			// {character, frequency}
+            count.add(new int[]{(int) entry.getKey(), entry.getValue()});
+        }
+        
+		// sort the list in descending order by the frequency
+        Collections.sort(count, (int[] a, int[] b) -> b[1] - a[1] );
+		
+        StringBuilder sb = new StringBuilder();
+        
+        for (int i = 0; i < count.size(); i++) {
+			// append 
+            for (int j = 0; j < count.get(i)[1]; j++) {
+                sb.append((char) count.get(i)[0]);
+            }
+        }
+        
+        return sb.toString();
+    }
+}
+```

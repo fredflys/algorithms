@@ -219,6 +219,52 @@ class Solution {
     }
 }
 ```
+recursive
+```java
+class Solution {
+    private double pow(double x, long y) {
+        if (y == 1) {
+            return x;
+        }
+
+        double res = pow(x, y / 2);
+        res *= res;
+        return (y % 2 == 1) ? (res * x) : res; 
+    }
+
+    public double myPow(double x, int n) {
+        if (n == 0) {
+            return 1;
+        }
+
+        long m = n;
+        return m < 0 ? (1. / pow(x, -m)) : pow(x, m);
+    }
+}
+```
+stack
+```java
+class Solution {
+    private double pow(double x, long y) {
+        if (y == 1) {
+            return x;
+        }
+
+        double res = pow(x, y / 2);
+        res *= res;
+        return (y % 2 == 1) ? (res * x) : res; 
+    }
+
+    public double myPow(double x, int n) {
+        if (n == 0) {
+            return 1;
+        }
+
+        long m = n;
+        return m < 0 ? (1. / pow(x, -m)) : pow(x, m);
+    }
+}
+```
 
 #### [1227. Airplane Seat Assignment Probability](https://leetcode.com/problems/airplane-seat-assignment-probability/) Medium
 combinatorial mathematics, probability
@@ -368,6 +414,23 @@ class Solution {
         }
         // cancel out repeated permutations, e.g. 1 2 2
         return factorial(totalBalls) / repeatedBallsPermutations;
+    }
+}
+```
+
+#### [172. Factorial Trailing Zeroes](https://leetcode.com/problems/factorial-trailing-zeroes/description/) Medium
+trailing zeros -> 2 * 5 = 10 -> how many pairs of 2 and 5 -> every even number has factor 2, 5's multiple has factor 5
+-> 2s are far more than 5s -> how many 5s the input number can be divided into
+```java
+class Solution {
+    public int trailingZeroes(int n) {
+        int res = 0;
+        int divisor = 5;
+        while (divisor <= n) {
+            res += n / divisor;
+            divisor *= 5;
+        }
+        return res;
     }
 }
 ```
