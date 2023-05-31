@@ -434,3 +434,170 @@ class Solution {
     }
 }
 ```
+
+#### [342. Power of Four](https://leetcode.com/problems/power-of-four/description/) Easy
+```java
+class Solution {
+    public boolean isPowerOfFour(int n) {
+        // 2^n: must be something binary like 1000...
+        // 4^n: 
+        return n >- 0 && (n & (n - 1)) == 0 && (n & 0xAAAAAAAA) == 0; 
+    }
+}
+```
+
+#### [371. Sum of Two Integers](https://leetcode.com/problems/sum-of-two-integers/description/) Medium
+```java
+class Solution {
+    public int getSum(int a, int b) {
+        // xor: addition without carry 
+        // 0 0 -> 0 1 1 -> 0 1 0 -> 1 0 1 -> 1
+        return a == 0 ? b : getSum((a & b) << 1, a ^ b);
+    }
+}
+```
+
+#### [1318. Minimum Flips to Make a OR b Equal to c](https://leetcode.com/problems/minimum-flips-to-make-a-or-b-equal-to-c/description/) Medium
+```java
+class Solution {
+    public int minFlips(int a, int b, int c) {
+        int res = 0;
+        final int INTEGER_DIGITS = 31;
+        for (int i = INTEGER_DIGITS - 1; i >= 0; i--) {
+            final int digita = getDigit(a, i);
+            final int digitb = getDigit(b, i);
+            final int digitc = getDigit(c, i);
+            if ((digita | digitb) == digitc) continue;
+
+            // change either digit to 1  
+            if (digitc == 1) {
+                res++;
+            } else {
+            // change both digit to 0
+            // either one, but not both, may be zero already
+                res += digita + digitb;
+            }
+        }
+        return res;
+    }
+
+    private int getDigit(int num, int digit) {
+        return (num >> digit) & 1;
+    }
+}
+```
+
+#### [421. Maximum XOR of Two Numbers in an Array](https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/description/) Medium
+trie
+
+28
+0001 1100
+5
+0000 0101
+2
+0000 0010
+                 ...
+                  0
+				 0
+				0
+			   0 1
+		   	  0	  1
+			0  1   1
+			  1 0	0
+			 0 1 0   0
+```java
+/*
+ maximum XOR of two numbers -> starting from high digits, every binary digit should be different, thus producing a 1 on that digit. This requires an efficient search mechanism so that a sequence can be fast compared with the rest sequence.
+ */
+
+class TrieNode {
+    // binary tree node leads to two children
+    public TrieNode[] next;
+    public TrieNode () {
+        // 0 goes to next[0]
+        // 1 goes to next[1]
+        next = new TrieNode[2];
+    }
+}
+
+class Solution {
+    public int findMaximumXOR(int[] nums) {
+        TrieNode root = new TrieNode();
+        TrieNode currentRoot;
+        for (int num: nums) {
+            currentRoot = root;
+            /*
+            extend every number to 31 digits (integer length) by filling in zeroes
+            this way no worry is needed for boundary check
+            */
+            for (int mask = 1 << 30; mask > 0; mask >>= 1) {
+                // the number on this digit is 0 or 1
+                int digitBinaryValue = (num & mask) == 0 ? 0 : 1;
+                if (currentRoot.next[digitBinaryValue] == null) {
+                    currentRoot.next[digitBinaryValue] = new TrieNode();
+                }
+                currentRoot = currentRoot.next[digitBinaryValue];
+            }
+        }
+
+        int res = 0;
+        for (int num: nums) {
+            int xorResult = 0;
+            currentRoot = root;
+            for (int mask = 1 << 30; mask > 0 && currentRoot != null; mask >>= 1) {
+                int nextDigitDirection = (num & mask) == 0 ? 1 : 0;
+                if (currentRoot.next[nextDigitDirection] != null) {
+                    xorResult |= mask;
+                    currentRoot = currentRoot.next[nextDigitDirection];
+                } else {
+                    // goes to another direction
+                    currentRoot = currentRoot.next[nextDigitDirection ^ 1];
+                }
+            }
+            res = Math.max(res, xorResult);
+        }
+
+        return res;
+    }
+}
+```
+
+#### [136. Single Number](https://leetcode.com/problems/single-number/description/) Easy
+xor: a ^ a = 0 a ^ 0 = a
+```java
+class Solution {
+    public int singleNumber(int[] nums) {
+        int res = 0;
+        for (int num: nums) {
+            res ^= num;
+            System.out.println(res);
+        }
+        return res;
+    }
+}
+```
+
+#### [137. Single Number II](https://leetcode.com/problems/single-number-ii/) Medium
+only 1 on every binary digit matters and on every digit the total count should be either a multiple of 3 or not 
+```java
+class Solution {
+    public int singleNumber(int[] nums) {
+        int res = 0;
+
+        for (int i = 0; i < 32; i++) {
+            int count = 0;
+            for (int j = 0; j < nums.length; j++) {
+                if ((nums[j] >> i & 1) == 1) {
+                    ++count;
+                }
+            }
+
+            if (count % 3 != 0) {
+                res = res | 1 << i;
+            }
+        }
+
+        return res;
+    }
+}
+```

@@ -231,6 +231,50 @@ class Solution:
         return result
 ```
 
+#### [11. Container With Most Water](https://leetcode.com/problems/container-with-most-water/description/) Medium
+naive brute force, tle
+```java
+class Solution {
+    public int maxArea(int[] height) {
+        int maxArea = 0;
+        int n = height.length;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int h = Math.min(height[i], height[j]);
+                int w = j - i;
+                maxArea = Math.max(maxArea, h * w);
+            }
+        }
+
+        return maxArea;    
+    }
+}
+```
+two pointers
+```java
+class Solution {
+    public int maxArea(int[] height) {
+        int maxArea = 0;
+        int n = height.length;
+        int l = 0, r = n - 1;
+        int h, w;
+        while (l < r) {
+            w = r - l;
+            h = Math.min(height[l], height[r]);
+            maxArea = Math.max(maxArea, w * h);
+            // only move pointer when there a chance of having a bigger area
+            if (height[l] < height[r]) {
+                l++;
+            } else {
+                r--;
+            }
+        }
+
+        return maxArea;    
+    }
+}
+```
+
 ### Sliding window
 
 #### [209 Minimum Size Subarray Sum](https://leetcode.com/problems/minimum-size-subarray-sum/) <span style="color:orange">Medium</span>
@@ -724,6 +768,93 @@ class Solution {
 }
 ```
 
+### [1456. Maximum Number of Vowels in a Substring of Given Length](https://leetcode.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/description/) Medium
+naive brute force, will cause TLE
+```java
+class Solution {
+    public int maxVowels(String s, int k) {
+        int maxVowls = 0;
+        int n = s.length();
+        for (int i = 0; i + k <= n; i++) {
+            int cnt = 0;
+            for (int j = 0; j < k; j++) {
+                if (isVowl(s, i + j)) cnt++;
+            }
+            if (cnt > maxVowls) maxVowls = cnt;
+        }
+
+        return maxVowls;
+    }
+
+    private boolean isVowl(String s, int index) {
+        if (s.charAt(index) == 'a' || s.charAt(index) == 'e' || s.charAt(index) == 'i' || s.charAt(index) == 'o' || s.charAt(index) == 'u') {
+            return true;
+        }
+        return false;
+    }
+}
+```
+sliding window
+```java
+class Solution {
+    public int maxVowels(String s, int k) {
+        int res = 0;
+        int n = s.length();
+        int l = 0, r = 0;
+        
+        int vowls = 0;
+        // [l, r] closed interval on both ends
+        while (r < n) {
+            if (isVowl(s, r)) vowls++;
+            if (r - l + 1 > k) {
+                if (isVowl(s, l)) vowls--;
+                l++;
+            }
+
+            if (vowls > res) res = vowls;
+            r++;
+        }
+
+        return res;
+    }
+
+    private boolean isVowl(String s, int index) {
+        if (s.charAt(index) == 'a' || s.charAt(index) == 'e' || s.charAt(index) == 'i' || s.charAt(index) == 'o' || s.charAt(index) == 'u') {
+            return true;
+        }
+        return false;
+    }
+}
+```
+
+#### [2379. Minimum Recolors to Get K Consecutive Black Blocks](https://leetcode.com/problems/minimum-recolors-to-get-k-consecutive-black-blocks/description/) Easy
+sliding window
+```java
+class Solution {
+    public int minimumRecolors(String blocks, int k) {
+        int n = blocks.length();
+        int r = 0, l = 0, cnt = 0;
+        int res = n;
+        while (r < n) {
+            if (recolorNeeded(blocks, r)) cnt++;
+            if (r - l + 1 == k) {
+                res = Math.min(cnt, res);
+                if (recolorNeeded(blocks, l)) cnt--;
+                l++;
+            }
+            r++;
+        }
+        return res;
+    }
+
+    private boolean recolorNeeded(String blocks, int index) {
+        return blocks.charAt(index) == 'W';
+    }
+}
+```
+
+Two Pointers
+
 
 #### [870. Advantage Shuffle](https://leetcode.com/problems/advantage-shuffle/) Medium
 two pointers
@@ -801,6 +932,43 @@ class Solution:
                 right -= 1
             else:
                 left += 1      
+```
+
+#### [16. 3Sum Closest](https://leetcode.com/problems/3sum-closest/description/) Medium
+two pointers
+```java
+class Solution {
+    public int threeSumClosest(int[] nums, int target) {
+        Arrays.sort(nums);
+        int n = nums.length;
+        int delta = Integer.MAX_VALUE;
+        for (int i = 0; i < n - 2; i++) {
+            int sum = nums[i] + twoSumCloest(nums, i + 1, target - nums[i]);
+            if (Math.abs(delta) > Math.abs(target - sum)) {
+                delta = target - sum;
+            }
+        }
+        return target - delta;
+    }
+
+    private int twoSumCloest(int[] nums, int start, int target) {
+        int l = start, r = nums.length - 1;
+        int delta = Integer.MAX_VALUE;
+        while (l < r) {
+            int sum = nums[l] + nums[r];
+            if (Math.abs(delta) > Math.abs(target - sum)) {
+                delta = target - sum;
+            }
+
+            if (sum < target) {
+                l++;
+            } else {
+                r--;
+            }
+        }
+        return target - delta;
+    }
+}
 ```
 
 #### [611. Valid Triangle Number](https://leetcode.com/problems/valid-triangle-number/) Medium
@@ -1613,6 +1781,130 @@ class Solution:
         return sum(l // length for l in L)
 ```
 
+#### []() Medium
+max of all possible minimum values -> binary search on an answer set
+the less tastiness is, the more choices there are and vice versa 
+```java
+class Solution {
+    // max of all minimums 
+    // binary search on an answer set
+    public int maximumTastiness(int[] price, int k) {
+        Arrays.sort(price);
+
+        // max tastiness is the max difference of the array
+        if (k == 2) return price[price.length - 1] - price[0];
+
+        // all candies have the same price so the max tastiness will be 0
+        int l = 0, r = price[price.length - 1] - price[0];
+        while (l + 1 < r) {
+            int mid = l + (r - l) / 2;
+            if (guess(price, k, mid)) {
+                l = mid;
+            } else {
+                r = mid;
+            }
+        }
+        return l;
+    }
+
+    private boolean guess(int[] price, int k, int tastiness) {
+        int candyCnt = 1;
+        int candy = price[0];
+        for (int i = 1; i < price.length; i++) {
+            if (price[i] >= candy + tastiness) {
+                candyCnt++;
+                candy = price[i];
+            }
+            if (candyCnt == k) return true;
+        }
+
+        return false;
+    }
+}
+```
+
+### [2560. House Robber IV](https://leetcode.com/problems/house-robber-iv/description/) Medium
+binary search
+```java
+import java.util.Arrays;
+
+class Solution {
+    public int minCapability(int[] nums, int k) {
+        int[] copiedNums = Arrays.copyOf(nums, nums.length);
+        Arrays.sort(copiedNums);
+        int l = copiedNums[0], r = copiedNums[nums.length - 1];
+
+        if (k == 1) return l;
+        
+        while (l < r) {
+            int mid = l + (r - l) / 2;
+            if (guess(nums, k, mid)) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+
+        return l;
+    }
+
+    private boolean guess(int[] nums, int k, int cap) {
+        int robbed = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] <= cap) {
+                robbed++;
+                i++;
+            }
+
+            if (robbed >= k) return true;
+        }
+
+        return false;
+    }
+}
+```
+dp and binary search
+```java
+class Solution {
+    public int minCapability(int[] nums, int k) {
+        int n = nums.length;
+        if (n == 1) {
+            return nums[0];
+        }
+        int l = 0, r = (int) 1e9;
+        while (l < r) {
+            int mid = l + (r - l) / 2;
+            // dp[i] means based on the guessed minimum capability (mid)
+            // to steal from the first i-th houses 
+            // how many houses at least can be robbed
+            int[] dp = new int[n];
+            // the guessed capability is indeed the maximum
+            if (nums[0] <= mid) dp[0] = 1;
+            if (Math.min(nums[0], nums[1]) <= mid) {
+                dp[1] = 1;
+            }
+
+            for (int i = 2; i < n; i++) {
+                if (nums[i] > mid) {
+                    // i-th house cannot be robbed
+                    dp[i] = dp[i - 1];
+                } else {
+                    // i-th house will be robbed or not
+                    dp[i] = Math.max(dp[i - 1], dp[i - 2] + 1);
+                }
+            }
+
+            if (dp[n - 1] >= k) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return r;
+    }
+}
+```
+
 #### [74. Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/) Medium
 
 binary search on a sorted input
@@ -2151,6 +2443,54 @@ class Solution {
 }
 ```
 
+#### [1283. Find the Smallest Divisor Given a Threshold](https://leetcode.com/problems/find-the-smallest-divisor-given-a-threshold/description/) Medium
+binary serach on an answer set
+```java
+class Solution {
+    public int smallestDivisor(int[] nums, int threshold) {
+        int l = 1 - 1, r = 1000000 + 1;
+        while (l + 1 < r) {
+            int mid = l + (r - l) / 2;
+            int remaining = threshold;
+            for (int i = 0; i < nums.length && remaining >= 0; remaining -= (nums[i++] + mid - 1) / mid);
+            if (remaining < 0) {
+                l = mid;
+            } else {
+                r = mid;
+            }
+        }
+        return r;
+    }
+}
+```
+recursive
+```java
+class Solution {
+    private int search(int[] nums, int l, int r, int threshold) {
+        if (l + 1 >= r) {
+            return -1;
+        }
+
+        int mid = l + (r - l) / 2;
+        int remaining = threshold;
+        for (int i = 0; i < nums.length && remaining >= 0; remaining -= (nums[i++] + mid - 1) / mid);
+        if (remaining < 0) {
+            return search(nums, mid, r, threshold);
+        }
+        
+        int possibleAnswer = search(nums, l, mid, threshold);
+        if (possibleAnswer == -1) {
+            return mid;
+        }
+        return possibleAnswer;
+    }
+
+    public int smallestDivisor(int[] nums, int threshold) {
+        return search(nums, 1 - 1, 1000000 + 1, threshold);
+    }
+}
+```
+
 ### DFS
 
 #### [78. Subsets](https://leetcode.com/problems/subsets/) <span style="color:orange">Medium</span>
@@ -2401,6 +2741,40 @@ class Solution {
             subset.add(candi  dates[i]);
             dfs(target - candidates[i], i + 1, candidates, subset, results);
             subset.remove(subset.size() - 1);
+        }
+    }
+}
+```
+
+#### [40. Combination Sum II](https://leetcode.com/problems/combination-sum-ii/description/) Medium
+```java
+class Solution {
+    boolean[] used;
+
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+    List<List<Integer>> res = new LinkedList<>();
+    used = new boolean[candidates.length];
+    Arrays.sort(candidates);
+    List<Integer> combination = new LinkedList<>();
+    backtrack(candidates, 0, target, combination, res);
+    return res;
+    }
+
+    private void backtrack(int[] candidates, int start, int target, List<Integer> combination, List<List<Integer>> res) {
+        for (int i = start; i < candidates.length; i++) {
+            if (i > start && candidates[i] == candidates[i - 1]) continue;
+
+            if (target - candidates[i] < 0) {
+                return;
+            }
+
+            combination.add(candidates[i]);
+            if (target - candidates[i] == 0) {
+                res.add(new LinkedList<Integer>(combination));
+            } else {
+                backtrack(candidates, i + 1, target - candidates[i], combination, res);
+            }
+            combination.remove(combination.size() - 1);
         }
     }
 }
@@ -2767,6 +3141,7 @@ class Solution {
 ```
 
 #### [1655. Distribute Repeating Integers](https://leetcode.com/problems/distribute-repeating-integers/description/) Hard
+dfs
 ```java
 class Solution {
     public boolean canDistribute(int[] nums, int[] quantity) {
@@ -2810,6 +3185,74 @@ class Solution {
         }
         
         return false;
+    }
+}
+```
+
+#### [1593. Split a String Into the Max Number of Unique Substrings](https://leetcode.com/problems/split-a-string-into-the-max-number-of-unique-substrings/description/) Medium
+dfs
+```java
+class Solution {
+    private int res;
+
+    public int maxUniqueSplit(String s) {
+        res = 1;
+        dfs(s, new HashSet<String>(), 0);
+        return res;    
+    }
+
+    private void dfs(String s, HashSet<String> cutParts, int cutPosition) {
+        // max cut from remaining string plus parts alreay cut
+        if (s.length() - cutPosition + cutParts.size() <= res) {
+            return;
+        }
+        
+        // nothing to cut
+        if (cutPosition == s.length()) {
+            res = cutParts.size();
+            return;
+        }
+
+        for (int i = cutPosition + 1; i <= s.length(); i++) {
+            String cut = s.substring(cutPosition, i);
+            if (!cutParts.contains(cut)) {
+                cutParts.add(cut);
+                dfs(s, cutParts, i);
+                cutParts.remove(cut);
+            }
+        }
+    }
+}
+```
+
+#### [1415. The k-th Lexicographical String of All Happy Strings of Length n](https://leetcode.com/problems/the-k-th-lexicographical-string-of-all-happy-strings-of-length-n/description/) Medium
+```java
+class Solution {
+    private List<String> res;
+    public String getHappyString(int n, int k) {
+        char[] candidates = {'a', 'b', 'c'};
+        res = new ArrayList<>();
+        dfs(n, "", candidates);
+        if (k > res.size()) {
+            return "";
+        }
+
+        return res.get(k - 1);
+    }
+
+    private void dfs(int desiredLength, String currentString, char[] candidates) {
+        if (currentString.length() == desiredLength) {
+            res.add(currentString);
+            return;
+        }
+
+        for (char candidate: candidates) {
+            if (currentString.length() != 0 && currentString.charAt(currentString.length() - 1) == candidate) {
+                continue;
+            }
+
+            dfs(desiredLength, currentString + candidate, candidates);
+        }
     }
 }
 ```

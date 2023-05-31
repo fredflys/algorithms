@@ -564,6 +564,53 @@ class Solution {
 }
 ```
 
+#### [1625. Lexicographically Smallest String After Applying Operations](https://leetcode.com/problems/lexicographically-smallest-string-after-applying-operations/description/) Medium
+```java
+class Solution {
+    String res = null;
+
+    public String findLexSmallestString(String s, int a, int b) {
+        res = s;
+        Queue<String> candidates = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        String candidate = null;
+        visited.add(s);
+        for (candidates.add(s); !candidates.isEmpty();) {
+            s = candidates.poll();
+            candidate = addUpEvenDigits(s, a);
+            addCandidate(candidates, visited, candidate);
+            candidate = reverseDigits(s, b);
+            addCandidate(candidates, visited, candidate);
+        }
+        return res;
+    }
+
+    String addUpEvenDigits(String source, int added) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < source.length(); i++) {
+            sb.append(
+                (i & 1) == 0 ?
+                    source.charAt(i):
+                    (char) ((source.charAt(i) - '0' + added) % 10 + '0')
+            );
+        }
+        return sb.toString();
+    }
+
+    String reverseDigits(String source, int pos) {
+        return source.substring(source.length() - pos) + source.substring(0, source.length() - pos);
+    }
+
+    void addCandidate(Queue<String> candidates, Set<String> visited, String candidate) {
+        System.out.println(candidate);
+        if (visited.add(candidate)) {
+            if (res.compareTo(candidate) > 0) res = candidate;
+            candidates.add(candidate);
+        }
+    }
+}
+```
+
 #### [200. Number of Islands ](https://leetcode-cn.com/problems/number-of-islands/)<span style="color:orange">Medium</span>
 
 BFS on a matrix to get number of connected blocks
@@ -920,6 +967,98 @@ class Solution:
         if not graph:
             return ""
         return topo_sort(graph)
+```
+
+#### [1203. Sort Items by Groups Respecting Dependencies](https://leetcode.com/problems/sort-items-by-groups-respecting-dependencies/description/) Hard
+reference: https://leetcode.cn/problems/sort-items-by-groups-respecting-dependencies/solution/dao-xu-lu-lu-zhe-ti-by-xyzza-1ah1/
+topological sort
+```java
+class Solution {
+    public int[] sortItems(int n, int m, int[] group, List<List<Integer>> beforeItems) {
+        // topological sort on groups and items
+        // order should be kept among groups and items as well
+
+        // assign new group numbers to ungrouped items
+        for (int i = 0; i < group.length; i++) {
+            if (group[i] == -1) group[i] = m++;
+        }
+
+        // initialization  
+        int[] groupIndegrees = new int[m];
+        int[] itemIndegrees = new int[n];
+        List<Integer>[] groupAdjacency = new ArrayList[m];
+        List<Integer>[] itemAdjacency = new ArrayList[n];
+        int index = 0;
+        while (index < m + n) {
+            if (index < m) groupAdjacency[index] = new ArrayList<>();
+            if (index < n) itemAdjacency[index] = new ArrayList<>();
+            index++;
+        }
+
+        // fill in group adjacency list and group indegrees
+        for (int i = 0; i < group.length; i++) {
+            for (int beforeItem: beforeItems.get(i)) {
+                // beforeItem comes before i and they do not belong to the same group
+                // then the group where beforeItem comes from comes before the group where i comes from
+                if (group[beforeItem] != group[i]) {
+                    groupAdjacency[group[beforeItem]].add(group[i]);
+                    groupIndegrees[group[i]]++;
+                }
+            }
+        }
+
+        // tp sort on groups
+        List<Integer> sortedGroups = tpSort(groupAdjacency, groupIndegrees);
+        if (sortedGroups.size() == 0) return new int[0];
+
+        // fill in item adjacency and item indegrees
+        for (int j = 0; j < n; j++) {
+            for (int beforeItem: beforeItems.get(j)) {
+                itemAdjacency[beforeItem].add(j);
+                itemIndegrees[j]++;
+            }
+        }
+
+        List<Integer> sortedItems = tpSort(itemAdjacency, itemIndegrees);
+        if (sortedItems.size() == 0) return new int[0];
+
+        // build results from sorted groups and sorted items
+        HashMap<Integer, List<Integer>> groupedItems = new HashMap<>();
+        for (Integer item: sortedItems) {
+            groupedItems.computeIfAbsent(group[item], key -> new ArrayList()).add(item);
+        }
+
+        int[] res = new int[n];
+        int resIndex = 0;
+        for (Integer groupId: sortedGroups) {
+            List<Integer> itemsFromGroup = groupedItems.getOrDefault(groupId, new ArrayList<>());
+            for (Integer item: itemsFromGroup) res[resIndex++] = item;
+        }
+
+        return res;
+    }
+
+    List<Integer> tpSort(List<Integer>[] adjacency, int[] indegrees) {
+        List<Integer> res = new ArrayList<>();
+        Queue<Integer> queue = new LinkedList<>();
+        int n = indegrees.length;
+
+        for (int i = 0; i < n; i++) {
+            if (indegrees[i] == 0) queue.offer(i);
+        }
+
+        while (!queue.isEmpty()) {
+            Integer item = queue.poll();
+            res.add(item);
+            for (int next : adjacency[item]) {
+                indegrees[next]--;
+                if (indegrees[next] == 0) queue.offer(next);
+            }
+        }
+
+        return res.size() == n ? res : new ArrayList<>();
+    }
+}
 ```
 
 #### [816 · Traveling Salesman Problem - LintCode](https://www.lintcode.com/problem/816/)
@@ -1451,5 +1590,233 @@ class Solution {
 }
 ```
 Union Find
+```java
+```
+
+#### [1584. Min Cost to Connect All Points](https://leetcode.com/problems/min-cost-to-connect-all-points/description/) Medium
+union find
+connect all points -> graph -> find the minimum spanning tree and calculate the total weight of the tree
+```java
+class Solution {
+    int[] parent;
+    int[] size;
+
+    public int minCostConnectPoints(int[][] points) {
+        // reprent a graph using an edge list, with first and second element denoting verticex and the third element denoting the manhattan distance
+        List<int[]> edges = new ArrayList<>();
+        int n = points.length;
+        parent = new int[n];
+        size = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+            size[i] = 1;
+            for (int j = 0; j < i; j++) {
+                edges.add(new int[] {
+                    i, j, getDistance(points[i], points[j])
+                });
+            }
+        }
+        // sort all edges by the weight, i.e. the distance
+        Collections.sort(edges, (a, b) -> (a[2] - b[2]));
+        
+        int res = 0;
+        // for the minimum spanning tree, there's only n - 1 edges
+        for (int i = 0, j = 0; i < edges.size() && j < n - 1; i++) {
+            int[] edge = edges.get(i);
+            if (merge(edge[0], edge[1])) {
+                j++;
+                res += edge[2];
+            }
+        }
+        return res;
+    }
+
+    int getDistance(int[] p, int[] q) {
+        return Math.abs(p[0] - q[0]) + Math.abs(p[1] - q[1]);
+    }
+
+    int find(int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x]);
+        }
+        return parent[x];
+    }
+
+    // merge two sets
+    boolean merge(int p, int q) {
+        p = find(p);
+        q = find(q);
+        // already connected
+        if (p == q) {
+            return false;
+        }
+
+        if (size[p] > size[q]) {
+            parent[q] = p;
+            size[p] += size[q];
+        } else {
+            parent[q] = p;
+            size[q] += size[p];
+        }
+        return true;
+    }
+```
+
+#### [1489. Find Critical and Pseudo-Critical Edges in Minimum Spanning Tree](https://leetcode.com/problems/find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/description/) Hard
+```java
+class Solution {
+    private int[] parent;
+    private int[] size;
+    private int[][] edges;
+    private static int INF = 1000000;
+
+    public List<List<Integer>> findCriticalAndPseudoCriticalEdges(int n, int[][] inputEdges) {
+        initialize(n);
+        edges = new int[inputEdges.length][4];
+        for (int i = 0; i < edges.length; i++) {
+            for (int j = 0; j < 3; j++) {
+                edges[i][j] = inputEdges[i][j];
+            }
+            edges[i][3] = i;
+        }
+        Arrays.sort(edges, (a, b) -> (a[2] - b[2]));
+        // default mst, ignore no edges
+        final int defaultMstWeight = mst(n, -1);
+        List<Integer> criticalEdges = new ArrayList<>();
+        List<Integer> noncriticalEdges = new ArrayList<>();
+        List<List<Integer>> resEdges = new ArrayList<>();
+
+        for (int i = 0; i < edges.length; i++) {
+            initialize(n);
+            if (mst(n, i) > defaultMstWeight) {
+                criticalEdges.add(edges[i][3]); 
+            } else {
+                initialize(n);
+                merge(edges[i][0], edges[i][1]);
+                if (mst(n - 1, i) + edges[i][2] == defaultMstWeight) {
+                    noncriticalEdges.add(edges[i][3]);
+                }
+            }
+        }
+
+        resEdges.add(criticalEdges);
+        resEdges.add(noncriticalEdges);
+        return resEdges;
+    }   
+
+    void initialize(int n) {
+        parent = new int[n];
+        size = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+            size[i] = 1;
+        }
+    }
+
+    int find(int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x]);
+        }
+        return parent[x];
+    }
+
+    boolean merge(int p, int q) {
+        p = find(p);
+        q = find(q);
+        if (p == q) {
+            return false;
+        }
+
+        if (size[p] > size[q]) {
+            parent[q] = p;
+            size[p] += size[q];
+        } else {
+            parent[p] = q;
+            size[q] += size[p];
+        }
+        return true;
+    }
+
+    int mst(int n, int ignoredEdgeIndex) {
+        int res = 0, mstEdges = 0;
+        for (int i = 0; mstEdges < n - 1 && i < edges.length; i++) {
+            if (i == ignoredEdgeIndex) continue;
+
+            if (merge(edges[i][0], edges[i][1])) {
+                mstEdges++;
+                res += edges[i][2];
+            }
+        }
+
+        if (mstEdges == n - 1) {
+            return res;
+        }
+        return INF;
+    }
+}
+```
+
+#### [1631. Path With Minimum Effort](https://leetcode.com/problems/path-with-minimum-effort/description/) Medium
+shortest path
+```java
+class Solution {
+    private int[][] moves = {
+        {-1, 0}, {1, 0},
+        {0, -1}, {0, 1}
+    };
+    private int m, n;
+
+    public int minimumEffortPath(int[][] heights) {
+        m = heights.length;
+        n = heights[0].length;
+        boolean[][] visited = new boolean[m][n];
+        // {cost, x, y}
+        PriorityQueue<int[]> q = new PriorityQueue<>((a, b) -> Arrays.compare(a, b));
+        
+        // add starting point to queue: starting from (0, 0) and cost is zero  
+        for (q.add(new int[] {0, 0, 0}); !q.isEmpty(); ) {
+            final int[] item = q.poll();
+            int x = item[1], y = item[2], cost = item[0];
+            
+            // already marked, should be skipped
+            if (visited[x][y]) {
+                continue;
+            }
+
+            visited[x][y] = true;
+            
+            // reach the ending point
+            if (x == m - 1 && y == n - 1) {
+                return item[0];
+            }
+
+            for (int i = 0; i < moves.length; i++) {
+                int newx = moves[i][0] + x, newy = moves[i][1] + y;
+                
+                if (!isValid(newx, newy)) {
+                    continue;
+                }
+
+                q.add(
+                    new int[] {
+                        Math.max(cost, Math.abs(heights[x][y] - heights[newx][newy])),
+                        newx,
+                        newy
+                    }
+                );
+            }   
+        }
+
+        return -1;
+    }
+
+    private boolean isValid(int x, int y) {
+        return (x >= 0 && x < m) && (y >= 0 && y < n);
+    }
+}
+```
+
+#### [1368. Minimum Cost to Make at Least One Valid Path in a Grid](https://leetcode.com/problems/minimum-cost-to-make-at-least-one-valid-path-in-a-grid/) Hard
+
 ```java
 ```

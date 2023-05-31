@@ -542,6 +542,76 @@ class Solution {
 }
 ```
 
+#### [22. Generate Parentheses](https://leetcode.com/problems/generate-parentheses/description/) Medium
+backtrack
+```java
+class Solution {
+    public List<String> generateParenthesis(int n) {
+        List<String> res = new LinkedList<>();
+        StringBuilder path = new StringBuilder();
+        backtrack(n, n, path, res);
+        return res;
+    }
+
+    private void backtrack(int left, int right, StringBuilder path, List<String> res) {
+        if (left < 0 || right < 0) return;
+        // more right parentheses are used
+        if (right < left) return;
+
+        if (left == 0 && right == 0) {
+            res.add(path.toString());
+            return;
+        }
+
+        path.append('(');
+        backtrack(left - 1, right, path, res);
+        path.deleteCharAt(path.length() - 1);
+
+        path.append(')');
+        backtrack(left, right - 1, path, res);
+        path.deleteCharAt(path.length() - 1);
+    }
+}
+```
+
+#### [32. Longest Valid Parentheses](https://leetcode.com/problems/longest-valid-parentheses/description/) Hard
+```java
+class Solution {
+    public int longestValidParentheses(String s) {
+        Stack<Integer> stk = new Stack<>();
+        // dp[i] means the max length of a legit parenthesis substring ending at s[i-1]
+        int[] dp = new int[s.length() + 1];
+        for (int i = 0; i < s.length(); i++) {
+            // (
+            if (s.charAt(i) == '(') {
+                stk.push(i);
+                dp[i + 1] = 0;
+                continue;
+            }
+
+            // )
+            
+            // no ( left in stack to match
+            if (stk.isEmpty()) {
+                dp[i + 1] = 0;
+                continue;
+            }
+            
+            int leftIndex = stk.pop();
+            // dp[leftIndex] means the max length of a legit parenthesis substring ending at s[leftIndex] (one character before leftIndex)
+            dp[i + 1] = i - leftIndex + 1 + dp[leftIndex];
+        }
+        
+        int res = 0;
+        for (int i = 0; i < dp.length; i++) {
+            res = Math.max(res, dp[i]);
+        }
+
+        return res;
+    }
+}
+```
+
 #### [84. Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/description/) Hard
 ```java
 class Solution {
