@@ -2001,3 +2001,76 @@ class MyCircularDeque {
     }
 }
 ```
+
+#### [1721. Swapping Nodes in a Linked List](https://leetcode.com/problems/swapping-nodes-in-a-linked-list/description/) Medium
+```java
+class Solution {
+    public ListNode swapNodes(ListNode head, int k) {
+        int n = count(head);
+        
+        ListNode former = find(head, k);
+        ListNode latter = find(head, n - k + 1);
+        
+        swap(former, latter);
+        return head;
+    }
+
+    private ListNode find(ListNode head, int k) {
+        if (k == 1) {
+            return head;
+        }
+
+        return find(head.next, k - 1);
+    }
+
+    private int count(ListNode head) {
+        int n = 0;
+        ListNode dummy = head;
+        while (dummy != null) {
+            n++;
+            dummy = dummy.next;
+        }
+        return n;
+    }
+
+    private void swap(ListNode a, ListNode b) {
+        int temp;
+        temp = a.val;
+        a.val = b.val;
+        b.val = temp;
+    }
+}
+```
+
+fast and slow pointers
+```java
+class Solution {
+    public ListNode swapNodes(ListNode head, int k) {
+        ListNode knode = findK(head, k);
+        ListNode lastKNode = findLastK(head, knode);
+        swap(knode, lastKNode);
+        return head;
+    }
+
+    private ListNode findK(ListNode head, int k) {
+        while (k-- != 1) {
+            head = head.next;
+        }
+        return head;
+    }
+
+    private ListNode findLastK(ListNode head, ListNode knode) {
+        while (knode.next != null) {
+            knode = knode.next;
+            head = head.next;
+        }
+        return head;
+    }
+
+    private void swap(ListNode a, ListNode b) {
+        int temp = a.val;
+        a.val = b.val;
+        b.val = temp;
+    }
+}
+```
