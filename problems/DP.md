@@ -1817,6 +1817,24 @@ class Solution {
 
 ```
 
+#### [53. Maximum Subarray](https://leetcode.com/problems/maximum-subarray/) Medium
+Kadane’s Algorithm
+```java
+class Solution {
+    public int maxSubArray(int[] nums) {
+        int res = nums[0];
+        int localMax = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            // two possibilities: starting afresh at current element or extending from previous subarray 
+            localMax = Math.max(nums[i], localMax + nums[i]);
+            res = Math.max(localMax, res);
+        }
+
+        return res;
+    }
+}
+```
+
 #### [122. Best Time to Buy and Sell Stock II](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/) Medium
 Umlimited transactions.
 DP
@@ -2091,3 +2109,88 @@ class Solution {
 ```
 
 #### [1547. Minimum Cost to Cut a Stick](https://leetcode.com/problems/minimum-cost-to-cut-a-stick/) Medium
+
+
+#### [64. Minimum Path Sum](https://leetcode.com/problems/minimum-path-sum/) Medium
+backtrack, will cause TLE
+```java
+class Solution {
+    int m, n;
+    int pathSum;
+    int[][] moves = {{1 ,0}, {0, 1}};
+
+    private boolean isValid(int[] pos) {
+        return pos[0] < m && pos[1] < n;
+    }
+
+    public int minPathSum(int[][] grid) {
+        m = grid.length;
+        n = grid[0].length;
+        pathSum = Integer.MAX_VALUE;
+        travel(grid, new int[]{0, 0}, 0);
+        return pathSum;
+    }
+
+    private void travel(int[][] grid, int[] pos, int currentSum) {
+        if (!isValid(pos)) {
+            return;
+        }
+
+        currentSum += grid[pos[0]][pos[1]];
+
+        if (pos[0] == m - 1 && pos[1] == n - 1) {
+            if (currentSum < pathSum) {
+                pathSum = currentSum;
+            }
+            return;
+        }
+
+        for (int i = 0; i < moves.length; i++) {
+            pos[0] += moves[i][0];
+            pos[1] += moves[i][1];
+            travel(grid, pos, currentSum);
+            pos[0] -= moves[i][0];
+            pos[1] -= moves[i][1];
+        }
+    }
+}
+```
+dp with memorization
+```java
+class Solution {
+    int[][] memo;
+
+    public int minPathSum(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+
+        memo = new int[m][n];
+        for (int[] row: memo) {
+            Arrays.fill(row, -1);
+        }
+
+        return dp(grid, m - 1, n - 1);
+    }
+    
+    private int dp(int[][] grid, int i, int j) {
+        if (i == 0 && j == 0) {
+            return grid[0][0];
+        }
+
+        if (i < 0 || j < 0) {
+            return Integer.MAX_VALUE;
+        }
+ 
+        if (memo[i][j] != -1) {
+            return memo[i][j];
+        }
+
+        memo[i][j] = Math.min(
+            dp(grid, i - 1, j),
+            dp(grid, i, j - 1)
+        ) + grid[i][j];
+
+        return memo[i][j];
+    }
+}
+```

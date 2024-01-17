@@ -777,3 +777,37 @@ class Solution {
     }
 }
 ```
+
+#### [71. Simplify Path](https://leetcode.com/problems/simplify-path/description/) Medium
+```java
+class Solution {
+    public String simplifyPath(String path) {
+        String[] items = path.split("/");
+        Stack<String> stk = new Stack<>();
+        for (String item: items) {
+            if (item.isEmpty()) continue;
+            if (item.equals(".")) continue;
+            if (item.equals("..")) {
+                if (!stk.isEmpty()) {
+                    stk.pop();
+                }
+                continue;
+            }
+
+            stk.push(item);
+        }
+
+        StringBuilder res = new StringBuilder();
+        while (!stk.isEmpty()) {
+            res.insert(0, stk.pop());
+            res.insert(0, "/");
+        }
+        
+        if (res.toString().isEmpty()) {
+            return "/";
+        }
+
+        return res.toString();
+    }
+}
+```

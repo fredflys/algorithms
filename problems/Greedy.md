@@ -276,13 +276,3 @@ class Solution {
 }
 ```
 
-#### [342. Power of Four](https://leetcode.com/problems/power-of-four/description/) Easy
-```java
-class Solution {
-    public boolean isPowerOfFour(int n) {
-        // 2^n: must be something binary like 1000...
-        // 4^n: 
-        return n >- 0 && (n & (n - 1)) == 0 && (n & 0xAAAAAAAA) == 0; 
-    }
-}
-```

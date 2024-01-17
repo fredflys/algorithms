@@ -1817,6 +1817,56 @@ class Solution {
 ```
 
 #### [1368. Minimum Cost to Make at Least One Valid Path in a Grid](https://leetcode.com/problems/minimum-cost-to-make-at-least-one-valid-path-in-a-grid/) Hard
-
+shortest path 
 ```java
+class Solution {
+    private int[][] moves = {
+        {0, 1}, {0, -1},
+        {1, 0}, {-1, 0}
+    };
+    int m, n;
+    
+    public int minCost(int[][] grid) {
+        m = grid.length;
+        n = grid[0].length;
+        int[][] costs = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                costs[i][j] = -1;
+            }
+        }
+
+        PriorityQueue<int[]> q = new PriorityQueue<>((a, b) -> Arrays.compare(a, b));
+
+        for (q.add(new int[] {0, 0, 0}); costs[m - 1][n - 1] < 0;) {
+            int[] item = q.poll();
+            int cost = item[0], x = item[1], y = item[2];
+            if (costs[x][y] > -1) {
+                continue;
+            }
+
+            costs[x][y] = cost;
+            for (int i = 0; i < moves.length; i++) {
+                int newx = x + moves[i][0], newy = y + moves[i][1];
+                if (!isValid(newx, newy)) {
+                    continue;
+                }
+
+                int directionId = i + 1;
+                q.add(new int[] {
+                    // no cost will be added if direction marker from the previous postion is  
+                    cost + (grid[x][y] == directionId ? 0 : 1),
+                    newx,
+                    newy
+                });
+            }
+        }
+
+        return costs[m - 1][n - 1];
+    }
+
+    private boolean isValid(int x, int y) {
+        return (x >= 0 && x < m) && (y >= 0 && y < n);
+    }
+}
 ```
