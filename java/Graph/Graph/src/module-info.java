@@ -1,0 +1,9 @@
+/**
+ * 
+ */
+/**
+ * @author Fred
+ *
+ */
+module Graph {
+}
