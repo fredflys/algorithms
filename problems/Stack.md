@@ -1,7 +1,9 @@
 Monotonic stack is used to find next greater or smaller number.
 
 #### [496. Next Greater Element I](https://leetcode.com/problems/next-greater-element-i/) Easy
+
 monotonic stack
+
 ```java
 class Solution {
     public int[] nextGreaterElement(int[] nums1, int[] nums2) {
@@ -15,19 +17,21 @@ class Solution {
             numToFirstGreater.put(num, greaters.isEmpty() ? -1 : greaters.peek());
             greaters.push(num);
         }
-        
+
         int[] res = new int[nums1.length];
         for (int i = 0; i < nums1.length; i++) {
             res[i] = numToFirstGreater.get(nums1[i]);
         }
-        
+
         return res;
     }
 }
 ```
 
 #### [503. Next Greater Element II](https://leetcode.com/problems/next-greater-element-ii/) Medium
+
 monotonic stack. Use modular operation and doubling array size to emulate a circular array.
+
 ```java
 class Solution {
     public int[] nextGreaterElements(int[] nums) {
@@ -40,18 +44,20 @@ class Solution {
             while (!stack.isEmpty() && num >= stack.peek() ) {
                 stack.pop();
             }
-            
+
             res[index] = stack.isEmpty() ? -1 : stack.peek();
-            stack.push(num);    
+            stack.push(num);
         }
-        
+
         return res;
     }
 }
 ```
 
 #### [1019. Next Greater Node In Linked List](https://leetcode.com/problems/next-greater-node-in-linked-list/) Medium
+
 my solution
+
 ```java
 class Solution {
     public int[] nextLargerNodes(ListNode head) {
@@ -60,7 +66,7 @@ class Solution {
         for(ListNode node = head; node != null; node = node.next) {
             n++;
         }
-        
+
         int[] res = new int[n];
         Stack<int[]> stack = new Stack<>();
         int index = 0;
@@ -71,17 +77,18 @@ class Solution {
             }
 
             stack.push(new int[]{index, head.val});
-        
+
             head = head.next;
             index++;
         }
-        
+
         return res;
     }
 }
 ```
 
 #### [739. Daily Temperatures](https://leetcode.com/problems/daily-temperatures/) Medium
+
 ```java
 class Solution {
     public int[] dailyTemperatures(int[] temperatures) {
@@ -95,7 +102,7 @@ class Solution {
             if (!warmerTempIndices.isEmpty()) {
                 res[i] = warmerTempIndices.peek() - i;
             }
-            
+
             warmerTempIndices.push(i);
         }
 
@@ -103,8 +110,11 @@ class Solution {
     }
 }
 ```
+
 #### [907. Sum of Subarray Minimums](https://leetcode.com/problems/sum-of-subarray-minimums/) Medium
+
 brute force, will not pass
+
 ```java
 class Solution {
     public int sumSubarrayMins(int[] arr) {
@@ -121,19 +131,21 @@ class Solution {
     }
 }
 ```
+
 reference: https://leetcode.cn/problems/sum-of-subarray-minimums/solution/xiao-bai-lang-dong-hua-xiang-jie-bao-zhe-489q/
 https://leetcode.com/problems/sum-of-subarray-minimums/discuss/2118729/Very-detailed-stack-explanation-O(n)-or-Images-and-comments
 monotonic stack
+
 ```java
 class Solution {
     private static final long MOD = (long) 1e9 + 7;
-    
+
     public int sumSubarrayMins(int[] arr) {
         int n = arr.length;
         Stack<Integer> stack = new Stack<>();
         int[] left = new int[n];
         int[] right = new int[n];
-        
+
         int num;
         for (int i = 0; i < n; i++) {
             num = arr[i];
@@ -141,16 +153,16 @@ class Solution {
             while (!stack.isEmpty() && arr[stack.peek()] > num) {
                 stack.pop();
             }
-            
+
             if (stack.isEmpty()) {
                 left[i] = -1;
             } else {
                 left[i] = stack.peek();
             }
-            
+
             stack.push(i);
         }
-        
+
         stack.clear();
         for (int j = arr.length - 1; j >= 0; j--) {
             num = arr[j];
@@ -158,13 +170,13 @@ class Solution {
             while (!stack.isEmpty() && arr[stack.peek()] >= num) {
                 stack.pop();
             }
-            
+
             if (stack.isEmpty()) {
                 right[j] = n;
             } else {
                 right[j] = stack.peek();
             }
-            
+
             stack.push(j);
         }
 
@@ -176,16 +188,18 @@ class Solution {
     }
 }
 ```
+
 monotonic stack, one loop
+
 ```java
 class Solution {
     private static long M = (long)1e9 + 7;
-    
+
     public int sumSubarrayMins(int[] arr) {
         long res = 0;
         Stack<Integer> stack = new Stack<>();
         stack.push(-1);
-        
+
         int n = arr.length;
         int num;
         for (int j = 0; j <= n; j++) {
@@ -194,38 +208,41 @@ class Solution {
             } else {
                 num = 0;
             }
-            
+
             while (stack.peek() != -1 && num < arr[stack.peek()]){
                 int index = stack.pop();
                 int i = stack.peek();
                 int left = index - i;
                 int right = j - index;
-                
+
                 long add = (long)(left * right * (long) arr[index]) % M;
                 res += add ;
                 res %= M;
             }
-            
+
             stack.push(j);
         }
-        
+
         return (int) res;
     }
 }
 ```
+
 #### [402. Remove K Digits](https://leetcode.com/problems/remove-k-digits/) Medium
+
 monotonic stack.
-The solution I come up with is flawed. I have to keep adding conditions to make it pass more test cases. But seversal failed attempts, still not all cases can be passed, which is pretty frustrating. 
+The solution I come up with is flawed. I have to keep adding conditions to make it pass more test cases. But seversal failed attempts, still not all cases can be passed, which is pretty frustrating.
 
 WRONG SOLUTION, UGLY CODE
+
 ```java
 class Solution {
     public String removeKdigits(String num, int k) {
         if (k >= num.length()) {
             return "0";
         }
-        
-        
+
+
         char[] digits = num.toCharArray();
         int n = digits.length;
         Deque<Character> stack = new LinkedList<>();
@@ -240,20 +257,20 @@ class Solution {
                     break;
                 }
             }
-            
+
             stack.push(digits[i]);
             res.append(digits[i]);
         }
-        
+
         if (res.length() == 1) {
             return res.toString();
         }
-        
+
         int i;
         for (i = 0; i < res.length(); i++) {
             if (res.charAt(i) != '0') break;
         }
-        
+
         res.delete(0, i);
         return res.toString();
     }
@@ -262,43 +279,47 @@ class Solution {
 
 all corner cases are beautiflly handled, much better than I do.
 If you'd like to modify the string in traversal, it's better to use while loop than for loop.
+
 ```java
 class Solution {
     public String removeKdigits(String num, int k) {
         int n = num.length();
         if (k == 0) return num;
         if (k == n) return "0";
-        
+
         Stack<Character> stack = new Stack<>();
         for (int i = 0; i < n; i++) {
             while (k > 0 && !stack.isEmpty() && num.charAt(i) < stack.peek()) {
                 stack.pop();
                 k--;
             }
-            
+
             stack.push(num.charAt(i));
         }
-        
+
         // k is not fully spent, e.g. 123 k = 2
         while (k-- > 0) stack.pop();
-        
+
         // build the result
         StringBuilder res = new StringBuilder();
         while (!stack.isEmpty()) {
             res.insert(0, stack.pop());
         }
-        
+
         // delete leading zeros
         while (res.length() > 1 && res.charAt(0) == '0') {
             res.delete(0, 1);
         }
-        
+
         return res.toString();
     }
 }
 ```
+
 #### [1475. Final Prices With a Special Discount in a Shop](https://leetcode.com/problems/final-prices-with-a-special-discount-in-a-shop/) Easy
+
 My solution. Running pretty slow.
+
 ```java
 class Solution {
     public int[] finalPrices(int[] prices) {
@@ -313,17 +334,19 @@ class Solution {
             }
             stack.push(i);
         }
-        
+
         while (!stack.isEmpty()) {
             int index = stack.pop();
             res[index] = prices[index];
         }
-        
+
         return res;
     }
 }
 ```
+
 two pointers. It is actually easier than a monotonic solution and runs faster.
+
 ```java
 class Solution {
     public int[] finalPrices(int[] prices) {
@@ -344,6 +367,7 @@ class Solution {
 ```
 
 #### [456. 132 Pattern](https://leetcode.com/problems/132-pattern/) Medium
+
 ```java
 class Solution {
     public boolean find132pattern(int[] nums) {
@@ -353,10 +377,10 @@ class Solution {
             if (nums[i] < middle) {
                 return true;
             }
-            
+
             while (!stack.isEmpty() && nums[i] > stack.peek()) {
                 middle = stack.pop();
-            }            
+            }
             stack.push(nums[i]);
         }
         return false;
@@ -365,34 +389,36 @@ class Solution {
 ```
 
 #### [316. Remove Duplicate Letters](https://leetcode.com/problems/remove-duplicate-letters/) Medium
+
 #### [1081. Smallest Subsequence of Distinct Characters](https://leetcode.com/problems/smallest-subsequence-of-distinct-characters/) Medium
+
 ```java
 class Solution {
     public String removeDuplicateLetters(String s) {
         char[] chars = s.toCharArray();
         int[] count = countOccurences(chars);
-            
+
         StringBuilder res = new StringBuilder();
         boolean[] contains = new boolean[26];
         for (char c: chars) {
             // visited
             count[c - 'a']--;
-            
+
             if (contains[c - 'a']) continue;
-            
+
             while (res.length() > 0 && c < res.charAt(res.length() - 1)) {
-                // do not pop if there are no duplicates after 
+                // do not pop if there are no duplicates after
                 if (count[peek(res) - 'a'] == 0) break;
-                
+
                 pop(res, contains);
             }
-            
+
             push(res, contains, c);
         }
-        
+
         return res.toString();
     }
-    
+
     int[] countOccurences(char[] chars) {
         int[] count = new int[26];
         for (char c: chars) {
@@ -400,18 +426,18 @@ class Solution {
         }
         return count;
     }
-    
+
     void push (StringBuilder res, boolean[] inStack, char c) {
         res.append(c);
         inStack[c - 'a'] = true;
     }
-    
+
     void pop (StringBuilder res, boolean[] inStack) {
         char stackTopChar = peek(res);
         res.delete(res.length() - 1, res.length());
         inStack[stackTopChar - 'a'] = false;
     }
-    
+
     char peek (StringBuilder res) {
         return res.charAt(res.length() - 1);
     }
@@ -419,7 +445,9 @@ class Solution {
 ```
 
 #### [901. Online Stock Span](https://leetcode.com/problems/online-stock-span/) Medium
+
 Stupid solution. Will cause TLE.
+
 ```java
 class StockSpanner {
     ArrayList<Integer> prices;
@@ -429,7 +457,7 @@ class StockSpanner {
         this.prices = new ArrayList<>();
         this.stack = new Stack<>();
     }
-    
+
     public int next(int price) {
         stack.clear();
         prices.add(price);
@@ -443,20 +471,22 @@ class StockSpanner {
     }
 }
 ```
+
 Push a two-element array into stack to store the price and its span at the same time. When popping smaller or equal elements from the stack, the desired span can be calculated from summing up the previous spans.
+
 ```java
 class StockSpanner {
     Stack<int[]> stack;
     public StockSpanner() {
         this.stack = new Stack<>();
     }
-    
+
     public int next(int price) {
         int span = 1;
         while (!stack.isEmpty() && price >= stack.peek()[0]) {
             span += stack.pop()[1];
         }
-        
+
         stack.push(new int[]{price, span});
         return span;
     }
@@ -464,7 +494,9 @@ class StockSpanner {
 ```
 
 #### [1944. Number of Visible People in a Queue](https://leetcode.com/problems/number-of-visible-people-in-a-queue/) Hard
+
 Guess it is not hard enough beacause I worked it out. Haha.
+
 ```java
 class Solution {
     public int[] canSeePersonsCount(int[] heights) {
@@ -481,22 +513,24 @@ class Solution {
                 stack.pop();
                 visible++;
             }
-            
+
             // the top person in the stack, if not empty, is higher than current person
             // who will block the view
             if (!stack.isEmpty()) visible++;
-            
+
             res[i] = visible;
             stack.push(i);
         }
-        
+
         return res;
     }
 }
 ```
 
 #### [1130. Minimum Cost Tree From Leaf Values](https://leetcode.com/problems/minimum-cost-tree-from-leaf-values/) Medium
+
 monotonic stack
+
 ```java
 class Solution {
     public int mctFromLeafValues(int[] arr) {
@@ -507,10 +541,10 @@ class Solution {
             while (arr[i] >= stack.peek()) {
                 res += stack.pop() * Math.min(stack.peek(), arr[i]);
             }
-            
+
             stack.push(arr[i]);
         }
-        
+
         while (stack.size() > 2) {
             res += stack.pop() * stack.peek();
         }
@@ -518,9 +552,35 @@ class Solution {
     }
 }
 ```
+
+### [Delete nodes having greater value on right](https://www.geeksforgeeks.org/problems/delete-nodes-having-greater-value-on-right/1?utm_source=geeksforgeeks&utm_medium=ml_article_practice_tab&utm_campaign=article_practice_tab)
+
+```java
+class Solution
+{
+    Node compute(Node head)
+    {
+        Node dummy = new Node(Integer.MAX_VALUE);
+        Stack<Node> stack = new Stack<>();
+        stack.push(dummy);
+        while (head != null) {
+            while (stack.peek().data < head.data) {
+                stack.pop();
+            }
+
+            stack.peek().next = head;
+            stack.push(head);
+            head = head.next;
+        }
+        return dummy.next;
+    }
+}
+```
+
 DP
 
 #### [20. Valid Parentheses](https://leetcode.com/problems/valid-parentheses/description/) Easy
+
 ```java
 class Solution {
     public boolean isValid(String s) {
@@ -543,7 +603,9 @@ class Solution {
 ```
 
 #### [22. Generate Parentheses](https://leetcode.com/problems/generate-parentheses/description/) Medium
+
 backtrack
+
 ```java
 class Solution {
     public List<String> generateParenthesis(int n) {
@@ -575,6 +637,7 @@ class Solution {
 ```
 
 #### [32. Longest Valid Parentheses](https://leetcode.com/problems/longest-valid-parentheses/description/) Hard
+
 ```java
 class Solution {
     public int longestValidParentheses(String s) {
@@ -590,18 +653,18 @@ class Solution {
             }
 
             // )
-            
+
             // no ( left in stack to match
             if (stk.isEmpty()) {
                 dp[i + 1] = 0;
                 continue;
             }
-            
+
             int leftIndex = stk.pop();
             // dp[leftIndex] means the max length of a legit parenthesis substring ending at s[leftIndex] (one character before leftIndex)
             dp[i + 1] = i - leftIndex + 1 + dp[leftIndex];
         }
-        
+
         int res = 0;
         for (int i = 0; i < dp.length; i++) {
             res = Math.max(res, dp[i]);
@@ -613,6 +676,7 @@ class Solution {
 ```
 
 #### [84. Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/description/) Hard
+
 ```java
 class Solution {
     public int largestRectangleArea(int[] heights) {
@@ -642,6 +706,7 @@ class Solution {
 ```
 
 #### [1441. Build an Array With Stack Operations](https://leetcode.com/problems/build-an-array-with-stack-operations/description/) Medium
+
 ```java
 class Solution {
     public List<String> buildArray(int[] target, int n) {
@@ -661,6 +726,7 @@ class Solution {
 ```
 
 #### [682. Baseball Game](https://leetcode.com/problems/baseball-game/description/) Easy
+
 ```java
 class Solution {
     public int calPoints(String[] operations) {
@@ -678,7 +744,7 @@ class Solution {
             }
 
             if (op.equals("C")) {
- 
+
                 sum -= stack.pop();
                 continue;
             }
@@ -699,6 +765,7 @@ class Solution {
 ```
 
 #### [225. Implement Stack using Queues](https://leetcode.com/problems/implement-stack-using-queues/description/) Easy
+
 ```java
 class MyStack {
     private Queue<Integer> q;
@@ -706,22 +773,22 @@ class MyStack {
     public MyStack() {
         q = new LinkedList<>();
     }
-    
+
     public void push(int x) {
         Queue<Integer> temp = new LinkedList<>();
         temp.offer(x);
         for (; !q.isEmpty(); temp.offer(q.poll()));
-        q = temp;        
+        q = temp;
     }
-    
+
     public int pop() {
         return q.poll();
     }
-    
+
     public int top() {
         return q.peek();
     }
-    
+
     public boolean empty() {
         return q.isEmpty();
     }
@@ -729,7 +796,9 @@ class MyStack {
 ```
 
 #### [239. Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/description/) Hard
+
 deque
+
 ```java
 class Solution {
     public int[] maxSlidingWindow(int[] nums, int k) {
@@ -755,6 +824,7 @@ class Solution {
 ```
 
 #### [1696. Jump Game VI](https://leetcode.com/problems/jump-game-vi/description/) Medium
+
 ```java
 class Solution {
     public int maxResult(int[] nums, int k) {
@@ -779,6 +849,7 @@ class Solution {
 ```
 
 #### [71. Simplify Path](https://leetcode.com/problems/simplify-path/description/) Medium
+
 ```java
 class Solution {
     public String simplifyPath(String path) {
@@ -802,7 +873,7 @@ class Solution {
             res.insert(0, stk.pop());
             res.insert(0, "/");
         }
-        
+
         if (res.toString().isEmpty()) {
             return "/";
         }

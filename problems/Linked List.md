@@ -439,6 +439,7 @@ public class Solution{
 ```
 
 Similar Questions:
+https://www.geeksforgeeks.org/problems/remove-loop-in-linked-list/1?page=1&category=Linked%20List&sortBy=submissions
 
 #### [21. Merge Two Sorted Lists](https://leetcode.com/problems/merge-two-sorted-lists/) Easy
 
@@ -1854,6 +1855,262 @@ class Solution {
     public void deleteNode(ListNode node) {
         node.val = node.next.val;
         node.next = node.next.next;
+    }
+}
+```
+
+#### [Delete a Node in Single Linked List](https://www.geeksforgeeks.org/problems/delete-a-node-in-single-linked-list/1?utm_source=geeksforgeeks&utm_medium=ml_article_practice_tab&utm_campaign=article_practice_tab)
+
+```java
+class GfG
+{
+    Node deleteNode(Node head, int x)
+    {
+        Node dummy = new Node(-1);
+        dummy.next = head;
+
+        Node prev = dummy;
+        while (head !=  null) {
+            if (x == 1) {
+                prev.next = head.next;
+                break;
+            }
+
+            prev = head;
+            head = head.next;
+            x--;
+        }
+
+        return dummy.next;
+    }
+}
+```
+
+#### [Remove duplicates from an unsorted linked list](https://www.geeksforgeeks.org/problems/remove-duplicates-from-an-unsorted-linked-list/1?utm_source=geeksforgeeks&utm_medium=ml_article_practice_tab&utm_campaign=article_practice_tab)
+
+```java
+class Solution
+{
+    //Function to remove duplicates from unsorted linked list.
+    public Node removeDuplicates(Node head)
+    {
+        Node dummy = new Node(-1);
+        dummy.next = head;
+
+        Node prev = dummy;
+        HashSet<Integer> seen = new HashSet<>();
+        while (head != null) {
+            if (seen.add(head.data)) {
+                prev = head;
+                head = head.next;
+            } else {
+                prev.next = head.next;
+                head = prev.next;
+            }
+        }
+        return dummy.next;
+    }
+}
+```
+
+#### [Delete N nodes after M nodes of a linked list](https://www.geeksforgeeks.org/problems/delete-n-nodes-after-m-nodes-of-a-linked-list/1?utm_source=geeksforgeeks&utm_medium=ml_article_practice_tab&utm_campaign=article_practice_tab)
+
+dummy node
+
+```java
+class Solution
+{
+    static void linkdelete(Node head, int M, int N)
+    {
+        Node dummy = new Node(-1);
+        dummy.next = head;
+
+        Node node = dummy;
+        int m = M;
+        int n = N;
+        Node prev;
+        Node current;
+        while (m > 0 && node != null) {
+            node = node.next;
+            m--;
+
+            if (m == 0 && node != null) {
+                prev = node;
+                current = node.next;
+                while (n > 0 && current != null) {
+                    prev.next = current.next;
+                    current = prev.next;
+                    n--;
+                }
+
+                n = N;
+                m = M;
+            }
+        }
+    }
+}
+```
+
+#### [Remove every k'th node](https://www.geeksforgeeks.org/problems/remove-every-kth-node/1?utm_source=geeksforgeeks&utm_medium=ml_article_practice_tab&utm_campaign=article_practice_tab)
+
+dummy node
+
+```java
+class GfG
+{
+    Node delete(Node head, int K)
+    {
+	    int k = K;
+	    Node dummy = new Node(-1);
+	    dummy.next = head;
+
+	    Node node = dummy;
+
+	    Node prev;
+	    Node current;
+	    while (k > 0 && node != null) {
+	        prev = node;
+	        node = node.next;
+	        k--;
+
+	        if (k == 0 && node != null) {
+	            prev.next = node.next;
+	            // set node to prev instead of prev.next
+	            node = prev;
+	            k = K;
+
+	           // System.out.println("Prev: " + prev.data);
+	           // System.out.println("Node: " + node.data);
+	        }
+	    }
+	    return dummy.next;
+    }
+}
+```
+
+#### [Remove all occurences of duplicates in a linked list](https://www.geeksforgeeks.org/problems/remove-all-occurences-of-duplicates-in-a-linked-list/1?utm_source=geeksforgeeks&utm_medium=ml_article_practice_tab&utm_campaign=article_practice_tab)
+
+dummy node
+
+```java
+class Solution
+{
+    public static Node removeAllDuplicates(Node head)
+    {
+        Node dummy = new Node(-1);
+        dummy.next = head;
+
+        Node prev = dummy;
+        Node temp;
+        while (head != null) {
+            // a duplicate is found
+            if (head.next != null && head.data == head.next.data) {
+                // find the next possible non-duplicate node
+                temp = head.next;
+                while (temp != null && temp.data == head.data) {
+                    temp = temp.next;
+                }
+
+                // remove the dumplicate nodes by linking the previous node to the next possible non-duplicate node
+                prev.next = temp;
+                head = prev.next;
+            } else {
+                prev = head;
+                head = head.next;
+            }
+
+        }
+
+        return dummy.next;
+    }
+```
+
+stack
+
+```java
+class Solution
+{
+    public static Node removeAllDuplicates(Node head)
+    {
+        Stack<Node> stack = new Stack<>();
+        Node dummy = new Node(-1);
+        stack.push(dummy);
+        while (head != null) {
+            if (head.data == stack.peek().data) {
+                while (head != null && head.data == stack.peek().data) {
+                    head = head.next;
+                }
+                stack.pop();
+            }
+
+            stack.peek().next = head;
+            stack.push(head);
+            if (head != null)
+                head = head.next;
+        }
+
+        return dummy.next;
+    }
+}
+```
+
+#### [Deletion and Reverse in Linked List](https://www.geeksforgeeks.org/problems/deletion-and-reverse-in-linked-list/1?utm_source=geeksforgeeks&utm_medium=ml_article_practice_tab&utm_campaign=article_practice_tab)
+
+```java
+class GFG
+{
+    //This method returns the head of the LL after deleting node with value d.
+    public static Node deleteNode(Node head,int d)
+    {
+        Node temp = head;
+        Node prev = null;
+        while (temp.data != d) {
+            prev = temp;
+            temp = temp.next;
+        }
+
+        if (prev != null) {
+            prev.next = temp.next;
+            return head;
+        } else {
+            Node last = findLastNode(head);
+            last.next = temp.next;
+            return temp.next;
+        }
+
+
+    }
+
+    public static Node findLastNode(Node head) {
+        Node prev = head;
+        Node temp = head.next;
+        while (temp != head) {
+            prev = temp;
+            temp = temp.next;
+        }
+        return prev;
+    }
+
+    //This method returns the head node of the reversed Linked list.
+    public static Node reverse(Node head)
+    {
+        Node temp = head.next;
+        Node prev = head;
+        while (temp != head) {
+            Node nextNode = temp.next;
+
+            // reverse
+            temp.next = prev;
+
+            // step forward
+            prev = temp;
+            temp = nextNode;
+        }
+
+        temp.next = prev;
+        head = prev;
+
+        return head;
     }
 }
 ```
