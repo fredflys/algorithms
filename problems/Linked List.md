@@ -2115,6 +2115,193 @@ class GFG
 }
 ```
 
+#### [Delete node in Doubly Linked List](https://www.geeksforgeeks.org/problems/delete-node-in-doubly-linked-list/1?utm_source=geeksforgeeks&utm_medium=ml_article_practice_tab&utm_campaign=article_practice_tab)
+
+```java
+class Solution
+{
+    // function returns the head of the linkedlist
+    Node deleteNode(Node head,int x)
+    {
+        if (head == null) {
+            return head;
+        }
+
+        Node dummy = new Node(-1);
+        dummy.next = head;
+        head.prev = dummy;
+
+        Node prev = dummy;
+        Node temp = head;
+	    while (x != 1) {
+	        prev = temp;
+	        temp = temp.next;
+            x--;
+	    }
+
+	    prev.next = temp.next;
+	    if (temp.next != null)
+	        temp.next.prev = prev;
+
+	    return dummy.next;
+    }
+}
+```
+
+#### [Delete Middle of Linked List](https://www.geeksforgeeks.org/problems/delete-middle-of-linked-list/1?utm_source=geeksforgeeks&utm_medium=ml_article_practice_tab&utm_campaign=article_practice_tab)
+
+not good in terms of space
+
+```java
+class Solution {
+    Node deleteMid(Node head) {
+        ArrayList<Node> nodes = count(head);
+        int size = nodes.size();
+        if (size == 0 || size == 1) {
+            return null;
+        }
+
+        int mid = size / 2;
+        if (mid + 1 == size) {
+            nodes.get(mid - 1).next = null;
+        } else {
+            nodes.get(mid - 1).next = nodes.get(mid + 1);
+        }
+
+        return head;
+    }
+
+    ArrayList<Node> count(Node head) {
+        ArrayList<Node> nodes = new ArrayList<>();
+        if (head == null) return nodes;
+
+        while (head != null) {
+            nodes.add(head);
+            head = head.next;
+        }
+
+        return nodes;
+    }
+}
+```
+
+slow and fast pointers
+
+```java
+class Solution {
+    Node deleteMid(Node head) {
+        if (head == null || head.next == null) {
+            return null;
+        }
+
+        Node prev = head;
+        Node slow = head;
+        Node fast = head;
+        while (fast != null && fast.next != null) {
+            fast = fast.next.next;
+            prev = slow;
+            slow = slow.next;
+        }
+
+        prev.next = slow.next;
+
+        return head;
+    }
+}
+```
+
+#### [Delete Alternate Nodes](https://www.geeksforgeeks.org/problems/delete-alternate-nodes/1?utm_source=geeksforgeeks&utm_medium=ml_article_practice_tab&utm_campaign=article_practice_tab)
+
+```java
+class Solution {
+
+    public void deleteAlternate (Node head){
+        if (head == null || head.next == null) {
+            return;
+        }
+
+        Node prev = head;
+        Node temp = head.next;
+        boolean shouldDelete = true;
+        while (temp != null) {
+            if (shouldDelete) {
+                prev.next = temp.next;
+                temp = prev.next;
+                shouldDelete = false;
+            } else {
+                prev = temp;
+                temp = temp.next;
+                shouldDelete = true;
+            }
+        }
+    }
+}
+```
+
+#### [Remove duplicate element from sorted Linked List](https://www.geeksforgeeks.org/problems/remove-duplicate-element-from-sorted-linked-list/1?utm_source=geeksforgeeks&utm_medium=ml_article_practice_tab&utm_campaign=article_practice_tab)
+
+```java
+class GfG
+{
+    //Function to remove duplicates from sorted linked list.
+    Node removeDuplicates(Node head)
+    {
+	// Your code here
+	    if (head == null || head.next == null) {
+	        return head;
+	    }
+
+	    Node prev = head;
+	    Node temp = head.next;
+	    while (temp != null) {
+	        if (temp.data == prev.data) {
+	            while (temp != null && temp.data == prev.data) {
+	                prev.next = temp.next;
+	                temp = prev.next;
+	            }
+	            continue;
+	        }
+
+	        prev = temp;
+	        temp = temp.next;
+	    }
+
+	    return head;
+    }
+}
+```
+
+#### [Delete all occurrences of a given key in a doubly linked list](https://www.geeksforgeeks.org/problems/delete-all-occurrences-of-a-given-key-in-a-doubly-linked-list/1?utm_source=geeksforgeeks&utm_medium=ml_article_practice_tab&utm_campaign=article_practice_tab)
+
+```java
+class Solution {
+    static Node deleteAllOccurOfX(Node head, int x) {
+        if (head == null) return head;
+
+        Node dummy = new Node();
+        dummy.next = head;
+
+        Node prev = dummy;
+        Node temp = head;
+        while (temp != null) {
+            if (temp.data == x) {
+                Node nextNode = temp.next;
+                prev.next = nextNode;
+                if (nextNode != null)
+                    nextNode.prev = prev;
+                temp = nextNode;
+            } else {
+                prev = temp;
+                temp = temp.next;
+            }
+        }
+
+        return dummy.next;
+    }
+}
+
+```
+
 #### [1669. Merge In Between Linked Lists](https://leetcode.com/problems/merge-in-between-linked-lists/description/) Medium
 
 ```java
