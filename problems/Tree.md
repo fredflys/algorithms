@@ -1,8 +1,8 @@
 ## Tree
 
-<img src="https://s2.loli.net/2022/01/09/DJmCGL5rSpwuMKs.png" alt="image-20220109132224589" style="zoom:50%;" /> 
+<img src="https://s2.loli.net/2022/01/09/DJmCGL5rSpwuMKs.png" alt="image-20220109132224589" style="zoom:50%;" />
 
-<img src="https://s2.loli.net/2022/01/09/cWtZSIj36khqFdC.png" alt="image-20220109130337781" style="zoom:50%;" /> 
+<img src="https://s2.loli.net/2022/01/09/cWtZSIj36khqFdC.png" alt="image-20220109130337781" style="zoom:50%;" />
 
 Categories:
 
@@ -18,7 +18,7 @@ BFS: Single Queue(FIFO)
 class Solution:
     def levelOrder(self, root):
         results = []
-        
+
         if not root:
             return results
         # initialization: put first level nodes in queue(FIFO)
@@ -44,7 +44,7 @@ class Solution:
         results = []
         if not root:
             return results
-        
+
         queue = collections.deque([root, None])
         level = []
         while queue:
@@ -73,7 +73,7 @@ class Solution:
         path, paths = [root], []
         self.findPaths(root, path, paths)
         return paths
-	
+
     def findPaths(self, node, path, paths):
         if node is None:
             return
@@ -81,17 +81,17 @@ class Solution:
         if node.left is None and node.right is None:
             paths.append("->".join([str(n.val) for n in path]))
             return
-        
+
         path.append(node.left)
         self.findPaths(node.left, path, paths)
         path.pop()
-        
+
         path.append(node.right)
         self.findPaths(node.right, path, paths)
         path.pop()
 ```
 
-Divide and conquer 
+Divide and conquer
 
 Whole tree paths = left tree paths + right tree paths
 
@@ -106,12 +106,12 @@ class Solution:
         # leat node
         if root.left is None and root.right is None:
             return [str(root.val)]
-        
+
         for path in self.binaryTreePaths(root.left):
             paths.append(str(root.val) + "->" + path)
         for path in self.binaryTreePaths(root.right):
             paths.append(str(root.val) + "->" + path)
-            
+
         return paths
 ```
 
@@ -124,15 +124,15 @@ class Solution:
     def isBalanced(self, root):
         isBalanced, _ = self.detectBalanced(root)
         return isBalanced
-    
+
     def detectBalanced(self, root):
         if not root:
             return True, 0
-        
+
         is_left_balanced, left_height = self.detectBalanced(root.left)
         is_right_balanced, right_height = self.detectBalanced(root.right)
         root_height = max(left_height, right_height) + 1
-        
+
         if not is_left_balanced or not is_right_balanced:
             return False, root_height
         if abs(left_height - right_height) > 1:
@@ -140,11 +140,30 @@ class Solution:
         return True, root_height
 ```
 
+```java
+class Tree
+{
+
+    //Function to check whether a binary tree is balanced or not.
+    boolean isBalanced(Node root)
+    {
+        if (root == null) return true;
+        if (Math.abs(calculateHeight(root.left) - calculateHeight(root.right)) > 1) return false;
+        return isBalanced(root.left) && isBalanced(root.right);
+    }
+
+    int calculateHeight(Node root) {
+        if (root == null) return 0;
+        return 1 + Math.max(calculateHeight(root.left), calculateHeight(root.right));
+    }
+}
+```
+
 #### [173. Binary Search Tree Iterator](https://leetcode-cn.com/problems/binary-search-tree-iterator/) <span style="color:orange">Medium</span>
 
 Divide and Conquer, BST, Iteration
 
-Without recursion, user has to use a stack to keep running paths and control backtracking. 
+Without recursion, user has to use a stack to keep running paths and control backtracking.
 
 ```java
 class BSTIterator {
@@ -158,7 +177,7 @@ class BSTIterator {
             root = root.left;
         }
     }
-    
+
     // inorder -> left, root, right
     public int next() {
         // peek to get the next instad of poppping because the stack has to be re-arranged for next iteration
@@ -175,9 +194,9 @@ class BSTIterator {
                 stack.push(node);
                 node = node.left;
             }
-        // if current node has no right node, return 
+        // if current node has no right node, return
         } else {
-            // current node is the end of the sub-tree we are travasing here 
+            // current node is the end of the sub-tree we are travasing here
             // it will not be used again, so pop it
             stack.pop();
             // backtrack by removing current sub-tree and moving up
@@ -187,7 +206,7 @@ class BSTIterator {
         }
         return current.val;
     }
-    
+
     public boolean hasNext() {
         return !stack.isEmpty();
     }
@@ -201,7 +220,7 @@ class BSTIterator:
     def __init__(self, root: Optional[TreeNode]):
         self.stack = []
         self.stack_from_most_left(root)
-    
+
     # as this code snippet will be reused, make it a function
     def stack_from_most_left(self, node):
         while node:
@@ -237,7 +256,7 @@ public class Solution {
     private int getTreeSum(TreeNode root) {
         if(root == null)
             return 0;
-        
+
         int leftSum = getTreeSum(root.left);
         int rightSum = getTreeSum(root.right);
         int rootSum = leftSum + rightSum + root.val;
@@ -251,6 +270,7 @@ public class Solution {
     }
 }
 ```
+
 #### [236. Lowest Common Ancestor of a Binary Tree](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/) <span style="color:orange">Medium</span>
 
 Divide and Conquer, Recursion
@@ -266,7 +286,7 @@ class Solution:
         left = self.lowestCommonAncestor(root.left, p, q)
         right = self.lowestCommonAncestor(root.right, p, q)
 
-        # p and q exists on left and right tree respectively, so root is the common ancestor 
+        # p and q exists on left and right tree respectively, so root is the common ancestor
         if left and right:
             return root
         # p and q exists only on left tree, then left is the common ancesstor
@@ -278,6 +298,7 @@ class Solution:
         # p and q exists on neither side of the tree, then there is no common ancestor
         return None
 ```
+
 #### [1644. Lowest Common Ancestor of a Binary Tree II](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree-ii/) <span style="color:green">Easy</span>
 
 Divide and Conquer
@@ -297,7 +318,7 @@ class Solution:
             if current in parents:
                 return current
             current = current.parent
-        
+
         return None
 ```
 
@@ -314,7 +335,7 @@ class Solution:
                 ancestors.append(current)
                 current = current.parent
             return ancestors
-        
+
         def get_lowest_common_ancestor(ans1, ans2):
             common = None
             for _ in range(min(len(ans1), len(ans2))):
@@ -327,7 +348,7 @@ class Solution:
         ancestors_A = get_ancestors(A)
         ancestors_B = get_ancestors(B)
         return get_lowest_common_ancestor(ancestors_A, ancestors_B)
-        
+
 ```
 
 #### [1650. Lowest Common Ancestor of a Binary Tree III](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii/) <span style="color:orange">Medium</span>
@@ -343,30 +364,30 @@ class Solution:
         if exists_a and exists_b:
         	return lca
         return None
-    
+
     def find(self, root: 'TreeNode', A: 'TreeNode', B: 'TreeNode') -> 'TreeNode':
         # Neither A nor B can be found on the tree
         if root is None:
             return False, False, None
         exists_left_a, exists_left_b, left_lca = self.find(root.left, A, B)
         exists_right_a, exists_right_b, right_lca = self.find(root.right, A, B)
-        
+
         # A on the left or right tree, or root itself is A, then A must exist
         exists_a = exists_left_a or exists_right_a or root == A
         exists_b = exists_left_b or exists_right_b or root == B
-        
+
         if root == A or root == B:
             return exists_a, exists_b, root
-        
+
         if left_lca and right_lca:
             return exists_a, exists_b, root
-        
+
         if left_lca:
             return exists_a, exists_b, left_lca
-        
+
         if right_lca:
             return exists_a, exists_b, right_lca
-        
+
         return exists_a, exists_b, None
 ```
 
@@ -383,14 +404,14 @@ class Solution:
         # no nodes to flatten
         if root is None:
             return None
-        
+
         # the last node on its left tree
         left_last = self.flatten_and_return_root(root.left)
         # the last node on its right tree
         right_last = self.flatten_and_return_root(root.right)
         # flattening steps
         # if there is no left tree, then it's alreay flattened
-        # otherwise 
+        # otherwise
         if left_last:
             # link left end to right start
             left_last.right = root.right
@@ -398,7 +419,7 @@ class Solution:
             root.right = root.left
             # make left empty
             root.left = None
-        
+
         if right_last:
             return right_last
         if left_last:
@@ -419,7 +440,7 @@ class Solution:
         stack = []
         node = root
         while node or stack:
-            # left 
+            # left
             while node:
                 stack.append(node)
                 node = node.left
@@ -441,7 +462,7 @@ class Solution:
         self.k = k
         self.findKthNode(root)
         return self.result
-        
+
     def findKthNode(self, root):
         if not root:
             return
@@ -453,9 +474,7 @@ class Solution:
         self.findKthNode(root.right)
 ```
 
-
-
-#### [270. Closest Binary Search Tree Value](https://leetcode.com/problems/closest-binary-search-tree-value/)  <span style="color:orange">Medium</span>
+#### [270. Closest Binary Search Tree Value](https://leetcode.com/problems/closest-binary-search-tree-value/) <span style="color:orange">Medium</span>
 
 ```java
 public class Solution {
@@ -465,7 +484,7 @@ public class Solution {
 
         TreeNode lowerBound = lowerBound(root, target);
         TreeNode upperBound = upperBound(root, target);
-        
+
         if (lowerBound == null)
             return upperBound.val;
 
@@ -481,19 +500,19 @@ public class Solution {
     public TreeNode lowerBound(TreeNode root, double target) {
         if (root == null)
             return null;
-        
+
         // current val is still bigger, then search in the left part
         // until current val is no less than the target
         if (root.val > target)
             return lowerBound(root.left, target);
-        
+
         // try to get the upper limit in the lower part
         TreeNode boundNode = lowerBound(root.right, target);
 
         // if a upper limit exists
         if (boundNode != null)
             return boundNode;
-        
+
         // back to last level and return
         return root;
     }
@@ -512,7 +531,7 @@ public class Solution {
         // if a upper limit exists
         if (boundNode != null)
             return boundNode;
-        
+
         // back to last level and return
         return root;
     }
@@ -525,15 +544,15 @@ Consider the test case below:
 
 target = 4.1
 
- 		3
+3
 
-​	2 	4
+​ 2 4
 
 1
 
-node.val < target True node:  3  lower:  3  upper:  3
-node.val < target True node:  4  lower:  3  upper:  3
-node:  None  lower:  4  upper: 3     
+node.val < target True node: 3 lower: 3 upper: 3
+node.val < target True node: 4 lower: 3 upper: 3
+node: None lower: 4 upper: 3
 
 ```python
 class Solution:
@@ -554,9 +573,9 @@ class Solution:
                 node = node.left
             else:
                 return node.val
-        
+
         # there is a chance that upper is lower is actually upper
-        # so comparison must be made between absolute values 
+        # so comparison must be made between absolute values
         if abs(upper.val - target) < abs(target - lower.val):
             return upper.val
         return lower.val
