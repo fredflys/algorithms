@@ -1,9 +1,10 @@
 #### [1431. Kids With the Greatest Number of Candies](https://leetcode.com/problems/kids-with-the-greatest-number-of-candies/description/) Easy
+
 ```java
 class Solution {
     public List<Boolean> kidsWithCandies(int[] candies, int extraCandies) {
         int n = candies.length;
-        
+
         int max = 0;
         for (int c: candies) {
             if (c > max) max = c;
@@ -23,13 +24,15 @@ class Solution {
 ```
 
 #### [1403. Minimum Subsequence in Non-Increasing Order](https://leetcode.com/problems/minimum-subsequence-in-non-increasing-order/description/) Easy
+
 order doesn't matter
+
 ```java
 class Solution {
     public List<Integer> minSubsequence(int[] nums) {
         Arrays.sort(nums);
         int n = nums.length;
-        
+
         int total = 0;
         for (int num: nums) {
             total += num;
@@ -47,6 +50,7 @@ class Solution {
 ```
 
 #### [1221. Split a String in Balanced Strings](https://leetcode.com/problems/split-a-string-in-balanced-strings/description/) Easy
+
 ```java
 class Solution {
     public int balancedStringSplit(String s) {
@@ -65,6 +69,7 @@ class Solution {
 ```
 
 #### [1518. Water Bottles](https://leetcode.com/problems/water-bottles/description/) Easy
+
 ```java
 class Solution {
     public int numWaterBottles(int numBottles, int numExchange) {
@@ -84,6 +89,7 @@ class Solution {
 ```
 
 #### [860. Lemonade Change](https://leetcode.com/problems/lemonade-change/) Easy
+
 ```java
 class Solution {
     public boolean lemonadeChange(int[] bills) {
@@ -126,6 +132,7 @@ class Solution {
 ```
 
 #### [1024. Video Stitching](https://leetcode.com/problems/video-stitching/description/) Medium
+
 ```java
 class Solution {
     public int videoStitching(int[][] clips, int time) {
@@ -141,7 +148,7 @@ class Solution {
         for (int left = right, i = 0; right < time && i < n; left = right, ++res) {
             // desired range (time) is still not covered and there are still clips left
             // and the starting point of the to-be-used clip falls in the stiched range
-            // if all conditions are met, try to stitch in the new clip and stretch the range   
+            // if all conditions are met, try to stitch in the new clip and stretch the range
             for(; right < time && i < n && left >= clips[i][0]; right = Math.max(right, clips[i++][1]));
             // after the stretch, right still remains put
             // this means the range cannot be enlarged
@@ -156,6 +163,7 @@ class Solution {
 ```
 
 #### [1296. Divide Array in Sets of K Consecutive Numbers](https://leetcode.com/problems/divide-array-in-sets-of-k-consecutive-numbers/) Medium
+
 ```java
 class Solution {
     public boolean isPossibleDivide(int[] nums, int k) {
@@ -189,6 +197,7 @@ class Solution {
 ```
 
 #### [1520. Maximum Number of Non-Overlapping Substrings](https://leetcode.com/problems/maximum-number-of-non-overlapping-substrings/) Hard
+
 ```java
 class Solution {
     public List<String> maxNumOfSubstrings(String s) {
@@ -196,7 +205,7 @@ class Solution {
         int[] lastAppearance = new int[26];
         Arrays.fill(firstAppearance, -1);
 
-        // store first and last positions for every character 
+        // store first and last positions for every character
         int n = s.length();
         for (int i = 0; i < n; i++) {
             int code = getCode(s, i);
@@ -220,7 +229,7 @@ class Solution {
                 if (firstAppearance[charInSubStringCode] >= i) {
                     currentSubStringEnd = Math.max(currentSubStringEnd, lastAppearance[charInSubStringCode]);
                 } else {
-                    // stretch the range if necessary to cover all occurances of the current character 
+                    // stretch the range if necessary to cover all occurances of the current character
                     currentSubStringEnd = -1;
                 }
             }
@@ -246,6 +255,7 @@ class Solution {
 ```
 
 #### [1383. Maximum Performance of a Team](https://leetcode.com/problems/maximum-performance-of-a-team/) Hard
+
 ```java
 class Solution {
     public int maxPerformance(int n, int[] speed, int[] efficiency, int k) {
@@ -276,3 +286,29 @@ class Solution {
 }
 ```
 
+#### [Minimum number of jumps](https://www.geeksforgeeks.org/problems/minimum-number-of-jumps-1587115620/1?page=1&sprint=a663236c31453b969852f9ea22507634&sprint=a663236c31453b969852f9ea22507634&sortBy=submissions)
+
+```java
+
+class Solution{
+    static int minJumps(int[] arr){
+        int n = arr.length;
+        int nextPos = 0;
+        int jumps = 0;
+        int currentPos = 0;
+        for (int pos = 0; pos < n - 1; pos++) {
+            nextPos = Math.max(nextPos, arr[pos] + pos);
+            if (pos == currentPos) {
+                jumps++;
+                currentPos = nextPos;
+            }
+        }
+
+        if (currentPos >= n - 1) {
+            return jumps;
+        }
+
+        return -1;
+    }
+}
+```

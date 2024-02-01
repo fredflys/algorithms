@@ -5478,3 +5478,40 @@ class Solution
 }
 
 ```
+
+#### [Determine if Two Trees are Identical](https://www.geeksforgeeks.org/problems/determine-if-two-trees-are-identical/1?page=1&category=Tree&sortBy=submissions)
+
+```java
+class Solution
+{
+    //Function to check if two trees are identical.
+	boolean isIdentical(Node root1, Node root2)
+	{
+	    if (root1 == null && root2 == null) return true;
+	    if (root1 == null) return false;
+	    if (root2 == null) return false;
+	    if (root1.data != root2.data) return false;
+
+	    return isIdentical(root1.left, root2.left) && isIdentical(root1.right, root2.right);
+	}
+
+}
+```
+
+#### [Mirror Tree](https://www.geeksforgeeks.org/problems/mirror-tree/1?page=1&category=Tree&sortBy=submissions)
+
+```java
+class Solution {
+    // Function to convert a binary tree into its mirror tree.
+    void mirror(Node node) {
+        if (node == null) return;
+
+        Node left = node.left;
+        node.left = node.right;
+        node.right = left;
+
+        mirror(node.left);
+        mirror(node.right);
+    }
+}
+```

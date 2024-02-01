@@ -4,6 +4,7 @@
 - sliding window
 - binary search
 - DFS
+
 #### 26 Remove Duplicates <span style="color:green">Easy</span>
 
 two-pointers: 不要想着从原数组内移除重复的元素，而是从空数组开始，一点点将不重复的元素添加进去。快指针用来遍历原数组，慢指针则负责追踪结果数组的最后一个位置。
@@ -78,7 +79,9 @@ class Solution {
 ```
 
 #### [944. Delete Columns to Make Sorted ](https://leetcode-cn.com/problems/delete-columns-to-make-sorted/) <span style="color:green">Easy</span>
+
 two-pointers
+
 ```java
 class Solution {
     public int minDeletionSize(String[] A) {
@@ -126,9 +129,13 @@ class Solution {
     }
 }
 ```
+
 #### [1513. Number of Substrings With Only 1s](https://leetcode.com/problems/number-of-substrings-with-only-1s/) Medium
+
 two-pointers, same direction
+
 1. get answer incrementally
+
 ```python
 # this solution will cause TLE
 class Solution:
@@ -154,7 +161,9 @@ class Solution:
 
         return result
 ```
+
 2. get substring lengths of 1s and then calculate the combinations of every substring and add them up
+
 ```python
 class Solution:
     def numSub(self, s: str) -> int:
@@ -185,9 +194,12 @@ class Solution:
 
         return int(result)
 ```
+
 #### [424. Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/) Medium
+
 two pointers
-longest repeating -> least replacements  -> replace infrequent letters with the most frequent letter
+longest repeating -> least replacements -> replace infrequent letters with the most frequent letter
+
 ```python
 class Solution:
     def characterReplacement(self, s: str, k: int) -> int:
@@ -232,7 +244,9 @@ class Solution:
 ```
 
 #### [11. Container With Most Water](https://leetcode.com/problems/container-with-most-water/description/) Medium
+
 naive brute force, tle
+
 ```java
 class Solution {
     public int maxArea(int[] height) {
@@ -246,11 +260,13 @@ class Solution {
             }
         }
 
-        return maxArea;    
+        return maxArea;
     }
 }
 ```
+
 two pointers
+
 ```java
 class Solution {
     public int maxArea(int[] height) {
@@ -270,7 +286,7 @@ class Solution {
             }
         }
 
-        return maxArea;    
+        return maxArea;
     }
 }
 ```
@@ -501,35 +517,37 @@ class Solution {
 ```
 
 #### [438. Find All Anagrams in a String](https://leetcode.com/problems/find-all-anagrams-in-a-string/) Medium
+
 sliding window
+
 ```java
 class Solution {
     public List<Integer> findAnagrams(String s, String p) {
         List<Integer> res = new LinkedList<>();
-        
+
         int[] target = new int[26];
         int[] window = new int[26];
         for (char c : p.toCharArray()) {
             target[c - 'a']++;
         }
-        
+
         int l = 0, r = 0;
         while (r < s.length()) {
             window[s.charAt(r) - 'a']++;
             r++;
-            
+
             if (r - l > p.length()) {
                 window[s.charAt(l) - 'a']--;
                 l++;
             }
-            
+
             if (r - l == p.length() && check(window, target)) res.add(l);
         }
 
-        
+
         return res;
     }
-    
+
     // compare two arrays
     boolean check(int[] window, int[] target) {
         for (int i = 0; i < 26; i++) {
@@ -541,6 +559,7 @@ class Solution {
 ```
 
 #### [567. Permutation in String](https://leetcode-cn.com/problems/permutation-in-string/) <span style="color:orange">Medium</span>
+
 fixed-size sliding window / two pointers
 When it comes to permutaion, only chars' count matters and how they are arranged doesn't matter. Also, a sub-string is required, thus comes the sliding window.
 
@@ -568,11 +587,14 @@ class Solution:
 ```
 
 #### [3. Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) Medium
+
 sliding window
 Consider:
+
 1. when to move right poninter and what needs to be updated
 2. when to move left pointer and what needs to be updated
 3. when to update the result
+
 ```java
 class Solution {
     public int lengthOfLongestSubstring(String s) {
@@ -603,7 +625,9 @@ class Solution {
 ```
 
 #### [187. Repeated DNA Sequences](https://leetcode.com/problems/repeated-dna-sequences/) Medium
+
 brute force
+
 ```java
 class Solution {
     public List<String> findRepeatedDnaSequences(String s) {
@@ -625,7 +649,9 @@ class Solution {
     }
 }
 ```
+
 sliding window
+
 ```java
 class Solution {
     public List<String> findRepeatedDnaSequences(String s) {
@@ -639,7 +665,7 @@ class Solution {
         while (r < s.length()) {
             window.append(s.charAt(r));
             r++;
-            
+
             if (r - l == L) {
                 windowStr = window.toString();
                 if (seen.contains(windowStr)) {
@@ -656,8 +682,10 @@ class Solution {
     }
 }
 ```
+
 sliding window hash - variation of Rabin-Karp text pattern algorithm
-Convert text information to numbers, which only can perform digit removal and adding in O(1), instead of O(L).  
+Convert text information to numbers, which only can perform digit removal and adding in O(1), instead of O(L).
+
 ```java
 class Solution {
     public List<String> findRepeatedDnaSequences(String s) {
@@ -665,10 +693,10 @@ class Solution {
         int L = 10;
         int R = 4;
         int RL = (int) Math.pow(R, L - 1);
-        
+
         HashSet<Integer> seen = new HashSet<>();
         List<String> res = new LinkedList<>();
-        
+
         int windowHash = 0;
         int l = 0, r = 0;
         while (r < nums.length) {
@@ -704,7 +732,7 @@ class Solution {
 
         return res;
     }
-    
+
     // conver s to a number in base 4
     int[] convertToQuaternay(String s) {
         int[] nums = new int[s.length()];
@@ -723,22 +751,23 @@ class Solution {
 ```
 
 #### [992. Subarrays with K Different Integers](https://leetcode.com/problems/subarrays-with-k-different-integers/) Hard
+
 sliding window
 if there are exactly k distinct integers between [i, j], there are at least k distinct integers between [i, j + 1]
 if there are exactly k distinct integers between [i, j], there are at most k distinct integers between [i + 1, j]
 For every possible position for i, a total amount of subarrays with at least k distinct integers can be counted and and summed up, which includes k subarrays, k + 1 subarrays and so forth. By the same logic, a total amount of subarrays with at least k + 1 distinct integers can also be calculated, which includes k + 1 subarrays, k + 2 subarrays and so forth. Subtract latter from former will yield the desired result.
 e.g.
-    
-a b a c b d  k = 3
-i       j
-for i, there are 6 - 4 + 1 subarrays where at least k distinct integers exist, i.e. [i, j - 1], [i, j], [i, j + 1] 
+
+a b a c b d k = 3
+i j
+for i, there are 6 - 4 + 1 subarrays where at least k distinct integers exist, i.e. [i, j - 1], [i, j], [i, j + 1]
 
 ```java
 class Solution {
     public int subarraysWithKDistinct(int[] nums, int k) {
         return countSubWithLeastKInt(nums, k) - countSubWithLeastKInt(nums, k + 1);
     }
-    
+
     int countSubWithLeastKInt(int[] nums, int k) {
         int[] window = new int[nums.length + 1];
         int res = 0;
@@ -750,26 +779,28 @@ class Solution {
                     ++distinctInts;
                 }
             }
-            
+
             if (distinctInts < k) break;
-            
-            // now outside the inner loop, j already is incremented to a position where [i, j] has **at least** k distinct integers  
+
+            // now outside the inner loop, j already is incremented to a position where [i, j] has **at least** k distinct integers
             res += nums.length - j + 1;
-            
+
             // shrink the window by decrementing i
             // prepare for the next iteration as i will be incremented
             if (--window[nums[i]] == 0) {
                 --distinctInts;
             }
         }
-        
+
         return res;
     }
 }
 ```
 
 ### [1456. Maximum Number of Vowels in a Substring of Given Length](https://leetcode.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/description/) Medium
+
 naive brute force, will cause TLE
+
 ```java
 class Solution {
     public int maxVowels(String s, int k) {
@@ -794,14 +825,16 @@ class Solution {
     }
 }
 ```
+
 sliding window
+
 ```java
 class Solution {
     public int maxVowels(String s, int k) {
         int res = 0;
         int n = s.length();
         int l = 0, r = 0;
-        
+
         int vowls = 0;
         // [l, r] closed interval on both ends
         while (r < n) {
@@ -828,7 +861,9 @@ class Solution {
 ```
 
 #### [2379. Minimum Recolors to Get K Consecutive Black Blocks](https://leetcode.com/problems/minimum-recolors-to-get-k-consecutive-black-blocks/description/) Easy
+
 sliding window
+
 ```java
 class Solution {
     public int minimumRecolors(String blocks, int k) {
@@ -855,9 +890,10 @@ class Solution {
 
 Two Pointers
 
-
 #### [870. Advantage Shuffle](https://leetcode.com/problems/advantage-shuffle/) Medium
+
 two pointers
+
 ```java
 class Solution {
     public int[] advantageCount(int[] nums1, int[] nums2) {
@@ -865,7 +901,7 @@ class Solution {
         // max heap: used to produce currently largest element in nums2
         PriorityQueue<int[]> candidates = new PriorityQueue<>(
             (int[] a, int[] b) -> {
-                return b[1] - a[1]; 
+                return b[1] - a[1];
             }
         );
         for (int i = 0; i < n; i++) {
@@ -873,14 +909,14 @@ class Solution {
         }
 
         Arrays.sort(nums1);
-        
+
         int[] res = new int[n];
         int l = 0, r = n - 1;
         int[] candidate;
         int index, currentMax;
         while (!candidates.isEmpty()) {
             candidate = candidates.poll();
-            index = candidate[0]; 
+            index = candidate[0];
             currentMax = candidate[1];
             if (nums1[r] > currentMax) {
                 res[index] = nums1[r];
@@ -890,32 +926,34 @@ class Solution {
                 l++;
             }
         }
-        
+
         return res;
     }
 }
 ```
 
 #### [15. 3Sum](https://leetcode.com/problems/3sum/) Medium
+
 Two pointers, dimension reduction
 This problem is turned into a two sum one with an outer loop.
+
 ```python
 class Solution:
     def threeSum(self, nums: List[int]) -> List[List[int]]:
         nums = sorted(nums)
         n = len(nums)
         results = []
-        
+
         # dimension reduction
         # change 3 sum problem to a two sum one with a loop
         for i in range(n):
             # avoid duplicates
-            # 
+            #
             if i > 0 and nums[i] == nums[i - 1]:
                 continue
             self.find_two_sums(nums, i + 1, -nums[i], results)
         return results
-    
+
     def find_two_sums(self, nums, left, target, results):
         right = len(nums) - 1
         last_pair = None
@@ -931,11 +969,13 @@ class Solution:
             elif two_sum > target:
                 right -= 1
             else:
-                left += 1      
+                left += 1
 ```
 
 #### [16. 3Sum Closest](https://leetcode.com/problems/3sum-closest/description/) Medium
+
 two pointers
+
 ```java
 class Solution {
     public int threeSumClosest(int[] nums, int target) {
@@ -972,15 +1012,17 @@ class Solution {
 ```
 
 #### [611. Valid Triangle Number](https://leetcode.com/problems/valid-triangle-number/) Medium
+
 a triangle definition: a <= b <= c and a + b < c
 two pointers
+
 ```python
 class Solution:
     def triangleNumber(self, nums: List[int]) -> int:
         nums = sorted(nums)
         n = len(nums)
         answer = 0
-        
+
         for i in range(n):
             left = 0
             right = i - 1
@@ -990,12 +1032,14 @@ class Solution:
                     right -= 1
                 else:
                     left += 1
-        
+
         return answer
 ```
 
 #### [75. Sort Colors](https://leetcode.com/problems/sort-colors/submissions/) Medium
+
 partition, two pointers
+
 ```python
 class Solution:
     def sortColors(self, nums: List[int]) -> None:
@@ -1003,12 +1047,12 @@ class Solution:
         index = 0
         left = 0
         right = n - 1
-        # 
+        #
         # loop invariant
         # - all in [0, left) == 0
         # - all in [left, index) == 1
         # - all in [index, right] unknown
-        # starting from empty partitions, gradually enlarge each partition by moving pointers left or right 
+        # starting from empty partitions, gradually enlarge each partition by moving pointers left or right
         # - all in (right, n - 1] == 2
         while index <= right:
             # find 1
@@ -1017,16 +1061,18 @@ class Solution:
             # find 0
             elif nums[index] < 1:
                 nums[index], nums[left] = nums[left], nums[index]
-                left += 1 
+                left += 1
                 index += 1
             # find 2
             else:
                 nums[index], nums[right] = nums[right], nums[index]
-                # after the swap, nums[index] is not known, so index will not be incremented 
-                # so that in the next loop nums[index] will be dealt with 
+                # after the swap, nums[index] is not known, so index will not be incremented
+                # so that in the next loop nums[index] will be dealt with
                 right -= 1
 ```
+
 for loop
+
 ```java
 class Solution {
     public void sortColors(int[] nums) {
@@ -1036,7 +1082,7 @@ class Solution {
         unknown: [j, k]
         2: (k, nums.length - 1]
         */
-        
+
         for (int i = 0, j = 0, k = nums.length - 1; j <= k; j++) {
             if (nums[j] == 0) {
                 // swap nums[j] and nums[i]
@@ -1056,8 +1102,10 @@ class Solution {
 ```
 
 #### [LintCode 143 · Sort Colors II](https://www.lintcode.com/problem/143/) Medium
+
 partition, merge sort, quick sort, two pointers
 nlogk
+
 ```python
 from typing import (
     List,
@@ -1094,10 +1142,10 @@ class Solution:
         self.sort(colors, middle_color + 1, color_to, index_from, index_to)
 ```
 
-
 #### [992. Subarrays with K Different Integers](https://leetcode-cn.com/problems/subarrays-with-k-different-integers/) <span style="color:red">Hard</span>
+
 two pointers
-**恰好**由k个不同整数组成的子序列个数 = **最多**由k个不同整数组成的子序列个数 - **最多**由k - 1个不同整数组成的子序列个数
+**恰好**由 k 个不同整数组成的子序列个数 = **最多**由 k 个不同整数组成的子序列个数 - **最多**由 k - 1 个不同整数组成的子序列个数
 
 ```python
 class Solution:
@@ -1134,7 +1182,7 @@ class Solution:
 
 #### [862. Shortest Subarray with Sum at Least K](https://leetcode-cn.com/problems/shortest-subarray-with-sum-at-least-k/) <span style="color:red">Hard</span>
 
-求连续子数组之和至少为k的最短长度，既然有和，就可以想到使用前缀和数组，问题可转化为连续子数组之和为prefix_sums[right] - prefix_sums[left] >= K时，right - left的最小值。如果以暴力求解，可以想到每一个点都要当作right，也要被当作left，即内外双层循环。如此方法，自然费时。有没有办法可以减少循环的次数呢？此问题的难点在于数组中可以有负数，前缀和数组自然就不一定是单调增加。从这一点出发，前缀和数组中就可能出现这样的情况：有i < j使得prefix_sums[i] >= prefix_sums[j]，也就是说i到j这一段的和小于0，往后再延长，长度变长自不必说，结果反而比起不带i到j这一段变小了。那么，i作为left自然不可能是最后答案。而假如我们已经找到了prefix_sums[j] - prefix_sums[i] >= K，j再往后走也没有意义，因为无论之后是正数还是负数，长度都变长了，即便符合条件，也不是我们要找的最后答案。因此，一旦遇到一个符合条件的left（即此刻的i），就意味着可以求出一个可能的结果，不必再考虑该点作为左侧起始点的情况。
+求连续子数组之和至少为 k 的最短长度，既然有和，就可以想到使用前缀和数组，问题可转化为连续子数组之和为 prefix_sums[right] - prefix_sums[left] >= K 时，right - left 的最小值。如果以暴力求解，可以想到每一个点都要当作 right，也要被当作 left，即内外双层循环。如此方法，自然费时。有没有办法可以减少循环的次数呢？此问题的难点在于数组中可以有负数，前缀和数组自然就不一定是单调增加。从这一点出发，前缀和数组中就可能出现这样的情况：有 i < j 使得 prefix_sums[i] >= prefix_sums[j]，也就是说 i 到 j 这一段的和小于 0，往后再延长，长度变长自不必说，结果反而比起不带 i 到 j 这一段变小了。那么，i 作为 left 自然不可能是最后答案。而假如我们已经找到了 prefix_sums[j] - prefix_sums[i] >= K，j 再往后走也没有意义，因为无论之后是正数还是负数，长度都变长了，即便符合条件，也不是我们要找的最后答案。因此，一旦遇到一个符合条件的 left（即此刻的 i），就意味着可以求出一个可能的结果，不必再考虑该点作为左侧起始点的情况。
 
 ```python
 class Solution:
@@ -1162,14 +1210,16 @@ class Solution:
 ```
 
 #### [54. Spiral Matrix](https://leetcode.com/problems/spiral-matrix/) Medium
+
 matrix, multi-dimension array
+
 ```java
 class Solution {
     public List<Integer> spiralOrder(int[][] matrix) {
         int m = .length, n = matrix[0].length;
         int upperbound = 0, rightbound = n - 1, leftbound = 0, lowerbound = m - 1;
         List<Integer> res = new LinkedList<>();
-        
+
         while (res.size() < m * n) {
             // from left to right
             // a row on the top is traversed
@@ -1177,22 +1227,22 @@ class Solution {
                 traverseRow(matrix, res, upperbound, leftbound, rightbound);
                 upperbound++;
             }
-            
-            
+
+
             // from top to bottom
             // a column on the rightest is traversed
             if (res.size() < m * n && rightbound >= leftbound) {
                 traverseCol(matrix, res, rightbound, upperbound, lowerbound);
                 rightbound--;
             }
-            
+
             // from right to left
             // a bottom row is traversed
             if (res.size() < m * n && lowerbound >= upperbound) {
                 traverseRow(matrix, res, lowerbound, rightbound, leftbound);
                 lowerbound--;
             }
-            
+
             // from bottom to top
             // a column on the leftest is traversed
             if (res.size() < m * n && leftbound <= rightbound) {
@@ -1200,10 +1250,10 @@ class Solution {
                 leftbound++;
             }
         }
-        
+
         return res;
     }
-    
+
     void traverseRow(int[][] matrix, List<Integer> res, int row, int start, int end) {
         if (start < end) {
             for (int i = start; i <= end; i++) {
@@ -1211,12 +1261,12 @@ class Solution {
             }
             return;
         }
-        
+
         for (int i = start; i >= end; i--) {
             res.add(matrix[row][i]);
         }
     }
-    
+
     void traverseCol(int[][] matrix, List<Integer> res, int col, int start, int end) {
         if (start < end) {
             for (int i = start; i <= end; i++) {
@@ -1224,8 +1274,8 @@ class Solution {
             }
             return;
         }
-        
-        
+
+
         for (int i = start; i >= end; i--) {
             res.add(matrix[i][col]);
         }
@@ -1265,6 +1315,7 @@ class Solution {
 ```
 
 #### [766. Toeplitz Matrix](https://leetcode.com/problems/toeplitz-matrix/) Easy
+
 ```java
 class Solution {
     public boolean isToeplitzMatrix(int[][] matrix) {
@@ -1273,7 +1324,7 @@ class Solution {
         int n = matrix[0].length;
         for (int i = 1 ; i < m; i++) {
             for (int j = 1; j < n; j++) {
-                if (matrix[i][j] != matrix[i - 1][j - 1]) return false; 
+                if (matrix[i][j] != matrix[i - 1][j - 1]) return false;
             }
         }
         return true;
@@ -1282,7 +1333,9 @@ class Solution {
 ```
 
 #### [1504. Count Submatrices With All Ones](https://leetcode.com/problems/count-submatrices-with-all-ones/) Medium
+
 Kind of know how it works but still not fully understand.
+
 ```java
 class Solution {
     public int numSubmat(int[][] mat) {
@@ -1295,7 +1348,7 @@ class Solution {
             for (int j = 0; j < n; j++) {
                 if (mat[i][j] == 1) rowConsectiveOne++;
                 else rowConsectiveOne = 0;
-                leftOnes[i][j] = rowConsectiveOne; 
+                leftOnes[i][j] = rowConsectiveOne;
             }
         }
         int res = 0;
@@ -1312,10 +1365,6 @@ class Solution {
     }
 }
 ```
-
-
-
-
 
 #### [912. Sort an Array](https://leetcode-cn.com/problems/sort-an-array/) <span style="color:orange">Medium</span>
 
@@ -1451,6 +1500,7 @@ class Solution {
     }
 }
 ```
+
 ### Binary search
 
 Keywords for binary search:
@@ -1460,36 +1510,34 @@ array, target, sorted, equal or close to target, $O(nlogn)$
 
 Binary search: Decrease and Conquer
 
- ```python
+```python
 class Solution:
-    def searchRange(self, nums, target):
-        if not nums:
-            return [-1, -1]
+   def searchRange(self, nums, target):
+       if not nums:
+           return [-1, -1]
 
-        def binary_search_left(nums, target):
-            left, right = 0, len(nums) - 1
-            while left < right:
-                mid = (left + right) // 2
-                if nums[mid] < target:
-                    left = mid + 1
-                else:
-                    right = mid
-            return left if nums[left] == target else -1
+       def binary_search_left(nums, target):
+           left, right = 0, len(nums) - 1
+           while left < right:
+               mid = (left + right) // 2
+               if nums[mid] < target:
+                   left = mid + 1
+               else:
+                   right = mid
+           return left if nums[left] == target else -1
 
-        def binary_search_right(nums, target):
-            left, right = 0, len(nums) - 1
-            while left < right:
-                mid = (left + right) // 2 + 1
-                if nums[mid] > target:
-                    right = mid - 1
-                else:
-                    left = mid
-            return left if nums[left] == target else -1
+       def binary_search_right(nums, target):
+           left, right = 0, len(nums) - 1
+           while left < right:
+               mid = (left + right) // 2 + 1
+               if nums[mid] > target:
+                   right = mid - 1
+               else:
+                   left = mid
+           return left if nums[left] == target else -1
 
-        return [binary_search_left(nums, target), binary_search_right(nums, target)]
- ```
-
-
+       return [binary_search_left(nums, target), binary_search_right(nums, target)]
+```
 
 #### 702.Search in a Sorted Array of Unknown Size <span style="color:orange">Medium</span>
 
@@ -1579,7 +1627,7 @@ class Solution:
 
 <img src="https://s2.loli.net/2021/12/30/nJgIpRw2Ld3kN9V.png" alt="image-20211230224558606" style="zoom:33%;" />
 
-XXXYYYY  Binary search is used to find the turning point.
+XXXYYYY Binary search is used to find the turning point.
 
 ```java
 class Solution {
@@ -1628,8 +1676,6 @@ class Solution:
                 end = mid
         return min(nums[start], nums[end])
 ```
-
-
 
 #### [33. Search in Rotated Sorted Array](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/) <span style="color:orange">Medium</span>
 
@@ -1747,7 +1793,7 @@ class Solution {
 }
 ```
 
-#### [183 · Wood Cut - LintCode  ](https://www.lintcode.com/problem/183/)<span style="color:orange">Medium</span>
+#### [183 · Wood Cut - LintCode ](https://www.lintcode.com/problem/183/)<span style="color:orange">Medium</span>
 
 Binary search on an answer set
 
@@ -1782,11 +1828,13 @@ class Solution:
 ```
 
 #### []() Medium
+
 max of all possible minimum values -> binary search on an answer set
-the less tastiness is, the more choices there are and vice versa 
+the less tastiness is, the more choices there are and vice versa
+
 ```java
 class Solution {
-    // max of all minimums 
+    // max of all minimums
     // binary search on an answer set
     public int maximumTastiness(int[] price, int k) {
         Arrays.sort(price);
@@ -1824,7 +1872,9 @@ class Solution {
 ```
 
 ### [2560. House Robber IV](https://leetcode.com/problems/house-robber-iv/description/) Medium
+
 binary search
+
 ```java
 import java.util.Arrays;
 
@@ -1835,7 +1885,7 @@ class Solution {
         int l = copiedNums[0], r = copiedNums[nums.length - 1];
 
         if (k == 1) return l;
-        
+
         while (l < r) {
             int mid = l + (r - l) / 2;
             if (guess(nums, k, mid)) {
@@ -1863,7 +1913,9 @@ class Solution {
     }
 }
 ```
+
 dp and binary search
+
 ```java
 class Solution {
     public int minCapability(int[] nums, int k) {
@@ -1875,7 +1927,7 @@ class Solution {
         while (l < r) {
             int mid = l + (r - l) / 2;
             // dp[i] means based on the guessed minimum capability (mid)
-            // to steal from the first i-th houses 
+            // to steal from the first i-th houses
             // how many houses at least can be robbed
             int[] dp = new int[n];
             // the guessed capability is indeed the maximum
@@ -1910,7 +1962,7 @@ class Solution {
 binary search on a sorted input
 
 - find a row: binary search on first column to get the largest point smaller than the target
-- find target in the row: binary search  on the row
+- find target in the row: binary search on the row
 
 This approach involves two binary searches, which is not so efficient. The matrix can also be treated as a one-dimensional sorted array so that only one binary search is needed.
 
@@ -2104,14 +2156,16 @@ class Solution:
 
 Division, minimum, prefix DP
 dp[i][j]: the minimum cost for the first i books to be copied by the first j persons
-    j - 1         j (last copier)  
-                    i
-. . . . . . .    |   . . .
-previous pages     remaining pages for last copier        
-                   
+j - 1 j (last copier)  
+ i
+. . . . . . . | . . .
+previous pages remaining pages for last copier
+
                    cost: sum(pages[prev...i - 1])
+
 cost: max(dp[prev][j - 1])
 Since the last copier and other copiers start their work at the same time, whichever group spend the most time will be final result: max(sum(pages[prev...i - 1]), max(dp[prev][j - 1])). Then find the minimum result from all the possibilities.
+
 ```python
 from typing import (
     List,
@@ -2134,7 +2188,7 @@ class Solution:
         # copying a book of 0 pages for whatever copiers costs no time
         for j in range(k + 1):
             dp[0][j] = 0
-        # no need to initialize 
+        # no need to initialize
         # hiring 0 person to copy any amount of books is a task never to be finished
 
         prev_books = [0] * (n + 1)
@@ -2155,7 +2209,9 @@ class Solution:
 ```
 
 #### [69. Sqrt(x)](https://leetcode.com/problems/sqrtx/description/) Easy
+
 binary search on an answer set
+
 ```java
 class Solution {
     public int mySqrt(int x) {
@@ -2174,7 +2230,9 @@ class Solution {
 ```
 
 #### [1482. Minimum Number of Days to Make m Bouquets](https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/description/) Medium
+
 binary search on an answer set, guess until a right answer is reached
+
 ```java
 class Solution {
     public int minDays(int[] bloomDay, int m, int k) {
@@ -2184,7 +2242,7 @@ class Solution {
             return -1;
         }
 
-        int l = -1, r = 1000000000 + 1; 
+        int l = -1, r = 1000000000 + 1;
         while (l + 1 < r) {
             int mid = l + (r - l) / 2, remainingBouquets = m;
             for (int i = 0, flowersInBouquet = 0; remainingBouquets > 0 && i < flowers; i++) {
@@ -2213,10 +2271,12 @@ class Solution {
 ```
 
 #### [1552. Magnetic Force Between Two Balls](https://leetcode.com/problems/magnetic-force-between-two-balls/description/) Medium
+
 binary search on an answer set
-l                                r
-           l   r
-  1 2 3 4..k | k + 1 k + 2 ... n
+l r
+l r
+1 2 3 4..k | k + 1 k + 2 ... n
+
 ```java
 class Solution {
     public int maxDistance(int[] position, int m) {
@@ -2246,7 +2306,9 @@ class Solution {
 ```
 
 #### [878. Nth Magical Number](https://leetcode.com/problems/nth-magical-number/description/) Hard
+
 binary search on an answer set, numeric theory
+
 ```java
 class Solution {
     public int nthMagicalNumber(int n, int a, int b) {
@@ -2276,7 +2338,9 @@ class Solution {
 ```
 
 #### [719. Find K-th Smallest Pair Distance](https://leetcode.com/problems/find-k-th-smallest-pair-distance/description/) Hard
+
 binary search on an answer set, sliding window
+
 ```java
 class Solution {
     public int smallestDistancePair(int[] nums, int k) {
@@ -2308,7 +2372,9 @@ class Solution {
 ```
 
 #### [1011. Capacity To Ship Packages Within D Days](https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/description/) Medium
+
 binary search on an answer set
+
 ```java
 class Solution {
     public int shipWithinDays(int[] weights, int days) {
@@ -2332,7 +2398,7 @@ class Solution {
     private boolean isShipped(int[] weights, int capacity, int limitDays) {
         int spent = 0;
         int loaded = 0;
-        
+
         for (int i = 0; i < weights.length; i++) {
             if (weights[i] > capacity) return false;
 
@@ -2345,13 +2411,14 @@ class Solution {
         }
 
         // still needs one more day to ship the last packages
-        // after exiting the loop, there is still some loaded weight 
+        // after exiting the loop, there is still some loaded weight
         return spent + 1 <= limitDays;
     }
 }
 ```
 
 #### [793. Preimage Size of Factorial Zeroes Function](https://leetcode.com/problems/preimage-size-of-factorial-zeroes-function/description/) Hard
+
 ```java
 class Solution {
     public int preimageSizeFZF(int k) {
@@ -2366,7 +2433,7 @@ class Solution {
                 l = mid;
             } else {
                 r = mid;
-            }    
+            }
         }
         return l;
     }
@@ -2382,17 +2449,18 @@ class Solution {
 ```
 
 #### [1095. Find in Mountain Array](https://leetcode.com/problems/find-in-mountain-array/description/) Hard
+
 ```java
 class Solution {
     public int findInMountainArray(int target, MountainArray mountainArr) {
         int peakIndex = findPeak(mountainArr);
-        
+
         int beforePeakFound = binarySeach(mountainArr, peakIndex, target);
         if (beforePeakFound != -1) return beforePeakFound;
-        
+
         int afterPeakFound = binarySeachDescending(mountainArr, peakIndex, target);
         if (afterPeakFound != -1) return afterPeakFound;
-        
+
         return -1;
     }
 
@@ -2444,7 +2512,9 @@ class Solution {
 ```
 
 #### [1283. Find the Smallest Divisor Given a Threshold](https://leetcode.com/problems/find-the-smallest-divisor-given-a-threshold/description/) Medium
+
 binary serach on an answer set
+
 ```java
 class Solution {
     public int smallestDivisor(int[] nums, int threshold) {
@@ -2463,7 +2533,9 @@ class Solution {
     }
 }
 ```
+
 recursive
+
 ```java
 class Solution {
     private int search(int[] nums, int l, int r, int threshold) {
@@ -2477,7 +2549,7 @@ class Solution {
         if (remaining < 0) {
             return search(nums, mid, r, threshold);
         }
-        
+
         int possibleAnswer = search(nums, l, mid, threshold);
         if (possibleAnswer == -1) {
             return mid;
@@ -2499,13 +2571,13 @@ Combinatorial Search Problem -> DFS.
 
 Every element either exist in a subset or does not exist in a subset and in total there are $2^n$ combinations.
 
- 									[ ]
+[ ]
 
-1?					[1] 						[ ]
+1? [1] [ ]
 
-2?		[1, 2] 				 	[1] 				[2] [ ]
+2? [1, 2] [1] [2] [ ]
 
-3? 	[1, 2, 3] [1, 2] 	[1, 3]  [1]	 [2] [2, 3] 	[3] [ ]
+3? [1, 2, 3] [1, 2] [1, 3] [1] [2] [2, 3] [3] [ ]
 
 ```java
 class Solution {
@@ -2541,16 +2613,17 @@ class Solution {
 ```
 
 BFS 1
+
 ```java
 class Solution {
     public List<List<Integer>> subsets(int[] nums) {
         if (nums == null) {
             return new ArrayList<>();
         }
-        
+
         List<List<Integer>> queue = new ArrayList<>();
         int index = 0;
-        
+
         // to avoid add the same number repetitively
         Arrays.sort(nums);
         // initialize: start from empty subset
@@ -2574,8 +2647,10 @@ class Solution {
     }
 }
 ```
+
 BFS 2
 [] | [1] | [2] [1,2] | [3] [1,3] [2,3] [1,2,3]
+
 ```java
 class Solution {
     public List<List<Integer>> subsets(int[] nums) {
@@ -2598,16 +2673,15 @@ class Solution {
 }
 ```
 
-
 A more general solution: Any subset starts with nums[0] .. nums[n - 1]. Since every subset is ascending, there is no need to go back, i.e. we are not gettting all the permutations here.
 
-​									[ ]
+​ [ ]
 
-​			[1] 					[2] 				[3]
+​ [1] [2] [3]
 
-​		[1, 2]  [1, 3] 	[2, 3]
+​ [1, 2] [1, 3] [2, 3]
 
-​	[1, 2, 3]
+​ [1, 2, 3]
 
 ```java
 class Solution {
@@ -2636,7 +2710,7 @@ class Solution {
 }
 ```
 
-#### [90. Subsets II  ](https://leetcode.com/problems/subsets-ii/)<span style="color:orange">Medium</span>
+#### [90. Subsets II ](https://leetcode.com/problems/subsets-ii/)<span style="color:orange">Medium</span>
 
 Combinatorial Search Probelm --> DFS while removing duplicates along the way
 
@@ -2668,6 +2742,7 @@ class Solution {
     }
 }
 ```
+
 #### [46. Permutations](https://leetcode.com/problems/permutations/) <span style="color:orange">Medium</span>
 
 [<img src="https://s4.ax1x.com/2022/01/13/7lSavT.png" alt="7lSavT.png" style="zoom:50%;" />](https://imgtu.com/i/7lSavT)
@@ -2714,6 +2789,7 @@ class Solution {
 ```
 
 #### [40. Combination Sum II](https://leetcode.cn/problems/combination-sum-ii/) Medium
+
 ```java
 class Solution {
     public List<List<Integer>> combinationSum2(int[] candidates, int target) {
@@ -2747,6 +2823,7 @@ class Solution {
 ```
 
 #### [40. Combination Sum II](https://leetcode.com/problems/combination-sum-ii/description/) Medium
+
 ```java
 class Solution {
     boolean[] used;
@@ -2781,7 +2858,9 @@ class Solution {
 ```
 
 #### [LintCode 90 · k Sum II](https://www.lintcode.com/problem/90/)
+
 Combination, DFS
+
 ```java
 public class Solution {
     public List<List<Integer>> kSumII(int[] A, int k, int target) {
@@ -2813,8 +2892,11 @@ public class Solution {
     }
 }
 ```
+
 #### [39. Combination Sum](https://leetcode.com/problems/combination-sum/) <span style="color:orange">Medium</span>
+
 Combination DFS
+
 ```python
 class Solution:
     def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
@@ -2838,7 +2920,9 @@ class Solution:
 ```
 
 #### [51. N-Queens](https://leetcode.com/problems/n-queens/) Hard
+
 DFS, search tree
+
 ```python
 class Solution:
     def solveNQueens(self, n):
@@ -2847,7 +2931,7 @@ class Solution:
         # try column places in every row, starting from an empty board
         self.search(n, [], results)
         return results
-    
+
     # hom many queens (n) are placed at which columns one by one (queen_columns)
     # answers are collected into results (results)
     def search(self, n, queen_columns, results):
@@ -2856,7 +2940,7 @@ class Solution:
         if queen_row == n:
             results.append(self.draw_board(queen_columns))
             return
-        
+
         # try every column in the current row
         for queen_column in range(n):
             # contradiction exists if a queen is placed in the current column
@@ -2865,14 +2949,14 @@ class Solution:
             queen_columns.append(queen_column)
             self.search(n, queen_columns, results)
             # backtrack
-            queen_columns.pop() 
-        
-        
+            queen_columns.pop()
+
+
     def is_valid(self, queen_columns, new_queen_row, new_queen_col):
         # check column
         if new_queen_col in queen_columns:
             return False
-        
+
         # check diagonal
         for queen_row, queen_col in enumerate(queen_columns):
             # from top left to bottom right: increasing in row number and column number
@@ -2882,7 +2966,7 @@ class Solution:
             if queen_row + queen_col == new_queen_row + new_queen_col:
                 return False
         return True
-        
+
     def draw_board(self, queen_columns):
         n = len(queen_columns)
         board = []
@@ -2893,7 +2977,9 @@ class Solution:
 ```
 
 #### [37. Sudoku Solver](https://leetcode.com/problems/sudoku-solver/) Hard
+
 DFS
+
 ```python
 class Solution:
     def solveSudoku(self, board: List[List[str]]) -> None:
@@ -2901,7 +2987,7 @@ class Solution:
         # starting from 0 and ending at 81
         self.search(board, 0, used)
         return board
-        
+
     def prepare_occupied_info(self, board):
         used = {
             'rows': [set() for _ in range(9)],
@@ -2914,39 +3000,39 @@ class Solution:
                     continue
                 used['rows'][row].add(board[row][col])
                 used['cols'][col].add(board[row][col])
-                # convert (x, y) coordinate to the x-th box 
+                # convert (x, y) coordinate to the x-th box
                 used['boxes'][row // 3 * 3 + col // 3].add(board[row][col])
-                
+
         return used
-    
+
     def search(self, board, index, used):
-        # exit: the last slot is already taken 
+        # exit: the last slot is already taken
         if index == 81:
             return True
-        
+
         x, y = index // 9, index % 9
         # current slot is alreay taken
         if board[x][y] != '.':
             return self.search(board, index + 1, used)
-        
+
         for val in range(1, 10):
             val = str(val)
             if not self.is_valid(used, x, y, val):
                 continue
-                
+
             board[x][y] = val
             used['rows'][x].add(val)
             used['cols'][y].add(val)
             used['boxes'][x // 3 * 3 + y // 3].add(val)
             if self.search(board, index + 1, used):
                 return True
-            
+
             board[x][y] = '.'
             used['rows'][x].remove(val)
             used['cols'][y].remove(val)
             used['boxes'][x // 3 * 3 + y // 3].remove(val)
-        
-            
+
+
     def is_valid(self, used, row, col, val):
         if val in used['rows'][row]:
             return False
@@ -2956,40 +3042,41 @@ class Solution:
             return False
         return True
 ```
+
 ```java
 class Solution {
     public void solveSudoku(char[][] board) {
         dfs(board, 0);
     }
-    
+
     private boolean dfs(char[][] board, int index) {
         if (index == 81) {
             return true;
         }
-        
+
         int x = index / 9;
         int y = index % 9;
-        
+
         // alreay filled
         if (board[x][y] != '.') {
             return dfs(board, index + 1);
         }
-        
+
         for (char val = '1'; val <= '9'; val++) {
             if (!isValid(board, x, y, val)) {
                 continue;
             }
-            
+
             board[x][y] = val;
             if (dfs(board, index + 1)) {
                 return true;
             }
             board[x][y] = '.';
         }
-        
+
         return false;
     }
-    
+
     private boolean isValid(char[][] board, int x, int y, char val) {
         for (int i = 0; i < 9; i++) {
             // row
@@ -3001,8 +3088,8 @@ class Solution {
             if (board[i][y] == val) {
                 return false;
             }
-            
-            /** 
+
+            /**
               0 1 2 3 4 5 6 7 8
             / 0 0 0 1 1 1 2 2 2 (row)
             % 0 1 2 0 1 2 0 1 2 (column)
@@ -3022,10 +3109,12 @@ class Solution {
             }
         }
         return true;
-    } 
+    }
 }
 ```
+
 Reduce search range for every slot so that the process can speed up
+
 ```python
 class Solution:
     def solveSudoku(self, board: List[List[str]]) -> None:
@@ -3033,7 +3122,7 @@ class Solution:
 
     def dfs(self, board):
         x, y, possibilities = self.get_possible(board)
-        
+
         if x is None:
             return True
 
@@ -3042,7 +3131,7 @@ class Solution:
             if self.dfs(board):
                 return True
             board[x][y] = '.'
-        
+
         return False
 
     def get_possible(self, board):
@@ -3061,7 +3150,7 @@ class Solution:
                 x, y, possibilities = i, j, vals
                 return x, y, possibilities
 
-        return x, y, possibilities            
+        return x, y, possibilities
 
 
     def is_valid(self, board, x, y, val):
@@ -3076,40 +3165,42 @@ class Solution:
 ```
 
 #### [1239. Maximum Length of a Concatenated String with Unique Characters](https://leetcode.com/problems/maximum-length-of-a-concatenated-string-with-unique-characters/) Medium
+
 Ugly solution. Still it works at an acceptable speed.
-The problem is that I tend to make too many false and premature assumptions from example test cases, which means a lot of unnecessary trials. For this problem, it is obvious that some strings contain overlapping characters, which mean that they should not be used. But from here I wrongly assume that strings themselves do not contain same characters, which is totally wrong. When I ran into a test case like this, e.g. ["aa", "bb"], I made another false assumption that the characters in a string are ordered, which is still wrong. After two attempts, I finally came to the coclution that I had to filter the input array first before other things.  
+The problem is that I tend to make too many false and premature assumptions from example test cases, which means a lot of unnecessary trials. For this problem, it is obvious that some strings contain overlapping characters, which mean that they should not be used. But from here I wrongly assume that strings themselves do not contain same characters, which is totally wrong. When I ran into a test case like this, e.g. ["aa", "bb"], I made another false assumption that the characters in a string are ordered, which is still wrong. After two attempts, I finally came to the coclution that I had to filter the input array first before other things.
+
 ```java
 class Solution {
     int maxLength = 0;
-    
+
     public int maxLength(List<String> arr) {
         List<Integer> removed = filterCandidates(arr);
         dfs(arr, 0, new StringBuilder(), removed);
         return maxLength;
     }
-    
+
     void dfs(List<String> arr, int start, StringBuilder sb, List<Integer> removed) {
         if (sb.length() > maxLength) {
             maxLength = sb.length();
         }
-        
-            
+
+
         for (int i = start; i < arr.size(); i++) {
             if (removed.contains(i)) {
                 continue;
             }
-            
+
             String candidate = arr.get(i);
             boolean flag = true;
             for (int j = 0; j < candidate.length(); j++) {
-                // indexOf only accepts string as an input 
+                // indexOf only accepts string as an input
                 if (sb.indexOf(String.valueOf(candidate.charAt(j))) > -1) {
                     flag = false;
                     break;
                 }
             }
 
-            
+
             if (!flag) {
                 continue;
             }
@@ -3118,7 +3209,7 @@ class Solution {
             sb.delete(sb.length() - candidate.length() ,sb.length());
         }
     }
-    
+
     List<Integer> filterCandidates(List<String> arr) {
         int[] counter;
         int n = arr.size();
@@ -3126,14 +3217,14 @@ class Solution {
         for (int i = 0; i < n; i++) {
             String candidate = arr.get(i);
             counter = new int[26];
-            
-            for (int j = 0; j < candidate.length(); j++) {                    
+
+            for (int j = 0; j < candidate.length(); j++) {
                 counter[candidate.charAt(j) - 97]++;
                 if (counter[candidate.charAt(j) - 97] > 1) {
                     removed.add(i);
                     continue;
                 }
-            }   
+            }
         }
         return removed;
     }
@@ -3141,7 +3232,9 @@ class Solution {
 ```
 
 #### [1655. Distribute Repeating Integers](https://leetcode.com/problems/distribute-repeating-integers/description/) Hard
+
 dfs
+
 ```java
 class Solution {
     public boolean canDistribute(int[] nums, int[] quantity) {
@@ -3150,7 +3243,7 @@ class Solution {
         // processing orders from largest to smallest
         return dfs(quantity, freq, quantity.length - 1);
     }
-    
+
     // only frequency matters, number doesn't count'
     int[] getFrequency(int[] nums) {
         Map<Integer, Integer> map = new HashMap<>();
@@ -3169,7 +3262,7 @@ class Solution {
 
     boolean dfs(int[] orders, int[] stock, int processingOrder) {
         // even 1st(0-index) is processed now
-        // which means all orders are finished 
+        // which means all orders are finished
         if (processingOrder == -1) {
             return true;
         }
@@ -3183,14 +3276,16 @@ class Solution {
                 stock[i] += orders[processingOrder];
             }
         }
-        
+
         return false;
     }
 }
 ```
 
 #### [1593. Split a String Into the Max Number of Unique Substrings](https://leetcode.com/problems/split-a-string-into-the-max-number-of-unique-substrings/description/) Medium
+
 dfs
+
 ```java
 class Solution {
     private int res;
@@ -3198,7 +3293,7 @@ class Solution {
     public int maxUniqueSplit(String s) {
         res = 1;
         dfs(s, new HashSet<String>(), 0);
-        return res;    
+        return res;
     }
 
     private void dfs(String s, HashSet<String> cutParts, int cutPosition) {
@@ -3206,7 +3301,7 @@ class Solution {
         if (s.length() - cutPosition + cutParts.size() <= res) {
             return;
         }
-        
+
         // nothing to cut
         if (cutPosition == s.length()) {
             res = cutParts.size();
@@ -3226,6 +3321,7 @@ class Solution {
 ```
 
 #### [1415. The k-th Lexicographical String of All Happy Strings of Length n](https://leetcode.com/problems/the-k-th-lexicographical-string-of-all-happy-strings-of-length-n/description/) Medium
+
 ```java
 class Solution {
     private List<String> res;
@@ -3262,9 +3358,11 @@ class Solution {
 Algorithms that has time complexity better than linear, i.e. less than $O(n)$
 
 #### [4. Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/) Hard
+
 recursive, something like a binary search in terms of perspective
 
 Think from the perspective of time complexity. A better solution than a linear one would be a logrithmatic one. Since there are two sorted arrays, the searching range can be narrowed by half if search can be down in two arrays at the same time by seaching k/2-th number in both arrays.
+
 ```java
 public class Solution {
     public double findMedianSortedArrays(int A[], int B[]) {
@@ -3319,6 +3417,7 @@ public class Solution {
     }
 }
 ```
+
 ```python
 class Solution:
     def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
@@ -3363,6 +3462,7 @@ class Solution:
 ```
 
 #### 1248 Count Number of Nice Subarrays <span style="color:orange">Medium</span>
+
 prefix sum
 自己想的解法，自以为完备，真正执行时，先会遇到语法错误。语法问题解决后，再去执行，常常是连第一个测试用例也无法通过。再以第一个测试用例，调整思路，使其通过后，再执行多个测试用例，发现又有错误。多半是自己只盯着特殊的测试用例，问题没理解充分，忽略了限制条件。好不容易让多个测试用例也通过了，真正提交时又会遇到要么是一半的测试用例没通过，要么是超时了，瓶颈在哪里自己也搞不清楚。这道题还是看了讨论中的题解才依样画葫芦给做出来的。
 
@@ -3405,6 +3505,7 @@ class Solution {
 ```
 
 #### [930 Binary Subarrays With Sum](https://leetcode-cn.com/problems/binary-subarrays-with-sum/) <span style="color:orange">Medium</span>
+
 prefix sum
 So we are trying to count continuous sub-arrays where the number of ones within is equal to a desired goal. So only ones count in this case. Consider the array [0,0,1,0,1,0,0,0] and the goal is 2 and [1,0,1] in the middle is the base case from which we can go left or right. Since two zeros are on the left and three on the right, we have 2 x 3 possibilities. Also, don't forget [1,0,1] in the middle, therefore we have (2+1) x (3+1) possibilities in total. Starting from this example, it's safe to say that the things we care about here are the number of ones and zeros in between. But we have to be careful when the goal is 0 because in this cases we can not get the result simply by summing the number of the zeros in between.
 
@@ -3444,7 +3545,7 @@ class Solution:
         return result
 ```
 
-前缀和加哈希表的解法，我始终无法理解，看了许多题解，还是不懂为什么要sum-goal，统计出来的map又有怎么样的实际意义。不想再在这道题上花时间了，挫败感太强了，之后再碰到前缀和的题目然后再看吧。
+前缀和加哈希表的解法，我始终无法理解，看了许多题解，还是不懂为什么要 sum-goal，统计出来的 map 又有怎么样的实际意义。不想再在这道题上花时间了，挫败感太强了，之后再碰到前缀和的题目然后再看吧。
 
 ```java
 class Solution {
@@ -3458,7 +3559,7 @@ class Solution {
         k: count sum[i, j] == k
         previous presum: [0, i - 1]
         current presum: [0, j]
-        
+
                presum
         .  .  .  .  .  .  .  .
               .  .  .  .
@@ -3466,27 +3567,29 @@ class Solution {
         0 i-1
          previous presum + k = current presum
       => current presum - k = previous presum
-        
+
         */
         for (int num: nums) {
             presum += num;
             if (map.containsKey(presum - goal)) {
-                count = count + map.get(presum - goal);    
+                count = count + map.get(presum - goal);
             }
-            
+
             // store previous presum
             map.put(presum, map.getOrDefault(presum, 0) + 1);
         }
-        
-        
-        
+
+
+
         return count;
     }
 }
 ```
 
 #### [1. Two Sum](https://leetcode-cn.com/problems/two-sum/) <span style="color:green">Easy</span>
+
 prefix sum
+
 ```python
 class Solution:
     def twoSum(self, nums: List[int], target: int) -> List[int]:
@@ -3499,7 +3602,9 @@ class Solution:
 ```
 
 #### [724. Find Pivot Index](https://leetcode.com/problems/find-pivot-index/) Easy
+
 prefix sum
+
 ```java
 class Solution {
     public int pivotIndex(int[] nums) {
@@ -3507,7 +3612,7 @@ class Solution {
         for (int num: nums) {
             preSum += num;
         }
-        
+
         int leftSum = 0;
         int pivotNum;
         for (int i = 0; i < nums.length; i++) {
@@ -3516,16 +3621,18 @@ class Solution {
             if (leftSum == rightSum) {
                 return i;
             }
-            
+
             // get ready for next loop: extend left
             leftSum += nums[i];
         }
-        
+
         return -1;
     }
 }
 ```
+
 Another solution: gradually narrow the right and extend the left and always leave the pivot in between
+
 ```java
 class Solution {
     public int pivotIndex(int[] nums) {
@@ -3534,7 +3641,7 @@ class Solution {
         for (int num: nums) {
             rightSum += num;
         }
-        
+
         // now it is the status when i == -1
         /*
           2 1 -1
@@ -3548,19 +3655,21 @@ class Solution {
             if (leftSum == rightSum) {
                 return i;
             }
-            
+
             // only now one number is added to the left for the next loop
             leftSum += nums[i];
         }
-        
+
         return -1;
     }
 }
 ```
 
 #### [560. Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/) Medium
+
 prefix sum
 Same solution can be used to solve 930.
+
 ```java
 class Solution {
     public int subarraySum(int[] nums, int k) {
@@ -3573,7 +3682,7 @@ class Solution {
         k: count sum[i, j] == k
         previous presum: [0, i - 1]
         current presum: [0, j]
-        
+
                presum
         .  .  .  .  .  .  .  .
               .  .  .  .
@@ -3581,30 +3690,31 @@ class Solution {
         0 i-1
          previous presum + k = current presum
       => current presum - k = previous presum
-        
+
         */
         for (int num: nums) {
             presum += num;
             if (map.containsKey(presum - k)) {
-                count = count + map.get(presum - k);    
+                count = count + map.get(presum - k);
             }
-            
+
             // store previous presum
             map.put(presum, map.getOrDefault(presum, 0) + 1);
         }
-        
-        
-        
+
+
+
         return count;
     }
 }
 ```
 
-
 #### [974. Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k) Medium
+
 prefix sum
 
-Modular arithmetic: a % c == b % c <-> (a - b) % c = 0 
+Modular arithmetic: a % c == b % c <-> (a - b) % c = 0
+
 ```java
 class Solution {
     public int subarraysDivByK(int[] nums, int k) {
@@ -3613,23 +3723,25 @@ class Solution {
         int presum = 0;
         Map<Integer, Integer> map = new HashMap<>();
         map.put(0, 1);
-        
+
         for (int num: nums) {
             presum += num;
             int modulus  = (presum % k + k) % k;
             if (map.containsKey(modulus )) {
-                count = count + map.get(modulus );    
+                count = count + map.get(modulus );
             }
-            
+
             // store previous presum
             map.put(modulus, map.getOrDefault(modulus, 0) + 1);
         }
-        
+
         return count;
     }
 }
 ```
+
 prefix sum, no corner cases need to be considered, though another loop is needed
+
 ```java
 class Solution {
     public boolean checkSubarraySum(int[] nums, int k) {
@@ -3648,28 +3760,29 @@ class Solution {
                 return true;
             }
         }
-        
+
         return false;
     }
 }
 ```
 
-
 #### [523. Continuous Subarray Sum](https://leetcode.com/problems/continuous-subarray-sum/) Medium
+
 Modular arithmetic, prefix sum, hash table
+
 ```java
 class Solution {
     public boolean checkSubarraySum(int[] nums, int k) {
         if (nums.length == 1) {
             return false;
         }
-        
+
         int n = nums.length;
         Map<Integer, Integer> map = new HashMap<>();
         int presum = 0;
-        // a desired subarray can be possibly found at index 1 (second element) 
+        // a desired subarray can be possibly found at index 1 (second element)
         // if -1 is not inserted here, this case will be missed
-        // e.g. [2,4] k = 6 
+        // e.g. [2,4] k = 6
         // also, the first element of prefix sum is actually 0, which should be included.
         map.put(0, -1);
         for (int i = 0; i < n; i++) {
@@ -3678,35 +3791,37 @@ class Solution {
             // System.out.println(modulus);
             if (map.containsKey(modulus)) {
                 if (i - map.get(modulus) > 1) {
-                    return true;   
+                    return true;
                 }
                 /*
-                do not update agiain when the same modulus is repeated. only keep the smalleest 
+                do not update agiain when the same modulus is repeated. only keep the smalleest
                 e.g. [5, 0, 0, 0] k = 3
-                
+
                 */
                 continue;
             }
-            
+
             map.put(modulus, i);
         }
-        
+
         return false;
     }
 }
 ```
 
 #### [912. Sort an Array](https://leetcode.com/problems/sort-an-array/) Medium
+
 merge sort
+
 ```java
 class Solution {
     int[] temp;
-    
+
     public int[] sortArray(int[] nums) {
         sort(nums, 0, nums.length - 1);
         return nums;
     }
-    
+
     void sort(int[] nums, int lo, int hi) {
         if (lo == hi) {
             return;
@@ -3716,10 +3831,10 @@ class Solution {
         sort(nums, mid + 1, hi);
         merge(nums, lo, mid, hi);
     }
-    
+
     void merge(int[] nums, int lo, int mid, int hi) {
         temp = new int[hi - lo + 1];
-        
+
         int i = 0, l = lo, r = mid + 1;
         while (l <= mid && r <= hi) {
             if (nums[l] < nums[r]) {
@@ -3728,16 +3843,16 @@ class Solution {
                 temp[i++] = nums[r++];
             }
         }
-        
+
         while (l <= mid) {
             temp[i++] = nums[l++];
         }
-        
+
         while (r <= hi) {
             temp[i++] = nums[r++];
         }
-        
-        // copy 
+
+        // copy
         for (int tempIndex = 0, numsIndex = lo; tempIndex < temp.length; tempIndex++, numsIndex++) {
             nums[numsIndex] = temp[tempIndex];
         }
@@ -3746,43 +3861,45 @@ class Solution {
 ```
 
 #### [315. Count of Smaller Numbers After Self](https://leetcode.com/problems/count-of-smaller-numbers-after-self/) Hard
+
 block search, my solution not fast for this problem, will cause TLE sometimes, check out Java solution for reference
+
 ```python
 class Block:
     def __init__(self):
         self.total = 0
         self.counter = {}
-        
+
 class BlockArray:
     def __init__(self, max_value):
         self.blocks = [
             Block()
             for _ in range(10000)
         ]
-        
+
     def get_position(self, val):
         return val // 100
-        
+
     def insert(self, val):
         position = self.get_position(val)
         self.blocks[position].counter[val] = self.blocks[position].counter.get(val, 0) + 1
         self.blocks[position].total += 1
-    
+
     def count_smaller(self, val):
         count = 0
         position = self.get_position(val)
         # count of total from all blocks that come before the block where the val lies
         for i in range(position):
             count += self.blocks[i].total
-        
+
         # count of all smaller numbers in this block
         block = self.blocks[position]
         for number in block.counter:
             if number < val:
                 count += block.counter[number]
-                
+
         return count
-        
+
 class Solution:
     def countSmaller(self, nums: List[int]) -> List[int]:
         results = []
@@ -3795,6 +3912,7 @@ class Solution:
             block_array.insert(nums[i] + offset)
         return results
 ```
+
 ```java
 class Solution {
     // not sure why 20000 is chosen
@@ -3809,14 +3927,14 @@ class Solution {
         if (nums == null || nums.length == 0) {
             return res;
         }
-        
+
         BlockArray blockArray = new BlockArray(SIZE);
         // iterate nums backward
         for (int i = nums.length - 1; i >= 0; i--) {
             res.addFirst(blockArray.countSmaller(nums[i] + OFFSET));
             blockArray.insert(nums[i] + OFFSET);
         }
-        
+
         return res;
     }
 }
@@ -3842,30 +3960,32 @@ class BlockArray {
             this.blocks[i] = new Block(this.blockSize);
         }
     }
-    
+
     public void insert(int value) {
         int indexOfBlock = value / blockSize;
         this.blocks[indexOfBlock].total++;
         this.blocks[indexOfBlock].counter[value - this.blockSize * indexOfBlock]++;
     }
-    
+
     public int countSmaller(int value) {
         int indexOfBlock = value / blockSize;
         int count = 0;
         for (int i = 0; i < indexOfBlock; i++) {
             count += this.blocks[i].total;
         }
-        
+
         for (int i = 0; i < value - this.blockSize * indexOfBlock; i++) {
             count += this.blocks[indexOfBlock].counter[i];
         }
-        
+
         return count;
     }
 }
 ```
+
 count[i] = COUNT(j) where j > i and nums[j] < nums[i]
 merge sort https://labuladong.github.io/algo/2/21/41/
+
 ```java
 class Solution {
     private class PosVal {
@@ -3875,10 +3995,10 @@ class Solution {
             this.index = index;
         }
     }
-    
+
     private PosVal[] temp;
     private int[] count;
-    
+
     public List<Integer> countSmaller(int[] nums) {
         int n = nums.length;
         count = new int[n];
@@ -3887,7 +4007,7 @@ class Solution {
         sort(pairs, 0, n - 1);
         return convertAnswer(count);
     }
-    
+
     PosVal[] convertNums(int[] nums) {
         PosVal[] res = new PosVal[nums.length];
         for (int i = 0; i < nums.length; i++) {
@@ -3895,7 +4015,7 @@ class Solution {
         }
         return res;
     }
-    
+
     List<Integer> convertAnswer(int[] count) {
         List<Integer> res = new LinkedList<>();
         for (int c: count) {
@@ -3903,23 +4023,23 @@ class Solution {
         }
         return res;
     }
-    
+
     void sort(PosVal[] pairs, int lo, int hi) {
         if (lo == hi) {
             return;
         }
-        
+
         int mid = lo + (hi - lo) / 2;
         sort(pairs, lo, mid);
         sort(pairs, mid + 1, hi);
         merge(pairs, lo, mid, hi);
     }
-    
+
     void merge(PosVal[] pairs, int lo, int mid, int hi) {
         for (int i = lo; i <= hi; i++) {
             temp[i] = pairs[i];
         }
-        
+
         int l = lo, r = mid + 1;
         for (int j = lo; j <= hi; j++) {
             if (l == mid + 1) {
@@ -3935,47 +4055,49 @@ class Solution {
             }
         }
     }
-    
-    
+
+
 }
 ```
 
 #### [493. Reverse Pairs](https://leetcode.com/problems/reverse-pairs/) Hard
-count[i] = COUNT(j) where j > i and nums[i] > 2 * nums[j] https://labuladong.github.io/algo/2/21/41/
+
+count[i] = COUNT(j) where j > i and nums[i] > 2 \* nums[j] https://labuladong.github.io/algo/2/21/41/
 merge sort. Before every merging, nums[lo..mid] and nums[mid + 1...hi] are already sorted. Make use of this.
+
 ```java
 class Solution {
-    
-    
+
+
     public int reversePairs(int[] nums) {
         sort(nums);
         return count;
     }
-    
+
     private int[] temp;
     int count = 0;
     void sort(int[]  nums) {
         temp = new int[nums.length];
         sort(nums, 0, nums.length - 1);
     }
-    
+
     void sort(int[] nums, int lo, int hi) {
         if (lo == hi) {
             return;
         }
-        
+
         int mid = lo + (hi - lo) / 2;
         sort(nums, lo, mid);
         sort(nums, mid + 1, hi);
         merge(nums, lo, mid, hi);
     }
-    
-    
+
+
     void merge(int[] nums, int lo, int mid, int hi) {
         for (int i = lo; i <= hi; i++) {
             temp[i] = nums[i];
         }
-        
+
         // now nums[lo..mid], nums[mid + 1, hi] are both sorted now
         // make sure [mid + 1, end)
         int end = mid + 1;
@@ -3983,10 +4105,10 @@ class Solution {
             while (end <= hi && (long) nums[i] > (long) nums[end] * 2) {
                 end++;
             }
-            
+
             count += end - (mid + 1);
         }
-        
+
         int l = lo, r = mid + 1;
         for (int j = lo; j <= hi; j++) {
             if (l == mid + 1) {
@@ -4004,10 +4126,12 @@ class Solution {
 ```
 
 #### [327. Count of Range Sum](https://leetcode.com/problems/count-of-range-sum/) Hard
+
 count[i] = COUNT(j) where lower <= preSum[j] - preSum[i] <= upper
 merge sort on a prefix sum set
 寻找满足条件的区间和实际上只需要找到任意两个满足差值为[lower, upper]的前缀和就可以，前缀和的顺序无关紧要
 reference: https://leetcode.cn/problems/count-of-range-sum/solution/327qu-jian-he-de-ge-shu-ti-jie-zong-he-by-xu-yuan-/
+
 ```java
 class Solution {
     int lower;
@@ -4021,7 +4145,7 @@ class Solution {
         sort(presum);
         return count;
     }
-    
+
     long[] getPresum(int[] nums) {
         long[] presum = new long[nums.length + 1];
         for (int i = 0; i < nums.length; i++) {
@@ -4029,27 +4153,27 @@ class Solution {
         }
         return presum;
     }
-    
+
     long[] temp;
     void sort(long[] nums) {
         temp = new long[nums.length];
         sort(nums, 0, nums.length - 1);
     }
-    
+
     void sort(long[] nums, int lo, int hi) {
         if (lo == hi) return;
-        
+
         int mid = lo + (hi - lo) / 2;
         sort(nums, lo, mid);
         sort(nums, mid + 1, hi);
         merge(nums, lo, mid, hi);
     }
-    
+
     void merge(long[] nums, int lo, int mid, int hi) {
         for (int i = lo; i <= hi; i++) {
             temp[i] = nums[i];
         }
-        
+
         // nums[lo...mid] and num[mid + 1...hi] are both sorted now
         int start = mid + 1, end = mid + 1;
         for (int k = lo; k <= mid; k++) {
@@ -4063,11 +4187,11 @@ class Solution {
             // end now stands at a position where range sum is just bigger than upper
             count += end - start; // end is not included
         }
-        
+
         int l = lo, r = mid + 1;
         for (int p = lo; p <= hi; p++) {
             if (l == mid + 1) {
-                nums[p] = temp[r++];   
+                nums[p] = temp[r++];
             } else if (r == hi + 1) {
                 nums[p] = temp[l++];
             } else if (temp[l] > temp[r]) {
@@ -4081,8 +4205,10 @@ class Solution {
 ```
 
 #### [215. Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/) Medium
+
 quick sort, quick select
 top k-th -> k-th in descending order -> n - k in ascending order
+
 ```java
 class Solution {
     public int findKthLargest(int[] nums, int k) {
@@ -4099,10 +4225,10 @@ class Solution {
                 return nums[pivot];
             }
         }
-        
+
         return -1;
     }
-    
+
     int partition(int[] nums, int lo, int hi) {
         int pivotVal = nums[hi];
 
@@ -4130,7 +4256,9 @@ class Solution {
     }
 }
 ```
+
 max heap - reversed min heap
+
 ```python
 class Solution:
     def findKthLargest(self, nums: List[int], k: int) -> int:
@@ -4145,13 +4273,15 @@ class Solution:
 ```
 
 #### [703. Kth Largest Element in a Stream](https://leetcode.com/problems/kth-largest-element-in-a-stream/) Easy
+
 min heap
 remove n - k items in a min heap and you will have the k-th larget on the top
+
 ```java
 class KthLargest {
     private int k;
     private PriorityQueue<Integer> pq = new PriorityQueue<>();
-    
+
     public KthLargest(int k, int[] nums) {
         for (int num: nums) {
             pq.offer(num);
@@ -4161,28 +4291,29 @@ class KthLargest {
         }
         this.k = k;
     }
-    
+
     public int add(int val) {
         pq.offer(val);
         if (pq.size() > k) {
             pq.poll();
         }
-        
+
         return pq.peek();
     }
 }
 ```
 
 #### [118. Pascal's Triangle](https://leetcode.com/problems/pascals-triangle/) Easy
+
 ```java
 class Solution {
     public List<List<Integer>> generate(int numRows) {
         List<List<Integer>> res = new ArrayList<>();
         List<Integer> firstRow = new ArrayList<>();
         firstRow.add(1);
-        
+
         res.add(firstRow);
-        
+
         List<Integer> row;
         List<Integer> previousRow = firstRow;
         for (int i = 2; i < numRows + 1; i++) {
@@ -4194,20 +4325,22 @@ class Solution {
                 row.add(num);
                 j++;
             }
-            
+
             row.add(1);
-            
+
             previousRow = row;
             res.add(row);
         }
-        
+
         return res;
     }
 }
 ```
 
 #### [594. Longest Harmonious Subsequence](https://leetcode.com/problems/longest-harmonious-subsequence/) Easy
+
 two pointers using while loop
+
 ```java
 class Solution {
     public int findLHS(int[] nums) {
@@ -4220,18 +4353,20 @@ class Solution {
                 res = Math.max(res, r - l + 1);
             }
             // r is fixed and move forawrd l until the desired condition is met
-            // if only a if is used here, instead of a while loop,  
+            // if only a if is used here, instead of a while loop,
             while (l < r && nums[r] - nums[l] > 1) {
                 l++;
             }
             r++;
         }
-        
+
         return res;
     }
 }
 ```
+
 two pointers using for loop
+
 ```java
 class Solution {
     public int findLHS(int[] nums) {
@@ -4242,12 +4377,14 @@ class Solution {
             while (l < r && nums[r] - nums[l] > 1) l++;
             if (nums[r] - nums[l] == 1) res = Math.max(res, r - l + 1);
         }
-        
+
         return res;
     }
 }
 ```
-Hash table 
+
+Hash table
+
 ```java
 class Solution {
     public int findLHS(int[] nums) {
@@ -4267,7 +4404,9 @@ class Solution {
 ```
 
 #### [219. Contains Duplicate II](https://leetcode.com/problems/contains-duplicate-ii/) Easy
+
 two pointers
+
 ```java
 class Solution {
     public boolean containsNearbyDuplicate(int[] nums, int k) {
@@ -4286,16 +4425,19 @@ class Solution {
                     return true;
                 }
                 i++;
-            } 
+            }
             j--;
         }
-        
+
         return false;
     }
 }
 ```
+
 #### [220. Contains Duplicate III](https://leetcode.com/problems/contains-duplicate-iii/) Hard
+
 brute force
+
 ```java
 class Solution {
     public boolean containsNearbyAlmostDuplicate(int[] nums, int indexDiff, int valueDiff) {
@@ -4305,13 +4447,15 @@ class Solution {
                 return true;
             }
         }
-        
+
         return false;
     }
 }
 ```
+
 reference: https://leetcode.cn/problems/contains-duplicate-iii/solution/c-li-yong-tong-fen-zu-xiang-xi-jie-shi-b-ofj6/
 bucket division
+
 ```java
 class Solution {
     public boolean containsNearbyAlmostDuplicate(int[] nums, int indexDiff, int valueDiff) {
@@ -4324,37 +4468,39 @@ class Solution {
             // already in the same bucket
             if (buckets.containsKey(id)) return true;
             // check previous and next bucket
-            if (buckets.containsKey(id - 1) && Math.abs(buckets.get(id - 1) - value) <= valueDiff) 
+            if (buckets.containsKey(id - 1) && Math.abs(buckets.get(id - 1) - value) <= valueDiff)
                 return true;
             if (buckets.containsKey(id + 1) && Math.abs(buckets.get(id + 1) - value) <= valueDiff)
                 return true;
             buckets.put(id, value);
-            // make sure 
-            if (i >= indexDiff) 
+            // make sure
+            if (i >= indexDiff)
                 buckets.remove(getBucketId(nums[i - indexDiff], valueDiff));
         }
         return false;
     }
-    
+
     int getBucketId(int value, int valueDiff) {
         if (value >= 0) {
             return value / (valueDiff + 1);
         }
-        
+
         return (value + 1) / (valueDiff + 1) - 1;
     }
 }
 ```
 
 #### [1637. Widest Vertical Area Between Two Points Containing No Points](https://leetcode.com/problems/widest-vertical-area-between-two-points-containing-no-points/) Medium
+
 The intuitive solution would be sorting the input and calcuate the gap between all non-equal candidates. Sorting means nlogn time complexity. with bucket division, the time complexity can be reduced to (3)n.
 bucket division, pigeonhole principle
+
 ```java
 class Solution {
     public int maxWidthOfVerticalArea(int[][] points) {
 		int n = points.length;
- 
-        // find the leftmost and rightmost point 
+
+        // find the leftmost and rightmost point
         int min = points[0][0];
         int max = points[0][0];
         // only horizontal ordinate is relevant here
@@ -4390,7 +4536,7 @@ class Solution {
             if (buckets[i] != null) {
                 res = Math.max(res, buckets[i][0] - lastMax);
                 lastMax = buckets[i][1];
-            }  
+            }
         }
 
         return res;
@@ -4399,7 +4545,9 @@ class Solution {
 ```
 
 #### [643. Maximum Average Subarray I](https://leetcode.com/problems/maximum-average-subarray-i/) Easy
+
 two pointers
+
 ```java
 class Solution {
     public double findMaxAverage(int[] nums, int k) {
@@ -4411,7 +4559,7 @@ class Solution {
         }
         average = sum / k;
         // System.out.println(sum);
-        for (int l = 1, r = k; r < nums.length; r++,l++) { 
+        for (int l = 1, r = k; r < nums.length; r++,l++) {
             sum = sum + nums[r] - nums[l - 1];
             average = Math.max(average, sum / k);
         }
@@ -4422,7 +4570,9 @@ class Solution {
 ```
 
 #### [1984. Minimum Difference Between Highest and Lowest of K Scores](https://leetcode.com/problems/minimum-difference-between-highest-and-lowest-of-k-scores/) Easy
+
 two pointers
+
 ```java
 class Solution {
     public int minimumDifference(int[] nums, int k) {
@@ -4442,28 +4592,58 @@ class Solution {
 ```
 
 #### [303. Range Sum Query - Immutable](https://leetcode.com/problems/range-sum-query-immutable/) Easy
+
 prefix sum
+
 ```java
 class NumArray {
     int[] prefix;
-    
+
     public NumArray(int[] nums) {
         int n = nums.length;
         int[] prefix = new int[n + 1];
         for (int i = 1; i < n + 1; i++) {
             prefix[i] = nums[i - 1] + prefix[i - 1];
         }
-        
+
         this.prefix = prefix;
     }
-    
+
     public int sumRange(int left, int right) {
         return prefix[right + 1] - prefix[left];
     }
 }
 ```
 
+#### [Equilibrium Poin](https://www.geeksforgeeks.org/problems/equilibrium-point-1587115620/1?page=1&sprint=a663236c31453b969852f9ea22507634&sprint=a663236c31453b969852f9ea22507634&sortBy=submissions)
+
+```java
+class Solution {
+
+
+    // a: input array
+    // n: size of array
+    // Function to find equilibrium point in the array.
+    public static int equilibriumPoint(long arr[], int n) {
+        if (n == 1) res = 1;
+
+        long[] prefix = new long[n + 1];
+        for (int i = 1; i <= n; i++) {
+            prefix[i] = prefix[i - 1] + arr[i - 1];
+        }
+
+        int res = -1;
+        for (int i = 2; i < n; i++) {
+            if (prefix[i - 1] == prefix[n] - prefix[i]) res = i;
+        }
+        return res;
+    }
+}
+
+```
+
 #### [304. Range Sum Query 2D - Immutable](https://leetcode.cn/problems/range-sum-query-2d-immutable/) Medium
+
 ```java
 class NumMatrix {
     // prefix[i][j] means the sum from [0,0] to [i-1, j-1]
@@ -4487,42 +4667,48 @@ class NumMatrix {
             }
         }
     }
-    
+
     public int sumRegion(int x1, int y1, int x2, int y2) {
         return prefix[x2 + 1][y2 + 1] - prefix[x1][y2 + 1] - prefix[x2 + 1][y1] + prefix[x1][y1];
     }
-}  
+}
 ```
 
+#### []()
+
 #### [1109. Corporate Flight Bookings](https://leetcode.com/problems/corporate-flight-bookings/) Medium
+
 difference array, range update in O(1)
+
 ```java
 class Solution {
     public int[] corpFlightBookings(int[][] bookings, int n) {
         int[] diff = new int[n];
         int[] res = new int[n];
-        
+
         for (int i = 0; i < bookings.length; i++) {
             diff[bookings[i][0] - 1] += bookings[i][2];
             if (bookings[i][1] < n) {
                 diff[bookings[i][1]] -= bookings[i][2];
             }
         }
-        
+
         res[0] = diff[0];
         for (int i = 1; i < n; i++) {
             res[i] = res[i - 1] + diff[i];
         }
-        
-        
+
+
         return res;
     }
 }
 ```
 
 #### [1526. Minimum Number of Increments on Subarrays to Form a Target Array](https://leetcode.com/problems/minimum-number-of-increments-on-subarrays-to-form-a-target-array/) Hard
+
 range update, difference array
-```java
+
+````java
 class Solution {
     public int minNumberOperations(int[] target) {
         int res = 0, pre = 0;
@@ -4544,26 +4730,26 @@ class Solution {
                 n = trip[2];
             }
         }
-        
+
         int[] diff = new int[n + 1];
         int[] res = new int[n + 1];
         for (int[] trip: trips) {
             diff[trip[1]] += trip[0];
-            
+
             // wrong condition and end should not be incremented in index
             // if (end < n - 1) {
-            //     diff[end + 1] -= passengers;    
+            //     diff[end + 1] -= passengers;
             // }
-            
+
             diff[trip[2]] -= trip[0];
-            
+
         }
-        
+
         res[0] = diff[0];
         if (res[0] > capacity)  {
             return false;
         }
-        
+
         for (int i = 1; i < n + 1; i++) {
             res[i] = res[i - 1] + diff[i];
             if (res[i] > capacity) {
@@ -4571,14 +4757,16 @@ class Solution {
             }
         }
 
-        
-        return true;        
+
+        return true;
     }
 }
-```
+````
 
 #### [48. Rotate Image](https://leetcode.com/problems/rotate-image/) Medium
+
 matrix, multi-dimension array
+
 ```java
 class Solution {
     public void rotate(int[][] matrix) {
@@ -4592,13 +4780,13 @@ class Solution {
                 matrix[j][i] = temp;
             }
         }
-        
+
         // row reversal line by line
         for (int[] row : matrix) {
             reverseRow(row);
         }
     }
-    
+
     void reverseRow(int[] nums) {
         int i = 0, j = nums.length - 1, temp;
         while (i < j) {
@@ -4618,7 +4806,7 @@ class Solution {
 /**
 for presum[j], count i's where i < j and presum[i] and presum[j] have different parities -> sum of i to j = presum[j] - presum[i]
 e.g.'
-         1 2 3 4  5 
+         1 2 3 4  5
 presum 0 1 3 6 10 15
 parity e o o e e  o
 count of even and odd presums count[0] even count[1] odd
@@ -4626,11 +4814,11 @@ i   (e,o)   odd subarrays
 0   (1,0)   0
 1   (1,1)   1
 3   (1,2)   3 is odd, find even presums before it, 1 + previous count[0] = 2
-6   (2,2)   6 is even, find odd presums before it, 2 + previous count[1] = 4     
+6   (2,2)   6 is even, find odd presums before it, 2 + previous count[1] = 4
     - [1] sum is odd, exlucding it from subarrays that end with arr[2] and subarray sum will be odd, [2, 3]
-    - [1,2] sum is odd, excluded and the desired subarray will be [3] 
+    - [1,2] sum is odd, excluded and the desired subarray will be [3]
 10  (3,2)   ...
-15  (3,3)   ...            
+15  (3,3)   ...
  */
 class Solution {
     public int numOfSubarrays(int[] arr) {
@@ -4654,12 +4842,14 @@ class Solution {
     }
 }
 ```
+
 use bitwise operation
+
 ```java
 /**
 0 even
 1 odd
-for sum[j], count sum[i] where i < j and sum[i] have different parities  
+for sum[j], count sum[i] where i < j and sum[i] have different parities
 
 odd + even = odd
 even + odd = odd
@@ -4676,13 +4866,13 @@ class Solution {
         for (int i = 0, sum = 0; i < arr.length; i++) {
             /**
             bitwise AND
-            if arr[i] is even, 0 
-            if arr[i] is odd, 1 
+            if arr[i] is even, 0
+            if arr[i] is odd, 1
             */
             parity = arr[i] & 1;
             /**
             bitwise XOR
-            only when 
+            only when
              */
             ++presumParity[sum ^= parity];
             res += presumParity[sum ^ 1];
@@ -4693,6 +4883,7 @@ class Solution {
 ```
 
 #### [1491. Average Salary Excluding the Minimum and Maximum Salary](https://leetcode.com/problems/average-salary-excluding-the-minimum-and-maximum-salary/) Easy
+
 ```java
 class Solution {
     public double average(int[] salary) {
@@ -4704,12 +4895,14 @@ class Solution {
             if (s > max) max = s;
             sum += s;
         }
-        
+
         return (sum - max - min) / (salary.length - 2);
     }
 }
 ```
+
 #### [1512. Number of Good Pairs](https://leetcode.com/problems/number-of-good-pairs/) Easy
+
 ```java
 class Solution {
     public int numIdenticalPairs(int[] nums) {
@@ -4720,15 +4913,15 @@ class Solution {
             if (nums[j] == nums[i]) {
                 count++;
                 continue;
-            } 
-            
+            }
+
             for (int k = 1; k < count; k++) {
                 total += k;
             }
             i = j;
             count = 1;
         }
-        
+
         for (int k = 1; k < count; k++) {
             total += k;
         }
@@ -4739,7 +4932,9 @@ class Solution {
 ```
 
 #### [268. Missing Number](https://leetcode.com/problems/missing-number/) Easy
+
 array as map
+
 ```java
 class Solution {
     public int missingNumber(int[] nums) {
@@ -4747,7 +4942,7 @@ class Solution {
         for (int num: nums) {
             count[num]++;
         }
-        
+
         int res = 0;
         for (int i = 0; i < count.length; i++) {
             if (count[i] == 0) res = i;
@@ -4758,7 +4953,9 @@ class Solution {
 ```
 
 #### [448. Find All Numbers Disappeared in an Array](https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/) Easy
+
 array as map
+
 ```java
 class Solution {
     public List<Integer> findDisappearedNumbers(int[] nums) {
@@ -4767,46 +4964,50 @@ class Solution {
         for (int num: nums) {
             count[num - 1]++;
         }
-        
+
         for (int i = 0; i < nums.length; i++) {
             if (count[i] == 0) res.add(i + 1);
         }
-        
+
         return res;
     }
 }
 ```
 
 #### [442. Find All Duplicates in an Array](https://leetcode.com/problems/find-all-duplicates-in-an-array/) Medium
+
 array as map
 I figured out a way to store frequency in the input array provided.
+
 ```java
 class Solution {
     public List<Integer> findDuplicates(int[] nums) {
         List<Integer> res = new ArrayList<>();
-        
+
         for (int i = 0; i < nums.length; i++) {
             int correctIndex = Math.abs(nums[i]) - 1;
             // the position is now visted twice, indicating a duplicate
             if (nums[correctIndex] < 0) {
                 res.add(correctIndex + 1);
             } else {
-                nums[correctIndex] = -nums[correctIndex]; 
+                nums[correctIndex] = -nums[correctIndex];
             }
         }
-        
+
         return res;
     }
 }
 ```
 
 #### [41. First Missing Positive](https://leetcode.com/problems/first-missing-positive/) Hard
+
 array as map
+
 ```java
 class Solution {
     public int firstMissingPositive(int[] nums) {
         int n = nums.length;
-    
+
         for (int i = 0; i < n; i++) {
             // keep moving nums[i] to the position where it belongs
             while (nums[i] >= 1 && nums[i] <= n && nums[i] != nums[nums[i] - 1]) {
@@ -4816,7 +5017,7 @@ class Solution {
 
         // now all eleements should be in the right positions
         for (int i = 0; i < n; i++) {
-            if (nums[i] != i + 1) return i + 1; 
+            if (nums[i] != i + 1) return i + 1;
         }
 
         return n + 1;
@@ -4831,8 +5032,10 @@ class Solution {
 ```
 
 #### [287. Find the Duplicate Number](https://leetcode.com/problems/find-the-duplicate-number/) Medium
+
 array as a linked list with cycle, turtoise and hare algorithms for detecting a cycle in a linked list
 Pay close attention to the constraints, which make this algorithms not only possible but also desired.
+
 ```java
 class Solution {
     public int findDuplicate(int[] nums) {
@@ -4855,7 +5058,9 @@ class Solution {
 ```
 
 #### [1657. Determine if Two Strings Are Close](https://leetcode.com/problems/determine-if-two-strings-are-close/) Medium
+
 use array as map, reverse thinking
+
 ```java
 class Solution {
     public boolean closeStrings(String word1, String word2) {
@@ -4863,7 +5068,7 @@ class Solution {
         int[] count2 = count(word2);
         return haveSameChars(count1, count2) && haveSameFrequency(count1, count2);
     }
-    
+
     int[] count(String word) {
         int[] count = new int[26];
         for (int i = 0; i < word.length(); i++) {
@@ -4871,25 +5076,58 @@ class Solution {
         }
         return count;
     }
-    
+
     boolean haveSameChars(int[] count1, int[] count2) {
         for (int i = 0; i < 26; i++) {
             if ((count1[i] == 0 && count2[i] != 0)
                 || (count1[i] != 00 && count2[i] == 0))
                 return false;
         }
-        
+
         return true;
     }
-    
+
     boolean haveSameFrequency(int[] count1, int[] count2) {
         Arrays.sort(count1);
         Arrays.sort(count2);
         for (int i = 0; i < 26; i++) {
-            if (count1[i] != count2[i]) 
+            if (count1[i] != count2[i])
                 return false;
         }
         return true;
+    }
+}
+```
+
+#### [Subarray with given sum](https://www.geeksforgeeks.org/problems/subarray-with-given-sum-1587115621/1?page=1&sprint=a663236c31453b969852f9ea22507634&sprint=a663236c31453b969852f9ea22507634&sortBy=submissions)
+
+```java
+class Solution
+{
+    //Function to find a continuous sub-array which adds up to a given number.
+    static ArrayList<Integer> subarraySum(int[] arr, int n, int s)
+    {
+        int[] prefix = new int[n + 1];
+        for (int i = 1; i < n + 1; i++) {
+            prefix[i] = prefix[i - 1] + arr[i - 1];
+        }
+        ArrayList<Integer> res = new ArrayList<>();
+        for (int i = 0, j = 1; i < n + 1 && j < n + 1; ) {
+            if (prefix[j] - prefix[i] == s) {
+                // make sure left bound is on the left
+                if (i + 1 <= j) {
+                    res.add(i + 1);
+                    res.add(j);
+                }
+                break;
+            } else if (prefix[j] - prefix[i] > s) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+        if (res.size() == 0) res.add(-1);
+        return res;
     }
 }
 ```
