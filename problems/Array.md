@@ -4591,6 +4591,71 @@ class Solution {
 }
 ```
 
+#### [Segregate 0s and 1s](https://www.geeksforgeeks.org/problems/segregate-0s-and-1s5106/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=bottom_sticky_on_article)
+
+two pointers
+
+```java
+
+class Solution {
+    void segregate0and1(int[] arr, int n) {
+        // 0: 0 - low - 1
+        // 1: high + 1, n
+        int low = 0, high = n - 1;
+        while (low <= high) {
+            if (arr[low] == 1) {
+                swap(arr, low, high);
+                high--;
+            } else {
+                low++;
+            }
+        }
+     }
+
+     void swap(int[] arr, int i, int j) {
+         int temp = arr[i];
+         arr[i] = arr[j];
+         arr[j] = temp;
+     }
+}
+
+```
+
+#### [Sort an array of 0s, 1s and 2s](https://www.geeksforgeeks.org/problems/sort-an-array-of-0s-1s-and-2s4231/1?page=1&sprint=a663236c31453b969852f9ea22507634&sprint=a663236c31453b969852f9ea22507634&sortBy=submissions)
+
+three pointers, Dutch National Flag problem
+
+```java
+class Solution
+{
+    public static void sort012(int arr[], int n)
+    {
+        int low = 0, mid = 0, high = n - 1;
+        // 0: 0 - low - 1
+        // 1: low - mid - 1
+        // 2: high + 1 - end
+        while (mid <= high) {
+            if (arr[mid] == 1) {
+                mid++;
+            } else if (arr[mid] == 0) {
+                swap(arr, mid, low);
+                low++;
+                mid++;
+            } else {
+                swap(arr, mid, high);
+                high--;
+            }
+        }
+    }
+
+    static void swap(int[] arr, int i, int j) {
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+}
+```
+
 #### [303. Range Sum Query - Immutable](https://leetcode.com/problems/range-sum-query-immutable/) Easy
 
 prefix sum
