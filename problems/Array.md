@@ -2563,6 +2563,48 @@ class Solution {
 }
 ```
 
+#### [Kth smallest element](https://www.geeksforgeeks.org/problems/kth-smallest-element5635/1?page=1&sprint=a663236c31453b969852f9ea22507634&sprint=a663236c31453b969852f9ea22507634&sortBy=submissions)
+
+partition, quick select
+
+```java
+class Solution{
+    public static int kthSmallest(int[] arr, int l, int r, int k)
+    {
+        return quick_select(arr, l, r, k);
+    }
+
+    static int quick_select(int[] arr, int l, int r, int k) {
+        int pivot = partition(arr, l, r);
+        if (pivot == k - 1) return arr[pivot];
+        else if (pivot > k - 1) return quick_select(arr, l, pivot - 1, k);
+        else return quick_select(arr, pivot + 1, r, k);
+    }
+
+    static int partition(int[] arr, int l, int r) {
+        int pivot = r;
+        // i represents the index that marks the partition point where all elements before it are smaller than the pivot value
+        // j is used for traversal
+        int i = 0;
+        for (int j = 0; j < r; j++) {
+            if (arr[j] < arr[pivot]) {
+                swap(arr, j, i);
+                i++;
+            }
+        }
+        swap(arr, r, i);
+        return i;
+    }
+
+    static void swap(int[] arr, int i, int j) {
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+}
+
+```
+
 ### DFS
 
 #### [78. Subsets](https://leetcode.com/problems/subsets/) <span style="color:orange">Medium</span>
@@ -5193,6 +5235,26 @@ class Solution
         }
         if (res.size() == 0) res.add(-1);
         return res;
+    }
+}
+```
+
+#### [945. Minimum Increment to Make Array Unique](https://leetcode.com/problems/minimum-increment-to-make-array-unique/description/) Medium
+
+```java
+class Solution {
+    public int minIncrementForUnique(int[] nums) {
+        int count = 0;
+        Arrays.sort(nums);
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] <= nums[i - 1]) {
+                int temp = nums[i - 1] + 1;
+                count += temp - nums[i];
+                nums[i] = temp;
+            }
+        }
+
+        return count;
     }
 }
 ```
