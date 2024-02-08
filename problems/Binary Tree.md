@@ -3874,21 +3874,6 @@ class Solution {
 depth traversal
 
 ```java
-/**
- * Definition for a binary tree node.
- * public class TreeNode {
- *     int val;
- *     TreeNode left;
- *     TreeNode right;
- *     TreeNode() {}
- *     TreeNode(int val) { this.val = val; }
- *     TreeNode(int val, TreeNode left, TreeNode right) {
- *         this.val = val;
- *         this.left = left;
- *         this.right = right;
- *     }
- * }
- */
 class Solution {
     int res;
     int[] count;
@@ -3938,6 +3923,65 @@ class Solution {
 ```
 
 #### [865. Smallest Subtree with all the Deepest Nodes](https://leetcode.com/problems/smallest-subtree-with-all-the-deepest-nodes/) Medium
+
+#### [Min distance between two given nodes of a Binary Tree](https://www.geeksforgeeks.org/problems/min-distance-between-two-given-nodes-of-a-binary-tree/1)
+
+```java
+class GfG {
+
+    List<Integer> pathA;
+    List<Integer> pathB;
+    int a;
+    int b;
+    int res;
+    int findDist(Node root, int a, int b) {
+        this.a = a;
+        this.b = b;
+        traverse(root, new LinkedList<Integer>());
+
+        res = 0;
+        // trim the longer path until they are the same length
+        trim(pathA, pathB);
+        trim(pathB, pathA);
+
+        // find the lowest common ancester along the path
+        int k = pathA.size();
+        while (pathA.get(k - 1) != pathB.get(k - 1)) {
+            k--;
+            res += 2;
+        }
+
+        return res;
+    }
+
+    void traverse(Node root, List<Integer> path) {
+        if (root == null) return;
+
+        path.add(root.data);
+
+        traverse(root.left, path);
+        traverse(root.right, path);
+
+        if (root.data == a) {
+            pathA = new LinkedList<>(path);
+        }
+        if (root.data == b) {
+            pathB = new LinkedList<>(path);
+        }
+
+        path.remove(path.size() - 1);
+    }
+
+    void trim(List<Integer> A, List<Integer> B) {
+        if (A.size() > B.size()) {
+            while (A.size() != B.size()) {
+                A.remove(A.size() - 1);
+                res++;
+            }
+        }
+    }
+}
+```
 
 #### [1123. Lowest Common Ancestor of Deepest Leaves](https://leetcode.com/problems/lowest-common-ancestor-of-deepest-leaves/) Medium
 
@@ -4711,7 +4755,7 @@ class Solution {
 
 #### [1315. Sum of Nodes with Even-Valued Grandparent](https://leetcode.com/problems/sum-of-nodes-with-even-valued-grandparent/) Medium
 
-traversal
+bfs traversal
 
 ```java
 class Solution {
@@ -4778,6 +4822,46 @@ class Solution {
         traverse(root.left);
         traverse(root.right);
     }
+}
+```
+
+#### [Node at distance](https://www.geeksforgeeks.org/problems/node-at-distance/1)
+
+```java
+class Solution
+{
+    int res = 0;
+
+    //Function to return count of nodes at a given distance from leaf nodes.
+    int printKDistantfromLeaf(Node root, int k)
+    {
+
+        traverse(root, new LinkedList<Integer>(), new LinkedList<Boolean>(), k);
+        return res;
+    }
+
+    void traverse(Node root, List<Integer> path, List<Boolean> counted, int k) {
+        if (root == null) return;
+        path.add(root.data);
+        counted.add(false);
+
+        traverse(root.left, path, counted, k);
+        traverse(root.right, path, counted, k);
+
+        if (root.left == null && root.right == null) {
+            int totalDistance = path.size() - 1;
+            // >= 0: the special node can be found on non-root level
+            // multiple leaf nodes can correspond to one special node so it should be counted only once
+            if (totalDistance - k >= 0 && !counted.get(totalDistance - k)) {
+                res++;
+                counted.set(totalDistance - k, true);
+            }
+        }
+
+        path.remove(path.size() - 1);
+        counted.remove(counted.size() - 1);
+    }
+
 }
 ```
 
@@ -5423,6 +5507,8 @@ class Tree
 ```
 
 #### [Level order traversal in spiral form](https://www.geeksforgeeks.org/problems/level-order-traversal-in-spiral-form/1?page=1&category=Tree&sortBy=submissions)
+
+level traversal
 
 ```java
 class Spiral

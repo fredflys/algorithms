@@ -1347,7 +1347,49 @@ class Solution:
 
 #### [322. Coin Change](https://leetcode.com/problems/coin-change/) Medium
 
+min value
+
+```java
+class Solution {
+    public int coinChange(int[] coins, int amount) {
+        // dp[i] the minimum number of coins to make up amount i
+        int[] dp = new int[amount + 1];
+        for (int i = 0; i < amount + 1; i++) {
+            dp[i] = amount + 1;
+        }
+        dp[0] = 0;
+
+        for (int i = 1; i < amount + 1; i++) {
+            for (int coin: coins) {
+                if (coin <= i) {
+                    dp[i] = Math.min(dp[i], 1 + dp[i - coin]);
+                }
+            }
+        }
+
+        return dp[amount] == amount + 1 ? -1 : dp[amount];
+    }
+}
+```
+
 #### [518. Coin Change 2](https://leetcode.com/problems/coin-change-2/) Medium
+
+combinations
+
+```java
+class Solution {
+    public int change(int amount, int[] coins) {
+        int[] dp = new int[amount + 1];
+        dp[0] = 1;
+        for (int coin : coins) {
+            for (int i = 1; i < amount + 1; i++) {
+                if (coin <= i) dp[i] = dp[i] + dp[i - coin];
+            }
+        }
+        return dp[amount];
+    }
+}
+```
 
 #### [2035. Partition Array Into Two Arrays to Minimize Sum Difference ](https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/)Hard
 
